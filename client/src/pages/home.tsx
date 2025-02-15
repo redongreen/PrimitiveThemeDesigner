@@ -701,17 +701,17 @@ const Home = () => {
                 className="absolute inset-0 rounded-[48px]"
                 style={{ 
                   border: '6px solid rgba(0, 0, 0, 0.4)',
-                  height: '844px',
                 }}
               >
-                <div className="w-full h-full rounded-[42px] overflow-hidden bg-background">
+                <div className="w-full h-full rounded-[42px] overflow-y-auto bg-background">
                   <div className="p-4">
                     <h4 className="text-sm font-medium mb-4">Accessible Pairings</h4>
 
                     <div className="mt-6">
-                      <h5 className="text-xs text-muted-foreground mb-2">Primary</h5>
+                      <h5 className="text-xs font-medium mb-2">Primary</h5>
+                      <div className="text-xs text-muted-foreground mb-2">Primary Background with On Primary Content</div>
                       <ColorPairing
-                        title="Primary Background with On Primary Content"
+                        title="Example"
                         background={ramp[semanticIndices.backgroundPrimary]?.hex}
                         foreground={getBestContrastColor(ramp[semanticIndices.backgroundPrimary]?.hex)?.color}
                         semanticMapping={{
@@ -720,9 +720,10 @@ const Home = () => {
                         }}
                       />
 
-                      <h5 className="text-xs text-muted-foreground mb-2 mt-6">Secondary</h5>
+                      <h5 className="text-xs font-medium mb-2 mt-6">Secondary</h5>
+                      <div className="text-xs text-muted-foreground mb-2">Secondary Background with On Secondary Content</div>
                       <ColorPairing
-                        title="Secondary Background with On Secondary Content"
+                        title="Example"
                         background={ramp[semanticIndices.backgroundSecondary]?.hex}
                         foreground={ramp[semanticIndices.contentOnSecondary]?.hex}
                         semanticMapping={{
@@ -731,8 +732,9 @@ const Home = () => {
                         }}
                       />
 
+                      <div className="text-xs text-muted-foreground mb-2 mt-4">Secondary Background with Neutral Foregrounds</div>
                       <ColorPairing
-                        title="Secondary Background with Neutral Foregrounds"
+                        title="Example"
                         background={ramp[semanticIndices.backgroundSecondary]?.hex}
                         foreground="#000000"
                         secondaryForeground="#4B4B4B"
@@ -745,9 +747,10 @@ const Home = () => {
                         }}
                       />
 
-                      <h5 className="text-xs text-muted-foreground mb-2 mt-6">Primary on Neutral</h5>
+                      <h5 className="text-xs font-medium mb-2 mt-6">Primary on Neutral</h5>
+                      <div className="text-xs text-muted-foreground mb-2">Primary Content on Neutral Background</div>
                       <ColorPairing
-                        title="Primary Content on Neutral Background"
+                        title="Example"
                         background="#FFFFFF"
                         foreground={ramp[semanticIndices.contentPrimary]?.hex}
                         border={ramp[semanticIndices.borderAccessible]?.hex}
@@ -769,12 +772,11 @@ const Home = () => {
                           }}
                         />
                       </div>
-                    </div>
 
-                    <div className="mt-6">
-                      <h5 className="text-xs text-muted-foreground mb-2">Disabled</h5>
+                      <h5 className="text-xs font-medium mb-2 mt-6">Disabled</h5>
+                      <div className="text-xs text-muted-foreground mb-2">Disabled State Example</div>
                       <ColorPairing
-                        title="Disabled State Example"
+                        title="Example"
                         background={ramp[semanticIndices.backgroundDisabled]?.hex}
                         foreground={ramp[semanticIndices.contentDisabled]?.hex}
                         semanticMapping={{
