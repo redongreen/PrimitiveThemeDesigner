@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -13,12 +13,13 @@ interface ColorRampProps {
 
 export function ColorRamp({ colors, onAdjustColor }: ColorRampProps) {
   const { toast } = useToast();
+  const [selectedStep, setSelectedStep] = useState<number | null>(null);
 
   const copyToClipboard = () => {
     const text = colors
       .map((color, i) => `Step ${i + 1}: ${color.hex}`)
       .join('\n');
-    
+
     navigator.clipboard.writeText(text).then(() => {
       toast({
         title: "Copied to clipboard",
@@ -44,61 +45,69 @@ export function ColorRamp({ colors, onAdjustColor }: ColorRampProps) {
 
       <div className="flex mb-4">
         {colors.map((color, i) => (
-          <div
+          <Button
             key={i}
-            className="flex-1 h-20"
+            variant="ghost"
+            className={`flex-1 h-20 rounded-none ${
+              selectedStep === i ? 'ring-2 ring-primary ring-inset' : ''
+            }`}
             style={{ backgroundColor: color.hex }}
+            onClick={() => setSelectedStep(i)}
           />
         ))}
       </div>
 
-      <div className="space-y-6">
-        {colors.map((color, i) => (
-          <div key={i} className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="font-medium">Step {i + 1}</span>
-              <code className="text-sm bg-muted px-2 py-1 rounded">
-                {color.hex}
-              </code>
+      {selectedStep !== null && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <span className="font-medium">Step {selectedStep + 1}</span>
+            <code className="text-sm bg-muted px-2 py-1 rounded">
+              {colors[selectedStep].hex}
+            </code>
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm">Lightness</label>
+              <Slider
+                value={[colors[selectedStep].oklch.l * 100]}
+                min={15}
+                max={95}
+                step={1}
+                onValueChange={([v]) => onAdjustColor(selectedStep, 'l', v / 100)}
+              />
             </div>
-            
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm">Lightness</label>
-                <Slider
-                  value={[color.oklch.l * 100]}
-                  min={15}
-                  max={95}
-                  step={1}
-                  onValueChange={([v]) => onAdjustColor(i, 'l', v / 100)}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm">Chroma</label>
-                <Slider
-                  value={[color.oklch.c * 100]}
-                  min={0}
-                  max={100}
-                  step={1}
-                  onValueChange={([v]) => onAdjustColor(i, 'c', v / 100)}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm">Hue</label>
-                <Slider
-                  value={[color.oklch.h]}
-                  min={0}
-                  max={360}
-                  step={1}
-                  onValueChange={([v]) => onAdjustColor(i, 'h', v)}
-                />
-              </div>
+
+            <div className="space-y-2">
+              <label className="text-sm">Chroma</label>
+              <Slider
+                value={[colors[selectedStep].oklch.c * 100]}
+                min={0}
+                max={100}
+                step={1}
+                onValueChange={([v]) => onAdjustColor(selectedStep, 'c', v / 100)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm">Hue</label>
+              <Slider
+                value={[colors[selectedStep].oklch.h]}
+                min={0}
+                max={360}
+                step={1}
+                onValueChange={([v]) => onAdjustColor(selectedStep, 'h', v)}
+              />
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {selectedStep === null && (
+        <div className="text-center text-muted-foreground py-4">
+          Select a color step to adjust its values
+        </div>
+      )}
     </Card>
   );
 }
