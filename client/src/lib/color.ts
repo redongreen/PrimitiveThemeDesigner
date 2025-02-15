@@ -128,13 +128,19 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
     // Create localized wave effects for positions
     const waveEffect = (center: number, width: number) => {
       const distanceFromCenter = Math.abs(position - center);
-      // Create a very focused Gaussian falloff
-      return Math.exp(-Math.pow(distanceFromCenter / width, 2) * 20);
+      // Smoother Gaussian falloff with sine wave combination
+      const gaussian = Math.exp(-Math.pow(distanceFromCenter / width, 2) * 4);
+      const sine = Math.cos(distanceFromCenter * Math.PI / width);
+      return gaussian * sine;
     };
 
     // Calculate effects centered at 20% and 80% through the ramp
-    const darkWave = waveEffect(0.2, 0.1) * 0.05;  // Effect for darker colors
-    const lightWave = waveEffect(0.8, 0.1) * 0.05; // Effect for lighter colors
+    // Adjust width based on step count to maintain consistent effect
+    const baseWidth = 0.2; // Base width of the effect
+    const adjustedWidth = Math.max(baseWidth, 1 / steps); // Ensure width is never smaller than one step
+
+    const darkWave = waveEffect(0.2, adjustedWidth) * 0.05;  // Effect for darker colors
+    const lightWave = waveEffect(0.8, adjustedWidth) * 0.05; // Effect for lighter colors
 
     // When torsionStrength is positive (slider > 50%):
     // - darkWave moves up (positive)
