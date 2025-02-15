@@ -7,11 +7,14 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   generateRamp,
   oklchToHex,
   calculateRampVibrance,
-  type ColorStop
+  type ColorStop,
+  getBestContrastColor,
+  getContrastRatio
 } from '@/lib/color';
 
 interface Point {
@@ -23,15 +26,49 @@ interface ColorTokenProps {
   color: string;
   name: string;
   slot: string;
+  contrastWith?: string;
 }
 
-const ColorToken: React.FC<ColorTokenProps> = ({ color, name, slot }) => (
-  <div className="flex items-center gap-3 mb-2">
-    <div 
-      className="w-6 h-6 rounded border border-border"
-      style={{ backgroundColor: color }}
-    />
-    <span className="font-mono text-sm">{name} = {slot}</span>
+const ColorToken: React.FC<ColorTokenProps> = ({ color, name, slot, contrastWith }) => {
+  const contrastRatio = contrastWith ? getContrastRatio(color, contrastWith) : null;
+
+  return (
+    <div className="flex items-center gap-3 mb-2">
+      <div 
+        className="w-6 h-6 rounded border border-border"
+        style={{ backgroundColor: color }}
+      />
+      <span className="font-mono text-sm flex-1">{name} = {slot}</span>
+      {contrastRatio && (
+        <span className="text-xs text-muted-foreground">
+          {contrastRatio.toFixed(1)}:1
+        </span>
+      )}
+    </div>
+  );
+};
+
+interface ColorPairingProps {
+  title: string;
+  background: string;
+  foreground: string;
+  border?: string;
+}
+
+const ColorPairing: React.FC<ColorPairingProps> = ({ title, background, foreground, border }) => (
+  <div 
+    className="rounded-lg p-4 mb-4"
+    style={{ 
+      backgroundColor: background,
+      border: border ? `1px solid ${border}` : undefined
+    }}
+  >
+    <p style={{ color: foreground }}>
+      {title}
+    </p>
+    <div className="text-xs mt-2" style={{ color: foreground }}>
+      Contrast ratio: {getContrastRatio(foreground, background).toFixed(1)}:1
+    </div>
   </div>
 );
 
@@ -329,21 +366,63 @@ export default function Home() {
         </TabsContent>
 
         <TabsContent value="theme" className="flex gap-8">
-          <div className="w-64">
+          <div className="w-72">
             <h3 className="font-medium mb-4">Background</h3>
-            <ColorToken color={ramp[6]?.hex} name="brandBackgroundPrimary" slot="500" />
-            <ColorToken color={ramp[1]?.hex} name="brandBackgroundSecondary" slot="100" />
-            <ColorToken color={ramp[0]?.hex} name="brandBackgroundDisabled" slot="50" />
+            <ColorToken 
+              color={ramp[6]?.hex} 
+              name="brandBackgroundPrimary" 
+              slot="500"
+              contrastWith="#000000"
+            />
+            <ColorToken 
+              color={ramp[1]?.hex} 
+              name="brandBackgroundSecondary" 
+              slot="100" 
+              contrastWith="#4B4B4B"
+            />
+            <ColorToken 
+              color={ramp[0]?.hex} 
+              name="brandBackgroundDisabled" 
+              slot="50"
+            />
 
             <h3 className="font-medium mb-4 mt-6">Foreground</h3>
-            <ColorToken color={ramp[7]?.hex} name="brandContentPrimary" slot="700" />
-            <ColorToken color="#FFFFFF" name="brandContentOnPrimary" slot="950" />
-            <ColorToken color={ramp[8]?.hex} name="brandContentOnSecondary" slot="800" />
-            <ColorToken color={ramp[3]?.hex} name="brandContentDisabled" slot="300" />
+            <ColorToken 
+              color={ramp[7]?.hex} 
+              name="brandContentPrimary" 
+              slot="700"
+              contrastWith="#FFFFFF"
+            />
+            <ColorToken 
+              color="#FFFFFF" 
+              name="brandContentOnPrimary" 
+              slot="950"
+              contrastWith={ramp[6]?.hex}
+            />
+            <ColorToken 
+              color={ramp[8]?.hex} 
+              name="brandContentOnSecondary" 
+              slot="800"
+              contrastWith={ramp[1]?.hex}
+            />
+            <ColorToken 
+              color={ramp[3]?.hex} 
+              name="brandContentDisabled" 
+              slot="300"
+            />
 
             <h3 className="font-medium mb-4 mt-6">Border</h3>
-            <ColorToken color={ramp[6]?.hex} name="brandBorderAccessible" slot="600" />
-            <ColorToken color={ramp[2]?.hex} name="brandBorderSubtle" slot="200" />
+            <ColorToken 
+              color={ramp[6]?.hex} 
+              name="brandBorderAccessible" 
+              slot="600"
+              contrastWith="#FFFFFF"
+            />
+            <ColorToken 
+              color={ramp[2]?.hex} 
+              name="brandBorderSubtle" 
+              slot="200"
+            />
           </div>
 
           <div className="flex-1">
@@ -357,20 +436,38 @@ export default function Home() {
               >
                 <div className="w-full h-full rounded-[42px] overflow-hidden bg-background">
                   <div className="p-4">
-                    <Card className="mb-4 p-4" style={{ backgroundColor: ramp[6]?.hex }}>
-                      <h4 style={{ color: '#FFFFFF' }}>Primary Background</h4>
-                    </Card>
+                    <h4 className="text-sm font-medium mb-4">Accessibility Pairings</h4>
 
-                    <Card className="mb-4 p-4" style={{ backgroundColor: ramp[1]?.hex }}>
-                      <h4 style={{ color: ramp[8]?.hex }}>Secondary Background</h4>
-                    </Card>
+                    <h5 className="text-xs text-muted-foreground mb-2">Primary</h5>
+                    <ColorPairing
+                      title="Primary Background with On Primary Content"
+                      background={ramp[6]?.hex}
+                      foreground="#FFFFFF"
+                    />
 
-                    <div className="rounded-lg p-4 mb-4" style={{ border: `1px solid ${ramp[6]?.hex}` }}>
-                      <p style={{ color: ramp[7]?.hex }}>Content with accessible border</p>
-                    </div>
+                    <h5 className="text-xs text-muted-foreground mb-2">Secondary</h5>
+                    <ColorPairing
+                      title="Secondary Background with On Secondary Content"
+                      background={ramp[1]?.hex}
+                      foreground={ramp[8]?.hex}
+                      border={ramp[2]?.hex}
+                    />
 
-                    <div className="rounded-lg p-4" style={{ border: `1px solid ${ramp[2]?.hex}` }}>
-                      <p style={{ color: ramp[3]?.hex }}>Disabled content with subtle border</p>
+                    <h5 className="text-xs text-muted-foreground mb-2">Primary on Neutral</h5>
+                    <ColorPairing
+                      title="Primary Content on Neutral Background"
+                      background="#FFFFFF"
+                      foreground={ramp[7]?.hex}
+                      border={ramp[6]?.hex}
+                    />
+
+                    <div className="mt-8">
+                      <h5 className="text-xs text-muted-foreground mb-2">States</h5>
+                      <ColorPairing
+                        title="Disabled State Example"
+                        background={ramp[0]?.hex}
+                        foreground={ramp[3]?.hex}
+                      />
                     </div>
                   </div>
                 </div>
