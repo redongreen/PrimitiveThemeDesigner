@@ -24,7 +24,7 @@ export default function Home() {
   const [ramp, setRamp] = useState<ColorStop[]>(() => 
     generateRamp(baseColor, steps)
   );
-  
+
   const [lightnessCurve, setLightnessCurve] = useState([...defaultCurvePoints]);
   const [chromaCurve, setChromaCurve] = useState([...defaultCurvePoints]);
   const [hueCurve, setHueCurve] = useState([...defaultCurvePoints]);
@@ -39,7 +39,8 @@ export default function Home() {
 
   const handleColorChange = (newColor: string) => {
     setBaseColor(newColor);
-    if (newColor.length === 7) {
+    // Only generate new ramp if we have a complete valid hex color
+    if (/^#[0-9A-Fa-f]{6}$/.test(newColor)) {
       updateRamp();
     }
   };
@@ -68,10 +69,10 @@ export default function Home() {
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
       <h1 className="text-4xl font-bold mb-8">Color Ramp Generator</h1>
-      
+
       <div className="flex gap-4 mb-8">
         <ColorInput value={baseColor} onChange={handleColorChange} />
-        
+
         <div>
           <Label htmlFor="steps">Steps</Label>
           <Input
@@ -123,7 +124,7 @@ export default function Home() {
               label="Hue Curve"
             />
           </div>
-          
+
           <ColorRamp colors={ramp} onAdjustColor={handleAdjustColor} />
         </TabsContent>
       </Tabs>
