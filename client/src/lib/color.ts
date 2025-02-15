@@ -143,7 +143,7 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
     const lightEffect = waveEffect(0.8, 0); // Width not used anymore
 
     // Calculate hue adjustment based on the combined effects
-    const hueAdjustment = (darkEffect - lightEffect) * torsionStrength * 60; // Reduced range for subtler effect
+    const hueAdjustment = (darkEffect - lightEffect) * torsionStrength * 12; // Reduced from 60 to 12 (80% reduction)
 
     // Apply the hue adjustment to the base hue
     const h = base.h + hueAdjustment;
