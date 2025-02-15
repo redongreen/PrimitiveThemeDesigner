@@ -696,14 +696,14 @@ const Home = () => {
           </div>
 
           <div className="flex-1">
-            <div className="relative mx-auto" style={{ width: '390px' }}>
+            <div className="flex flex-col mx-auto" style={{ width: '390px' }}>
               <div 
-                className="absolute inset-0 rounded-[48px]"
+                className="rounded-[48px] flex flex-col"
                 style={{ 
                   border: '6px solid rgba(0, 0, 0, 0.4)',
                 }}
               >
-                <div className="w-full h-full rounded-[42px] overflow-y-auto bg-background">
+                <div className="w-full rounded-[42px] bg-background">
                   <div className="p-4">
                     <h4 className="text-sm font-medium mb-4">Accessible Pairings</h4>
 
