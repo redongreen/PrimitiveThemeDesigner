@@ -24,55 +24,25 @@ function calculateInfluence(draggedStep: number, currentStep: number, totalSteps
   return Math.exp(-(distance * distance) / (2 * sigma * sigma));
 }
 
-function cubicInterpolate(
-  points: Point[],
-  t: number,
-  minStep: number,
-  maxStep: number
-): number {
-  // Find the points that bracket the target step
-  const p = points.sort((a, b) => a.step - b.step);
-  const i1 = p.findIndex(pt => pt.step > t);
-
-  if (i1 === -1) return p[p.length - 1].value;
-  if (i1 === 0) return p[0].value;
-
-  const i0 = i1 - 1;
-  const t0 = p[i0].step;
-  const t1 = p[i1].step;
-  const v0 = p[i0].value;
-  const v1 = p[i1].value;
-
-  // Calculate tension vectors with exponential influence
-  const tension = 0.5;
-  const m0 = i0 > 0 ? (p[i1].value - p[i0 - 1].value) * tension : (v1 - v0) * tension;
-  const m1 = i1 < p.length - 1 ? (p[i1 + 1].value - v0) * tension : (v1 - v0) * tension;
-
-  // Cubic Hermite spline interpolation
-  const t2 = (t - t0) / (t1 - t0);
-  const t3 = t2 * t2;
-  const t4 = t3 * t2;
-
-  return (2 * t4 - 3 * t3 + 1) * v0 +
-         (t4 - 2 * t3 + t2) * m0 +
-         (-2 * t4 + 3 * t3) * v1 +
-         (t4 - t3) * m1;
-}
-
 export function CurveEditor({ label, points, steps, minValue, maxValue, onChange }: CurveEditorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [initialPoints, setInitialPoints] = useState<Point[]>([]);
 
-  // Convert between canvas and value coordinates
+  // Add padding to keep points away from edges
+  const PADDING = 20; // pixels of padding
+
+  // Convert between canvas and value coordinates with padding
   const toCanvasCoords = (point: Point, width: number, height: number) => ({
-    x: (point.step / (steps - 1)) * width,
-    y: height - ((point.value - minValue) / (maxValue - minValue)) * height
+    x: PADDING + ((point.step / (steps - 1)) * (width - 2 * PADDING)),
+    y: PADDING + ((maxValue - point.value) / (maxValue - minValue)) * (height - 2 * PADDING)
   });
 
   const fromCanvasCoords = (x: number, y: number, width: number, height: number): Point => ({
-    step: Math.round((x / width) * (steps - 1)),
-    value: Math.max(minValue, Math.min(maxValue, maxValue - ((y / height) * (maxValue - minValue))))
+    step: Math.round(((x - PADDING) / (width - 2 * PADDING)) * (steps - 1)),
+    value: Math.max(minValue, Math.min(maxValue, 
+      maxValue - (((y - PADDING) / (height - 2 * PADDING)) * (maxValue - minValue))
+    ))
   });
 
   useEffect(() => {
@@ -85,26 +55,26 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw grid
+    // Draw grid with padding
     ctx.strokeStyle = '#e5e7eb';
     ctx.lineWidth = 1;
 
     // Vertical lines for steps
     for (let i = 0; i < steps; i++) {
-      const x = (canvas.width * i) / (steps - 1);
+      const x = PADDING + ((canvas.width - 2 * PADDING) * i) / (steps - 1);
       ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, canvas.height);
+      ctx.moveTo(x, PADDING);
+      ctx.lineTo(x, canvas.height - PADDING);
       ctx.stroke();
     }
 
     // Horizontal lines
     const numLines = 5;
     for (let i = 0; i <= numLines; i++) {
-      const y = (canvas.height * i) / numLines;
+      const y = PADDING + ((canvas.height - 2 * PADDING) * i) / numLines;
       ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(canvas.width, y);
+      ctx.moveTo(PADDING, y);
+      ctx.lineTo(canvas.width - PADDING, y);
       ctx.stroke();
     }
 
@@ -119,29 +89,32 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       const start = toCanvasCoords(sortedPoints[0], canvas.width, canvas.height);
       ctx.moveTo(start.x, start.y);
 
-      // Draw curve segments
+      // Draw curve segments with quadratic curves
       for (let i = 1; i < sortedPoints.length; i++) {
         const prev = toCanvasCoords(sortedPoints[i - 1], canvas.width, canvas.height);
         const curr = toCanvasCoords(sortedPoints[i], canvas.width, canvas.height);
 
-        // Use quadratic curves for smoother transitions
         const cpX = (prev.x + curr.x) / 2;
         ctx.quadraticCurveTo(cpX, (prev.y + curr.y) / 2, curr.x, curr.y);
       }
-
-      // Complete the curve to the last point
-      const last = toCanvasCoords(sortedPoints[sortedPoints.length - 1], canvas.width, canvas.height);
-      ctx.lineTo(last.x, last.y);
       ctx.stroke();
     }
 
-    // Draw points
+    // Draw points with visible handles
     sortedPoints.forEach((point) => {
       const { x, y } = toCanvasCoords(point, canvas.width, canvas.height);
+
+      // Draw point handle
       ctx.fillStyle = '#000';
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, 2 * Math.PI);
       ctx.fill();
+
+      // Draw larger interaction area
+      ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+      ctx.beginPath();
+      ctx.arc(x, y, 10, 0, 2 * Math.PI);
+      ctx.stroke();
     });
 
     // Draw step labels
@@ -149,7 +122,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
     for (let i = 0; i < steps; i++) {
-      const x = (canvas.width * i) / (steps - 1);
+      const x = PADDING + ((canvas.width - 2 * PADDING) * i) / (steps - 1);
       ctx.fillText(`${i + 1}`, x, canvas.height - 5);
     }
   }, [points, steps, minValue, maxValue]);
@@ -161,17 +134,38 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    return fromCanvasCoords(x, y, canvas.width, canvas.height);
+
+    // Clamp coordinates to stay within padded area
+    const clampedX = Math.max(PADDING, Math.min(canvas.width - PADDING, x));
+    const clampedY = Math.max(PADDING, Math.min(canvas.height - PADDING, y));
+
+    return fromCanvasCoords(clampedX, clampedY, canvas.width, canvas.height);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     const pos = getMousePosition(e);
     if (!pos) return;
 
-    // Find the closest point
-    const index = points.findIndex(p => p.step === pos.step);
-    if (index !== -1) {
-      setDraggingIndex(index);
+    // Find the closest point within interaction radius
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const mousePos = { x: e.clientX - canvas.getBoundingClientRect().left, y: e.clientY - canvas.getBoundingClientRect().top };
+
+    let closestIndex = -1;
+    let closestDistance = Infinity;
+
+    points.forEach((point, index) => {
+      const coords = toCanvasCoords(point, canvas.width, canvas.height);
+      const distance = Math.sqrt(Math.pow(coords.x - mousePos.x, 2) + Math.pow(coords.y - mousePos.y, 2));
+      if (distance < 15 && distance < closestDistance) { // Increased interaction radius
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    if (closestIndex !== -1) {
+      setDraggingIndex(closestIndex);
       setInitialPoints([...points]);
     }
   };
@@ -191,16 +185,12 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       if (i !== draggingIndex) {
         const influence = calculateInfluence(draggedStep, point.step, steps);
         point.value = initialPoints[i].value + (valueDelta * influence);
+        point.value = Math.max(minValue, Math.min(maxValue, point.value));
       }
     });
 
     // Update the dragged point
     newPoints[draggingIndex].value = pos.value;
-
-    // Ensure values stay within bounds
-    newPoints.forEach(point => {
-      point.value = Math.max(minValue, Math.min(maxValue, point.value));
-    });
 
     onChange(newPoints);
   };
@@ -217,7 +207,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
         ref={canvasRef}
         width={300}
         height={200}
-        className="border rounded-lg"
+        className="border rounded-lg cursor-pointer"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
