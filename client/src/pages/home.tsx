@@ -401,11 +401,24 @@ export default function Home() {
   const getSemanticsIndices = useCallback((ramp: ColorStop[]) => {
     if (!ramp.length) return {};
 
+    // Filter colors that meet the contrast requirement against #F3F3F3
+    const validColors = ramp.map((color, index) => ({
+      color,
+      index,
+      contrast: getContrastRatio(color.hex, '#F3F3F3')
+    })).filter(item => item.contrast >= 4.5);
+
+    // Find the color closest to the base color among valid colors
+    const backgroundPrimaryIndex = validColors.reduce((best, current) => {
+      const currentDiff = Math.abs(current.color.oklch.l - ramp[0].oklch.l) +
+                         Math.abs(current.color.oklch.c - ramp[0].oklch.c);
+      const bestDiff = Math.abs(ramp[best].oklch.l - ramp[0].oklch.l) +
+                      Math.abs(ramp[best].oklch.c - ramp[0].oklch.c);
+      return currentDiff < bestDiff ? current.index : best;
+    }, validColors[0]?.index || 0);
+
     // Find the lightest color with sufficient contrast against #5E5E5E for secondary background
     const backgroundSecondaryIndex = findLightestWithContrast(ramp, '#5E5E5E', 4.5);
-
-    // Find best matching primitive color
-    const backgroundPrimaryIndex = findBestMatchingPrimitive(ramp, baseColor);
 
     // Background disabled should be similar to secondary but one step lighter
     const backgroundDisabledIndex = Math.max(0, backgroundSecondaryIndex - 1);
