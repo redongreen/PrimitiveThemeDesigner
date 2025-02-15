@@ -9,10 +9,8 @@ import {
   generateRamp,
   oklchToHex,
   calculateRampVibrance,
-  type ColorStop,
-  type ColorBlindnessType
+  type ColorStop
 } from '@/lib/color';
-import { ColorBlindnessToggle } from '@/components/ColorBlindnessToggle';
 
 interface Point {
   step: number;
@@ -43,7 +41,6 @@ export default function Home() {
       value: ramp[i].oklch.h
     }))
   );
-  const [colorBlindnessType, setColorBlindnessType] = useState<ColorBlindnessType>(null);
 
   const interpolatePoints = (currentPoints: Point[], newStepCount: number): Point[] => {
     if (currentPoints.length === 0) return [];
@@ -272,14 +269,10 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <ColorBlindnessToggle
-          value={colorBlindnessType}
-          onValueChange={setColorBlindnessType}
-        />
       </div>
 
       <div className="space-y-4">
-        <ColorRamp colors={ramp} colorBlindnessType={colorBlindnessType} />
+        <ColorRamp colors={ramp} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <CurveEditor
