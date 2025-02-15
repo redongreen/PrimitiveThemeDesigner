@@ -35,8 +35,21 @@ interface ColorTokenProps {
 const ColorToken: React.FC<ColorTokenProps> = ({ color, name, rampIndex, contrastWith }) => {
   const { toast } = useToast();
   const contrastRatio = contrastWith ? getContrastRatio(color, contrastWith) : null;
-  const primitiveValue = rampIndex === -1 ? "auto" : ((rampIndex + 1) * 100).toString();
-  const displayValue = color === "#000000" ? "Black" : color === "#FFFFFF" ? "White" : `Primitive-${primitiveValue}`;
+
+  // Calculate the primitive value and display text
+  let displayValue: string;
+  if (rampIndex === -1) {
+    // Handle special colors
+    if (color.toUpperCase() === "#000000") {
+      displayValue = "Black";
+    } else if (color.toUpperCase() === "#FFFFFF") {
+      displayValue = "White";
+    } else {
+      displayValue = "auto";
+    }
+  } else {
+    displayValue = `Primitive-${(rampIndex + 1) * 100}`;
+  }
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(color).then(() => {
