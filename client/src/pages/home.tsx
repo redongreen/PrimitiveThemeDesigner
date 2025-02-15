@@ -163,27 +163,46 @@ const ColorPairing: React.FC<ColorPairingProps> = ({
   );
 };
 
+// Helper function (assuming this is available or can be implemented elsewhere)
+const hexToOklch = (hex: string): {l: number; c: number; h: number} => {
+  //Implementation to convert hex to oklch.  Replace with actual implementation.
+  // This is a placeholder.  You'll need a proper conversion library.
+  return {l: 0, c: 0, h: 0};
+};
+
+
 const findBestMatchingPrimitive = (ramp: ColorStop[], targetHex: string): number => {
   if (!ramp.length) return 0;
 
   let minDiff = Number.MAX_VALUE;
   let bestIndex = 0;
 
-  const targetColor = ramp[0]; // Using first color as reference
+  // Convert target hex to OKLCH
+  const targetColor = hexToOklch(targetHex);
 
   ramp.forEach((color, index) => {
-    const diff = Math.abs(
-      color.oklch.l - targetColor.oklch.l +
-      color.oklch.c - targetColor.oklch.c +
-      color.oklch.h - targetColor.oklch.h
-    );
+    // Calculate weighted differences for each component
+    const lDiff = Math.abs(color.oklch.l - targetColor.l);
+    const cDiff = Math.abs(color.oklch.c - targetColor.c);
+
+    // Handle hue wraparound (hue is circular)
+    let hDiff = Math.abs(color.oklch.h - targetColor.h);
+    if (hDiff > 180) {
+      hDiff = 360 - hDiff;
+    }
+    hDiff = hDiff / 360; // Normalize to [0,1]
+
+    // Weight the components
+    // Lightness is most important, then chroma, then hue
+    const diff = (lDiff * 2) + (cDiff * 1.5) + (hDiff * 1);
+
     if (diff < minDiff) {
       minDiff = diff;
       bestIndex = index;
     }
   });
 
-  return Math.min(bestIndex, ramp.length - 1);
+  return bestIndex;
 };
 
 const findLightestWithContrast = (ramp: ColorStop[], against: string, minContrast: number): number => {
