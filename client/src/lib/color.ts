@@ -109,9 +109,8 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
   const maxChroma = base.c * vibranceMultiplier;
 
   // Calculate hue torsion effect
-  // Map hueTorsion to -5% to +5% effect
-  const maxTorsion = 0.05; // 5% adjustment
-  const torsionStrength = (hueTorsion - 0.5) * 2; // -1 to 1 range
+  // Map hueTorsion [0,1] to [-1, 1] range for direction
+  const torsionStrength = (hueTorsion - 0.5) * 2;
 
   // Generate lightness values from 0.15 to 0.95 to avoid pure black/white
   for (let i = 0; i < steps; i++) {
@@ -127,24 +126,23 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
     // Calculate normalized position in the ramp (0 to 1)
     const position = i / (steps - 1);
 
-    // Calculate hue adjustment based on position
+    // Calculate hue adjustment using a smooth curve
     let hueAdjustment = 0;
-    const step3Position = 3 / (steps - 1);
-    const step7Position = 7 / (steps - 1);
+    const curve = (x: number) => Math.sin(x * Math.PI) * 0.05; // 5% maximum adjustment
 
-    // Create bell curve effect around positions 0.3 and 0.7
-    if (Math.abs(position - step3Position) < 0.1) {
-      // Near step 3: positive adjustment at 100% torsion, negative at 0%
-      hueAdjustment = maxTorsion * -torsionStrength * (1 - Math.abs(position - step3Position) / 0.1);
-    } else if (Math.abs(position - step7Position) < 0.1) {
-      // Near step 7: negative adjustment at 100% torsion, positive at 0%
-      hueAdjustment = maxTorsion * torsionStrength * (1 - Math.abs(position - step7Position) / 0.1);
+    // Apply stronger effect near steps 3 and 7 (30% and 70% through the ramp)
+    if (position >= 0.2 && position <= 0.8) {
+      const normalizedPos = (position - 0.2) / 0.6; // normalize to 0-1 range within our region of interest
+      hueAdjustment = curve(normalizedPos) * torsionStrength;
     }
 
-    // Apply the hue adjustment
-    const h = ((base.h + (base.h * hueAdjustment)) % 360 + 360) % 360;
+    // Apply the hue adjustment to the base hue
+    const h = base.h * (1 + hueAdjustment);
 
-    const oklchValues = { l, c, h };
+    // Normalize hue to 0-360 range
+    const normalizedHue = ((h % 360) + 360) % 360;
+
+    const oklchValues = { l, c, h: normalizedHue };
     const hex = oklchToHex(oklchValues);
 
     ramp.push({

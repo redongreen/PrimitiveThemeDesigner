@@ -177,8 +177,7 @@ export default function Home() {
   };
 
   const handleHueTorsionChange = (value: number[]) => {
-    // Snap to nearest quarter
-    const newValue = Math.round(value[0] * 4) / 4;
+    const newValue = value[0];
     setHueTorsion(newValue);
 
     // Generate a new base ramp with the updated hue torsion
@@ -231,15 +230,23 @@ export default function Home() {
           <Label htmlFor="vibrance">Vibrance</Label>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">Pastel</span>
-            <Slider
-              id="vibrance"
-              min={0}
-              max={1}
-              step={0.01}
-              value={[vibrance]}
-              onValueChange={handleVibranceChange}
-              className="flex-1"
-            />
+            <div className="relative flex-1">
+              <div className="absolute -top-6 left-0 right-0 flex justify-between text-xs text-muted-foreground">
+                <span>0%</span>
+                <span>25%</span>
+                <span>50%</span>
+                <span>75%</span>
+                <span>100%</span>
+              </div>
+              <Slider
+                id="vibrance"
+                min={0}
+                max={1}
+                step={0.01}
+                value={[vibrance]}
+                onValueChange={handleVibranceChange}
+              />
+            </div>
             <span className="text-sm text-muted-foreground">Vibrant</span>
           </div>
         </div>
@@ -248,15 +255,23 @@ export default function Home() {
           <Label htmlFor="hueTorsion">Hue Torsion</Label>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">Cool</span>
-            <Slider
-              id="hueTorsion"
-              min={0}
-              max={1}
-              step={0.25}
-              value={[hueTorsion]}
-              onValueChange={handleHueTorsionChange}
-              className="flex-1"
-            />
+            <div className="relative flex-1">
+              <div className="absolute -top-6 left-0 right-0 flex justify-between text-xs text-muted-foreground">
+                <span>0%</span>
+                <span>25%</span>
+                <span>50%</span>
+                <span>75%</span>
+                <span>100%</span>
+              </div>
+              <Slider
+                id="hueTorsion"
+                min={0}
+                max={1}
+                step={0.01}
+                value={[hueTorsion]}
+                onValueChange={handleHueTorsionChange}
+              />
+            </div>
             <span className="text-sm text-muted-foreground">Warm</span>
           </div>
         </div>
