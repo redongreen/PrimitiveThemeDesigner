@@ -81,15 +81,35 @@ const ColorToken: React.FC<ColorTokenProps> = ({ color, name, rampIndex, contras
 
 interface ColorPairingProps {
   title: string;
+  subtitle?: string;
   background: string;
   foreground: string;
+  secondaryForeground?: string;
+  tertiaryForeground?: string;
   border?: string;
-  subtitle?: string;
+  alternativeBackground?: string;
+  semanticMapping: {
+    background: string;
+    foreground: string;
+    border?: string;
+  };
 }
 
-const ColorPairing: React.FC<ColorPairingProps> = ({ title, background, foreground, border, subtitle }) => {
-  const contrastRatio = getContrastRatio(foreground, background);
-  const isAccessible = contrastRatio >= 4.5;
+const ColorPairing: React.FC<ColorPairingProps> = ({
+  title,
+  subtitle,
+  background,
+  foreground,
+  secondaryForeground,
+  tertiaryForeground,
+  border,
+  alternativeBackground,
+  semanticMapping
+}) => {
+  const mainContrastRatio = getContrastRatio(foreground, background);
+  const secondaryContrastRatio = secondaryForeground ? getContrastRatio(secondaryForeground, background) : null;
+  const tertiaryContrastRatio = tertiaryForeground ? getContrastRatio(tertiaryForeground, background) : null;
+  const alternativeContrastRatio = alternativeBackground ? getContrastRatio(foreground, alternativeBackground) : null;
 
   return (
     <div 
@@ -99,20 +119,35 @@ const ColorPairing: React.FC<ColorPairingProps> = ({ title, background, foregrou
         border: border ? `1px solid ${border}` : undefined
       }}
     >
-      <p style={{ color: foreground }}>
-        {title}
-      </p>
-      {subtitle && (
-        <p className="text-xs mt-1" style={{ color: foreground }}>
-          {subtitle}
-        </p>
-      )}
-      <div className="text-xs mt-2" style={{ color: foreground }}>
-        Contrast ratio: {contrastRatio.toFixed(2)}:1
-        {!isAccessible && (
-          <span className="text-red-500 ml-2">
-            (Below WCAG AA)
-          </span>
+      <div className="mb-2" style={{ color: foreground }}>
+        <h4 className="text-sm font-medium">{title}</h4>
+        {subtitle && <p className="text-xs mt-1">{subtitle}</p>}
+      </div>
+
+      <div className="text-xs space-y-1" style={{ color: foreground }}>
+        <div>background: {semanticMapping.background}</div>
+        <div>foreground: {semanticMapping.foreground}</div>
+        {semanticMapping.border && <div>border: {semanticMapping.border}</div>}
+
+        <div className="mt-2">
+          {mainContrastRatio.toFixed(2)}:1
+          {alternativeBackground && (
+            <span className="ml-2">
+              (alternative: {alternativeContrastRatio?.toFixed(2)}:1)
+            </span>
+          )}
+        </div>
+
+        {secondaryForeground && (
+          <div style={{ color: secondaryForeground }} className="mt-1">
+            secondary neutral foreground: {secondaryForeground} ({secondaryContrastRatio?.toFixed(2)}:1)
+          </div>
+        )}
+
+        {tertiaryForeground && (
+          <div style={{ color: tertiaryForeground }} className="mt-1">
+            tertiary neutral foreground: {tertiaryForeground} ({tertiaryContrastRatio?.toFixed(2)}:1)
+          </div>
         )}
       </div>
     </div>
@@ -493,36 +528,55 @@ export default function Home() {
                   <div className="p-4">
                     <h4 className="text-sm font-medium mb-4">Accessible Pairings</h4>
 
-                    <h5 className="text-xs text-muted-foreground mb-2">Primary</h5>
-                    <ColorPairing
-                      title="Primary Background with On Primary Content"
-                      background={ramp[6]?.hex}
-                      foreground={getBestContrastColor(ramp[6]?.hex)?.color}
-                    />
-
-                    <h5 className="text-xs text-muted-foreground mb-2 mt-6">Secondary</h5>
-                    <ColorPairing
-                      title="Secondary Background with On Secondary Content"
-                      subtitle="brandBackgroundSecondary with brandContentOnSecondary"
-                      background={ramp[11]?.hex}
-                      foreground={ramp[5]?.hex}
-                    />
-                    <ColorPairing
-                      title="Secondary Background with Black Text"
-                      subtitle="brandBackgroundSecondary with #000000"
-                      background={ramp[11]?.hex}
-                      foreground="#000000"
-                      border={ramp[10]?.hex}
-                    />
-
                     <div className="mt-6">
-                      <h5 className="text-xs text-muted-foreground mb-2">Primary on Neutral</h5>
+                      <h5 className="text-xs text-muted-foreground mb-2">Primary</h5>
+                      <ColorPairing
+                        title="Primary Background with On Primary Content"
+                        background={ramp[6]?.hex}
+                        foreground={getBestContrastColor(ramp[6]?.hex)?.color}
+                        semanticMapping={{
+                          background: "brandBackgroundPrimary",
+                          foreground: "brandContentOnPrimary"
+                        }}
+                      />
+
+                      <h5 className="text-xs text-muted-foreground mb-2 mt-6">Secondary</h5>
+                      <ColorPairing
+                        title="Secondary Background with On Secondary Content"
+                        background={ramp[1]?.hex}
+                        foreground={ramp[9]?.hex}
+                        semanticMapping={{
+                          background: "brandBackgroundSecondary",
+                          foreground: "brandContentOnSecondary"
+                        }}
+                      />
+
+                      <ColorPairing
+                        title="Secondary Background with Neutral Foregrounds"
+                        background={ramp[1]?.hex}
+                        foreground="#000000"
+                        secondaryForeground="#4B4B4B"
+                        tertiaryForeground="#5E5E5E"
+                        border={ramp[2]?.hex}
+                        semanticMapping={{
+                          background: "brandBackgroundSecondary",
+                          foreground: "#000000",
+                          border: "brandBorderSubtle"
+                        }}
+                      />
+
+                      <h5 className="text-xs text-muted-foreground mb-2 mt-6">Primary on Neutral</h5>
                       <ColorPairing
                         title="Primary Content on Neutral Background"
-                        subtitle="brandContentPrimary on #FFFFFF with brandBorderAccessible"
                         background="#FFFFFF"
-                        foreground={ramp[4]?.hex}
-                        border={ramp[6]?.hex}
+                        foreground={ramp[8]?.hex}
+                        border={ramp[7]?.hex}
+                        alternativeBackground="#F3F3F3"
+                        semanticMapping={{
+                          background: "#FFFFFF",
+                          foreground: "brandContentPrimary",
+                          border: "brandBorderAccessible"
+                        }}
                       />
 
                       {/* Progress bar */}
@@ -541,8 +595,12 @@ export default function Home() {
                       <h5 className="text-xs text-muted-foreground mb-2">Disabled</h5>
                       <ColorPairing
                         title="Disabled State Example"
-                        background={ramp[11]?.hex} 
-                        foreground={ramp[8]?.hex} 
+                        background={ramp[0]?.hex}
+                        foreground={ramp[3]?.hex}
+                        semanticMapping={{
+                          background: "brandBackgroundDisabled",
+                          foreground: "brandContentDisabled"
+                        }}
                       />
                     </div>
                   </div>
