@@ -61,33 +61,31 @@ const ColorToken: React.FC<ColorTokenProps> = ({ color, name, rampIndex, contras
   };
 
   return (
-    <div className="flex flex-col mb-4">
-      <div className="flex items-center gap-3">
-        <div 
-          className="w-6 h-6 rounded border border-border"
-          style={{ backgroundColor: color }}
-        />
-        <div className="flex-1">
-          <span className="font-mono text-sm">{name}</span>
-          <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
-            {displayValue} <span className="text-muted-foreground">({color})</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-4 w-4 p-0 opacity-50 hover:opacity-100"
-              onClick={copyToClipboard}
-            >
-              <Copy className="h-3 w-3" />
-              <span className="sr-only">Copy hex code</span>
-            </Button>
-          </div>
+    <div className="flex items-center gap-3 mb-2">
+      <div 
+        className="w-6 h-6 rounded border border-border"
+        style={{ backgroundColor: color }}
+      />
+      <div className="flex-1">
+        <span className="font-mono text-sm">{name}</span>
+        <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
+          {displayValue} <span className="text-muted-foreground">({color})</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-4 w-4 p-0 opacity-50 hover:opacity-100"
+            onClick={copyToClipboard}
+          >
+            <Copy className="h-3 w-3" />
+            <span className="sr-only">Copy hex code</span>
+          </Button>
         </div>
-        {contrastRatio && (
-          <span className="text-xs text-muted-foreground">
-            {contrastRatio.toFixed(2)}:1
-          </span>
-        )}
       </div>
+      {contrastRatio && (
+        <span className="text-xs text-muted-foreground">
+          {contrastRatio.toFixed(2)}:1
+        </span>
+      )}
     </div>
   );
 };
@@ -467,9 +465,9 @@ export default function Home() {
             <Card className="p-4 mb-6">
               <h3 className="text-sm font-medium mb-4">Background</h3>
               <ColorToken 
-                color={ramp[6]?.hex} 
+                color={ramp[4]?.hex} 
                 name="brandBackgroundPrimary"
-                rampIndex={6}
+                rampIndex={4}
                 contrastWith="#000000"
               />
               <ColorToken 
@@ -488,21 +486,21 @@ export default function Home() {
             <Card className="p-4 mb-6">
               <h3 className="text-sm font-medium mb-4">Foreground</h3>
               <ColorToken 
-                color={ramp[8]?.hex}
+                color={ramp[7]?.hex}
                 name="brandContentPrimary"
-                rampIndex={8}
+                rampIndex={7}
                 contrastWith="#FFFFFF"
               />
               <ColorToken 
-                color={getBestContrastColor(ramp[6]?.hex)?.color}
+                color={getBestContrastColor(ramp[4]?.hex)?.color}
                 name="brandContentOnPrimary"
                 rampIndex={-1}
-                contrastWith={ramp[6]?.hex}
+                contrastWith={ramp[4]?.hex}
               />
               <ColorToken 
-                color={ramp[9]?.hex}
+                color={ramp[8]?.hex}
                 name="brandContentOnSecondary"
-                rampIndex={9}
+                rampIndex={8}
                 contrastWith={ramp[1]?.hex}
               />
               <ColorToken 
@@ -515,9 +513,9 @@ export default function Home() {
             <Card className="p-4">
               <h3 className="text-sm font-medium mb-4">Border</h3>
               <ColorToken 
-                color={ramp[7]?.hex}
+                color={ramp[6]?.hex}
                 name="brandBorderAccessible"
-                rampIndex={7}
+                rampIndex={6}
                 contrastWith="#FFFFFF"
               />
               <ColorToken 
@@ -545,8 +543,8 @@ export default function Home() {
                       <h5 className="text-xs text-muted-foreground mb-2">Primary</h5>
                       <ColorPairing
                         title="Primary Background with On Primary Content"
-                        background={ramp[6]?.hex}
-                        foreground={getBestContrastColor(ramp[6]?.hex)?.color}
+                        background={ramp[4]?.hex}
+                        foreground={getBestContrastColor(ramp[4]?.hex)?.color}
                         semanticMapping={{
                           background: "brandBackgroundPrimary",
                           foreground: "brandContentOnPrimary"
@@ -557,7 +555,7 @@ export default function Home() {
                       <ColorPairing
                         title="Secondary Background with On Secondary Content"
                         background={ramp[1]?.hex}
-                        foreground={ramp[9]?.hex}
+                        foreground={ramp[8]?.hex}
                         semanticMapping={{
                           background: "brandBackgroundSecondary",
                           foreground: "brandContentOnSecondary"
@@ -582,8 +580,8 @@ export default function Home() {
                       <ColorPairing
                         title="Primary Content on Neutral Background"
                         background="#FFFFFF"
-                        foreground={ramp[8]?.hex}
-                        border={ramp[7]?.hex}
+                        foreground={ramp[7]?.hex}
+                        border={ramp[6]?.hex}
                         alternativeBackground="#F3F3F3"
                         semanticMapping={{
                           background: "#FFFFFF",
@@ -597,7 +595,7 @@ export default function Home() {
                         <div 
                           className="h-full w-full animate-progress"
                           style={{ 
-                            background: `linear-gradient(90deg, ${ramp[6]?.hex} 0%, ${ramp[6]?.hex} 100%)`,
+                            background: `linear-gradient(90deg, ${ramp[4]?.hex} 0%, ${ramp[4]?.hex} 100%)`,
                             animation: 'progress 2s linear infinite'
                           }}
                         />
