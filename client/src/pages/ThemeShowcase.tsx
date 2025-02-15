@@ -5,16 +5,15 @@ import { Card } from "@/components/ui/card";
 interface ColorTokenProps {
   color: string;
   name: string;
-  slot: string;
 }
 
-const ColorToken: React.FC<ColorTokenProps> = ({ color, name, slot }) => (
+const ColorToken: React.FC<ColorTokenProps> = ({ color, name }) => (
   <div className="flex items-center gap-3 mb-2">
     <div 
       className="w-6 h-6 rounded border border-border"
       style={{ backgroundColor: color }}
     />
-    <span className="font-mono text-sm">{name} = {slot}</span>
+    <span className="font-mono text-sm">{name}</span>
   </div>
 );
 
@@ -26,31 +25,31 @@ const ThemeShowcase: React.FC = () => {
           <TabsTrigger value="primitive">Primitive</TabsTrigger>
           <TabsTrigger value="theme">Theme</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="primitive">
           <div>Primitive Content</div>
         </TabsContent>
-        
+
         <TabsContent value="theme" className="flex gap-8">
           {/* Color Tokens List */}
           <div className="w-64">
             <h3 className="font-medium mb-4">Background</h3>
-            <ColorToken color="var(--brand-background-primary)" name="brandBackgroundPrimary" slot="500" />
-            <ColorToken color="var(--brand-background-secondary)" name="brandBackgroundSecondary" slot="100" />
-            <ColorToken color="var(--brand-background-disabled)" name="brandBackgroundDisabled" slot="50" />
-            
+            <ColorToken color="var(--brand-background-primary)" name="--brand-background-primary" />
+            <ColorToken color="var(--brand-background-secondary)" name="--brand-background-secondary" />
+            <ColorToken color="var(--brand-background-disabled)" name="--brand-background-disabled" />
+
             <h3 className="font-medium mb-4 mt-6">Foreground</h3>
-            <ColorToken color="var(--brand-content-primary)" name="brandContentPrimary" slot="700" />
-            <ColorToken color="var(--brand-content-on-primary)" name="brandContentOnPrimary" slot="950" />
-            <ColorToken color="var(--brand-content-on-secondary)" name="brandContentOnSecondary" slot="800" />
-            <ColorToken color="var(--brand-content-disabled)" name="brandContentDisabled" slot="300" />
-            
+            <ColorToken color="var(--brand-content-primary)" name="--brand-content-primary" />
+            <ColorToken color="var(--brand-content-on-primary)" name="--brand-content-on-primary" />
+            <ColorToken color="var(--brand-content-on-secondary)" name="--brand-content-on-secondary" />
+            <ColorToken color="var(--brand-content-disabled)" name="--brand-content-disabled" />
+
             <h3 className="font-medium mb-4 mt-6">Border</h3>
-            <ColorToken color="var(--brand-border-accessible)" name="brandBorderAccessible" slot="600" />
-            <ColorToken color="var(--brand-border-subtle)" name="brandBorderSubtle" slot="200" />
+            <ColorToken color="var(--brand-border-accessible)" name="--brand-border-accessible" />
+            <ColorToken color="var(--brand-border-subtle)" name="--brand-border-subtle" />
           </div>
-          
-          {/* iPhone Frame */}
+
+          {/* Theme Preview */}
           <div className="flex-1">
             <div className="relative mx-auto" style={{ width: '390px' }}>
               <div 
@@ -63,20 +62,38 @@ const ThemeShowcase: React.FC = () => {
                 <div className="w-full h-full rounded-[42px] overflow-hidden bg-background">
                   {/* Theme Preview Content */}
                   <div className="p-4">
-                    <Card className="mb-4 p-4 bg-[var(--brand-background-primary)]">
-                      <h4 className="text-[var(--brand-content-on-primary)]">Primary Background</h4>
+                    <Card className="mb-4 p-4" style={{ backgroundColor: 'var(--brand-background-primary)' }}>
+                      <h4 style={{ color: 'var(--brand-content-on-primary)' }}>Primary Background</h4>
+                      <p className="text-sm mt-2" style={{ color: 'var(--brand-content-on-primary)' }}>
+                        This card demonstrates the primary background color with its corresponding contrasting text.
+                      </p>
                     </Card>
-                    
-                    <Card className="mb-4 p-4 bg-[var(--brand-background-secondary)]">
-                      <h4 className="text-[var(--brand-content-on-secondary)]">Secondary Background</h4>
+
+                    <Card className="mb-4 p-4" style={{ backgroundColor: 'var(--brand-background-secondary)' }}>
+                      <h4 style={{ color: 'var(--brand-content-on-secondary)' }}>Secondary Background</h4>
+                      <p className="text-sm mt-2" style={{ color: 'var(--brand-content-on-secondary)' }}>
+                        This card shows the secondary background color with proper contrast text.
+                      </p>
                     </Card>
-                    
-                    <div className="border border-[var(--brand-border-accessible)] rounded-lg p-4 mb-4">
-                      <p className="text-[var(--brand-content-primary)]">Content with accessible border</p>
+
+                    <div className="mb-4 p-4 rounded-lg" style={{ 
+                      border: '1px solid var(--brand-border-accessible)',
+                      backgroundColor: 'var(--background)'
+                    }}>
+                      <h4 style={{ color: 'var(--brand-content-primary)' }}>Accessible Border</h4>
+                      <p className="text-sm mt-2" style={{ color: 'var(--brand-content-primary)' }}>
+                        An example of content with an accessible border that meets contrast requirements.
+                      </p>
                     </div>
-                    
-                    <div className="border border-[var(--brand-border-subtle)] rounded-lg p-4">
-                      <p className="text-[var(--brand-content-disabled)]">Disabled content with subtle border</p>
+
+                    <div className="p-4 rounded-lg" style={{ 
+                      border: '1px solid var(--brand-border-subtle)',
+                      backgroundColor: 'var(--brand-background-disabled)'
+                    }}>
+                      <h4 style={{ color: 'var(--brand-content-disabled)' }}>Disabled State</h4>
+                      <p className="text-sm mt-2" style={{ color: 'var(--brand-content-disabled)' }}>
+                        This shows how disabled content appears with subtle borders and proper contrast.
+                      </p>
                     </div>
                   </div>
                 </div>
