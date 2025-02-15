@@ -202,12 +202,28 @@ const findBestMatchingPrimitive = (ramp: ColorStop[], targetHex: string): number
 const findLightestWithContrast = (ramp: ColorStop[], against: string, minContrast: number): number => {
   if (!ramp.length) return 0;
 
-  for (let i = 0; i < ramp.length; i++) {
-    if (getContrastRatio(ramp[i].hex, against) >= minContrast) {
-      return i;
+  // Filter colors that meet both lightness and contrast requirements
+  const validColors = ramp.filter((color, index) => {
+    const meetsLightness = color.oklch.l >= 0.84 && color.oklch.l <= 0.92; // 84-92% lightness
+    const meetsContrast = getContrastRatio(color.hex, against) >= minContrast;
+    const notLastColor = index < ramp.length - 1; // Exclude the last color
+
+    return meetsLightness && meetsContrast && notLastColor;
+  });
+
+  if (validColors.length === 0) {
+    // If no color meets all criteria, fall back to the first color that meets contrast
+    // (excluding the last color)
+    for (let i = 0; i < ramp.length - 1; i++) {
+      if (getContrastRatio(ramp[i].hex, against) >= minContrast) {
+        return i;
+      }
     }
+    return Math.min(ramp.length - 2, 11); // Max index should be 11 (1100), never last color
   }
-  return Math.min(ramp.length - 1, 11); // Max index should be 11 (1100)
+
+  // Find the original index of the first valid color (lightest that meets all criteria)
+  return ramp.findIndex(color => color.hex === validColors[0].hex);
 };
 
 const findDarkestWithContrast = (ramp: ColorStop[], against: string, minContrast: number): number => {
