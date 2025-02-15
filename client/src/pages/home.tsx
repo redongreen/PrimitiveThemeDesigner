@@ -1,8 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ColorInput } from '@/components/ColorInput';
 import { CurveEditor } from '@/components/CurveEditor';
 import { ColorRamp } from '@/components/ColorRamp';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -60,6 +59,11 @@ export default function Home() {
     setRamp(newRamp);
   }, [baseColor, steps, lightnessPoints, chromaPoints, huePoints]);
 
+  // Update ramp when curve points change
+  useEffect(() => {
+    updateRamp();
+  }, [lightnessPoints, chromaPoints, huePoints, updateRamp]);
+
   const handleColorChange = (newColor: string) => {
     setBaseColor(newColor);
   };
@@ -94,49 +98,6 @@ export default function Home() {
     }
   };
 
-  const handleAdjustColor = (index: number, property: 'l' | 'c' | 'h', value: number) => {
-    const newRamp = [...ramp];
-    newRamp[index] = {
-      ...newRamp[index],
-      oklch: {
-        ...newRamp[index].oklch,
-        [property]: value
-      }
-    };
-
-    // Update corresponding curve points
-    if (property === 'l') {
-      setLightnessPoints(prev => {
-        const newPoints = [...prev];
-        const pointIndex = newPoints.findIndex(p => p.step === index);
-        if (pointIndex !== -1) {
-          newPoints[pointIndex].value = value * 100;
-        }
-        return newPoints;
-      });
-    } else if (property === 'c') {
-      setChromaPoints(prev => {
-        const newPoints = [...prev];
-        const pointIndex = newPoints.findIndex(p => p.step === index);
-        if (pointIndex !== -1) {
-          newPoints[pointIndex].value = value * 100;
-        }
-        return newPoints;
-      });
-    } else if (property === 'h') {
-      setHuePoints(prev => {
-        const newPoints = [...prev];
-        const pointIndex = newPoints.findIndex(p => p.step === index);
-        if (pointIndex !== -1) {
-          newPoints[pointIndex].value = value;
-        }
-        return newPoints;
-      });
-    }
-
-    setRamp(newRamp);
-  };
-
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
       <h1 className="text-4xl font-bold mb-8">Color Ramp Generator</h1>
@@ -162,47 +123,36 @@ export default function Home() {
         </div>
       </div>
 
-      <Tabs defaultValue="individual" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="individual">Individual Adjustment</TabsTrigger>
-          <TabsTrigger value="curve">Curve Adjustment</TabsTrigger>
-        </TabsList>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <CurveEditor
+            points={lightnessPoints}
+            steps={steps}
+            minValue={15}
+            maxValue={95}
+            onChange={setLightnessPoints}
+            label="Lightness Curve"
+          />
+          <CurveEditor
+            points={chromaPoints}
+            steps={steps}
+            minValue={0}
+            maxValue={100}
+            onChange={setChromaPoints}
+            label="Chroma Curve"
+          />
+          <CurveEditor
+            points={huePoints}
+            steps={steps}
+            minValue={0}
+            maxValue={360}
+            onChange={setHuePoints}
+            label="Hue Curve"
+          />
+        </div>
 
-        <TabsContent value="individual">
-          <ColorRamp colors={ramp} onAdjustColor={handleAdjustColor} />
-        </TabsContent>
-
-        <TabsContent value="curve" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <CurveEditor
-              points={lightnessPoints}
-              steps={steps}
-              minValue={15}
-              maxValue={95}
-              onChange={setLightnessPoints}
-              label="Lightness Curve"
-            />
-            <CurveEditor
-              points={chromaPoints}
-              steps={steps}
-              minValue={0}
-              maxValue={100}
-              onChange={setChromaPoints}
-              label="Chroma Curve"
-            />
-            <CurveEditor
-              points={huePoints}
-              steps={steps}
-              minValue={0}
-              maxValue={360}
-              onChange={setHuePoints}
-              label="Hue Curve"
-            />
-          </div>
-
-          <ColorRamp colors={ramp} onAdjustColor={handleAdjustColor} />
-        </TabsContent>
-      </Tabs>
+        <ColorRamp colors={ramp} />
+      </div>
     </div>
   );
 }
