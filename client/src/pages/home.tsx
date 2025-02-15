@@ -401,21 +401,46 @@ export default function Home() {
   const getSemanticsIndices = useCallback((ramp: ColorStop[]) => {
     if (!ramp.length) return {};
 
-    // Filter colors that meet the contrast requirement against #F3F3F3
-    const validColors = ramp.map((color, index) => ({
-      color,
-      index,
-      contrast: getContrastRatio(color.hex, '#F3F3F3')
-    })).filter(item => item.contrast >= 4.5);
+    // Helper function to calculate color similarity in OKLCH space
+    const getColorDifference = (color1: ColorStop, color2: ColorStop) => {
+      const l1 = color1.oklch.l;
+      const c1 = color1.oklch.c;
+      const h1 = color1.oklch.h;
+      const l2 = color2.oklch.l;
+      const c2 = color2.oklch.c;
+      const h2 = color2.oklch.h;
 
-    // Find the color closest to the base color among valid colors
-    const backgroundPrimaryIndex = validColors.reduce((best, current) => {
-      const currentDiff = Math.abs(current.color.oklch.l - ramp[0].oklch.l) +
-                         Math.abs(current.color.oklch.c - ramp[0].oklch.c);
-      const bestDiff = Math.abs(ramp[best].oklch.l - ramp[0].oklch.l) +
-                      Math.abs(ramp[best].oklch.c - ramp[0].oklch.c);
-      return currentDiff < bestDiff ? current.index : best;
-    }, validColors[0]?.index || 0);
+      // Calculate hue difference considering the circular nature
+      let hueDiff = Math.abs(h1 - h2);
+      if (hueDiff > 180) {
+        hueDiff = 360 - hueDiff;
+      }
+      // Normalize hue difference to [0,1]
+      hueDiff = hueDiff / 360;
+
+      // Weight the components (lightness and chroma are already in [0,1])
+      return Math.abs(l1 - l2) * 2 + 
+             Math.abs(c1 - c2) * 1.5 + 
+             hueDiff;
+    };
+
+    // Find backgroundPrimary:
+    // First, filter colors that meet contrast requirement
+    const validPrimaryColors = ramp.filter(color => 
+      getContrastRatio(color.hex, '#F3F3F3') >= 4.5
+    );
+
+    // Then find the closest match to the base color
+    const backgroundPrimaryIndex = validPrimaryColors.reduce((bestIndex, currentColor, currentIndex) => {
+      const currentDiff = getColorDifference(currentColor, ramp[0]); // ramp[0] contains the base color
+      const bestDiff = getColorDifference(validPrimaryColors[bestIndex], ramp[0]);
+      return currentDiff < bestDiff ? currentIndex : bestIndex;
+    }, 0);
+
+    // Map the index back to the original ramp
+    const backgroundPrimary = ramp.findIndex(color => 
+      color.hex === validPrimaryColors[backgroundPrimaryIndex]?.hex
+    );
 
     // Find the lightest color with sufficient contrast against #5E5E5E for secondary background
     const backgroundSecondaryIndex = findLightestWithContrast(ramp, '#5E5E5E', 4.5);
@@ -466,7 +491,7 @@ export default function Home() {
     );
 
     return {
-      backgroundPrimary: backgroundPrimaryIndex,
+      backgroundPrimary: Math.max(0, backgroundPrimary),
       backgroundSecondary: backgroundSecondaryIndex,
       backgroundDisabled: backgroundDisabledIndex,
       contentPrimary: contentPrimaryIndex,
