@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Copy } from 'lucide-react';
 import type { ColorStop } from '@/lib/color';
+import { getBestContrastColor } from '@/lib/color';
 import { useToast } from '@/hooks/use-toast';
 
 interface ColorRampProps {
@@ -41,14 +42,24 @@ export function ColorRamp({ colors }: ColorRampProps) {
       </div>
 
       <div className="flex">
-        {colors.map((color, i) => (
-          <div
-            key={i}
-            className="flex-1 h-20"
-            style={{ backgroundColor: color.hex }}
-            title={`Step ${i + 1}: ${color.hex}`}
-          />
-        ))}
+        {colors.map((color, i) => {
+          const contrast = getBestContrastColor(color.hex);
+          return (
+            <div
+              key={i}
+              className="flex-1 h-20 relative"
+              style={{ backgroundColor: color.hex }}
+            >
+              <div 
+                className="absolute inset-0 flex flex-col items-center justify-center text-xs font-mono"
+                style={{ color: contrast.color }}
+              >
+                <div>Step {i + 1}</div>
+                <div>{contrast.ratio.toFixed(2)}:1</div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </Card>
   );

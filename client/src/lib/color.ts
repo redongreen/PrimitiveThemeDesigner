@@ -1,5 +1,45 @@
 import { oklch, parse, formatHex } from 'culori';
 
+// Calculate relative luminance for a color
+function getLuminance(hex: string): number {
+  const rgb = parse(hex);
+  if (!rgb) return 0;
+
+  // Convert to sRGB values
+  const rsRGB = rgb.r || 0;
+  const gsRGB = rgb.g || 0;
+  const bsRGB = rgb.b || 0;
+
+  // Convert to linear RGB values
+  const r = rsRGB <= 0.03928 ? rsRGB / 12.92 : Math.pow((rsRGB + 0.055) / 1.055, 2.4);
+  const g = gsRGB <= 0.03928 ? gsRGB / 12.92 : Math.pow((gsRGB + 0.055) / 1.055, 2.4);
+  const b = bsRGB <= 0.03928 ? bsRGB / 12.92 : Math.pow((bsRGB + 0.055) / 1.055, 2.4);
+
+  // Calculate luminance
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+// Calculate contrast ratio between two colors
+export function getContrastRatio(color1: string, color2: string): number {
+  const l1 = getLuminance(color1);
+  const l2 = getLuminance(color2);
+
+  const lighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+// Get the best contrast color (black or white) for a given background
+export function getBestContrastColor(bgColor: string): { color: string; ratio: number } {
+  const whiteContrast = getContrastRatio(bgColor, '#ffffff');
+  const blackContrast = getContrastRatio(bgColor, '#000000');
+
+  return whiteContrast > blackContrast 
+    ? { color: '#ffffff', ratio: whiteContrast }
+    : { color: '#000000', ratio: blackContrast };
+}
+
 export interface ColorStop {
   hex: string;
   oklch: {
