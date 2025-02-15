@@ -387,7 +387,7 @@ export default function Home() {
               contrastWith="#4B4B4B"
             />
             <ColorToken 
-              color={ramp[0]?.hex} 
+              color={ramp[11]?.hex} 
               name="brandBackgroundDisabled" 
               slot="50"
             />
@@ -406,7 +406,7 @@ export default function Home() {
               contrastWith={ramp[6]?.hex}
             />
             <ColorToken 
-              color={ramp[8]?.hex} 
+              color={ramp[5]?.hex} 
               name="brandContentOnSecondary" 
               slot="800"
               contrastWith={ramp[11]?.hex}
@@ -456,7 +456,7 @@ export default function Home() {
                       title="Secondary Background with On Secondary Content"
                       subtitle="brandBackgroundSecondary with brandContentOnSecondary"
                       background={ramp[11]?.hex}
-                      foreground={ramp[8]?.hex}
+                      foreground={ramp[5]?.hex}
                     />
                     <ColorPairing
                       title="Secondary Background with Black Text"
@@ -478,7 +478,7 @@ export default function Home() {
                       <h5 className="text-xs text-muted-foreground mb-2">States</h5>
                       <ColorPairing
                         title="Disabled State Example"
-                        background={ramp[0]?.hex}
+                        background={ramp[11]?.hex}
                         foreground={ramp[3]?.hex}
                       />
                     </div>
