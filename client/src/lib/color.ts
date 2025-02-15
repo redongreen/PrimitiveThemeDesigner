@@ -12,7 +12,7 @@ export interface ColorStop {
 export function hexToOklch(hex: string) {
   const color = oklch(parse(hex));
   return {
-    l: color.l,
+    l: color.l || 0,
     c: color.c || 0,
     h: color.h || 0
   };
@@ -29,7 +29,13 @@ export function generateRamp(baseColor: string, steps: number): ColorStop[] {
   // Generate lightness values from 0.15 to 0.95 to avoid pure black/white
   for (let i = 0; i < steps; i++) {
     const l = 0.15 + (0.8 * i) / (steps - 1);
-    const c = base.c * (1 - Math.abs(0.5 - l)); // Reduce chroma at extremes
+
+    // Adjust chroma based on lightness while maintaining the base chroma
+    // Reduce chroma more at the extremes of lightness to prevent oversaturation
+    const chromaFactor = 1 - Math.abs(0.5 - l) * 1.5;
+    const c = base.c * Math.max(0, Math.min(1, chromaFactor));
+
+    // Keep the original hue
     const h = base.h;
 
     const hex = oklchToHex({ l, c, h });
@@ -55,9 +61,12 @@ export function adjustRampWithCurve(
     if (property === 'l') {
       newOklch.l = y * 0.8 + 0.15; // Scale to our lightness range
     } else if (property === 'c') {
+      // Scale chroma relative to the base color's chroma
       newOklch.c = y * stop.oklch.c;
-    } else {
-      newOklch.h = y * 360;
+    } else if (property === 'h') {
+      // Adjust hue relative to the base color's hue
+      const baseHue = ramp[0].oklch.h;
+      newOklch.h = baseHue + (y * 60 - 30); // Allow ±30° hue shift
     }
 
     return {
