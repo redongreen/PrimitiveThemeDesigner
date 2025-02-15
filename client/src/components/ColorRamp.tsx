@@ -57,7 +57,7 @@ export function ColorRamp({ colors }: ColorRampProps) {
               style={{ backgroundColor: color.hex }}
             >
               <div 
-                className="absolute inset-0 p-2 flex flex-col items-start justify-start text-xs font-mono"
+                className="absolute inset-0 p-2 flex flex-col justify-between text-[10px] font-mono"
                 style={{ color: contrast.color }}
               >
                 <div>Step {i + 1}</div>
