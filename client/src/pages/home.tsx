@@ -90,7 +90,6 @@ const ColorToken: React.FC<ColorTokenProps> = ({ color, name, rampIndex, contras
 };
 
 interface ColorPairingProps {
-  title: string;
   subtitle?: string;
   background: string;
   foreground: string;
@@ -106,7 +105,6 @@ interface ColorPairingProps {
 }
 
 const ColorPairing: React.FC<ColorPairingProps> = ({
-  title,
   subtitle,
   background,
   foreground,
@@ -129,11 +127,6 @@ const ColorPairing: React.FC<ColorPairingProps> = ({
         border: border ? `1px solid ${border}` : undefined
       }}
     >
-      <div className="mb-2" style={{ color: foreground }}>
-        <h4 className="text-sm font-medium">{title}</h4>
-        {subtitle && <p className="text-xs mt-1">{subtitle}</p>}
-      </div>
-
       <div className="text-xs space-y-1" style={{ color: foreground }}>
         <div>background: {semanticMapping.background}</div>
         <div>foreground: {semanticMapping.foreground}</div>
@@ -717,93 +710,86 @@ const Home = () => {
           <div className="flex-1">
             <div className="flex flex-col mx-auto" style={{ width: '390px' }}>
               <div 
-                className="rounded-[48px] flex flex-col"
+                className="rounded-[48px] flex flex-col p-4"
                 style={{ 
                   border: '6px solid rgba(0, 0, 0, 0.4)',
                 }}
               >
-                <div className="w-full rounded-[42px] bg-background">
-                  <div className="p-4">
-                    <h4 className="text-sm font-medium mb-4">Accessible Pairings</h4>
+                <div className="w-full rounded-[42px] bg-background p-4">
+                  <h4 className="text-sm font-medium mb-4">Accessible Pairings</h4>
 
-                    <div className="mt-6">
-                      <h5 className="text-xs font-medium mb-2">Primary</h5>
-                      <div className="text-xs text-muted-foreground mb-2">Primary Background with On Primary Content</div>
-                      <ColorPairing
-                        title="Example"
-                        background={ramp[semanticIndices.backgroundPrimary]?.hex}
-                        foreground={getBestContrastColor(ramp[semanticIndices.backgroundPrimary]?.hex)?.color}
-                        semanticMapping={{
-                          background: "brandBackgroundPrimary",
-                          foreground: "brandContentOnPrimary"
-                        }}
-                      />
+                  <div className="mt-6">
+                    <h5 className="text-xs font-medium mb-2">Primary</h5>
+                    <div className="text-xs text-muted-foreground mb-2">Primary Background with On Primary Content</div>
+                    <ColorPairing
+                      background={ramp[semanticIndices.backgroundPrimary]?.hex}
+                      foreground={getBestContrastColor(ramp[semanticIndices.backgroundPrimary]?.hex)?.color}
+                      semanticMapping={{
+                        background: "brandBackgroundPrimary",
+                        foreground: "brandContentOnPrimary"
+                      }}
+                    />
 
-                      <h5 className="text-xs font-medium mb-2 mt-6">Secondary</h5>
-                      <div className="text-xs text-muted-foreground mb-2">Secondary Background with On Secondary Content</div>
-                      <ColorPairing
-                        title="Example"
-                        background={ramp[semanticIndices.backgroundSecondary]?.hex}
-                        foreground={ramp[semanticIndices.contentOnSecondary]?.hex}
-                        semanticMapping={{
-                          background: "brandBackgroundSecondary",
-                          foreground: "brandContentOnSecondary"
-                        }}
-                      />
+                    <h5 className="text-xs font-medium mb-2 mt-6">Secondary</h5>
+                    <div className="text-xs text-muted-foreground mb-2">Secondary Background with On Secondary Content</div>
+                    <ColorPairing
+                      background={ramp[semanticIndices.backgroundSecondary]?.hex}
+                      foreground={ramp[semanticIndices.contentOnSecondary]?.hex}
+                      semanticMapping={{
+                        background: "brandBackgroundSecondary",
+                        foreground: "brandContentOnSecondary"
+                      }}
+                    />
 
-                      <div className="text-xs text-muted-foreground mb-2 mt-4">Secondary Background with Neutral Foregrounds</div>
-                      <ColorPairing
-                        title="Example"
-                        background={ramp[semanticIndices.backgroundSecondary]?.hex}
-                        foreground="#000000"
-                        secondaryForeground="#4B4B4B"
-                        tertiaryForeground="#5E5E5E"
-                        border={ramp[semanticIndices.borderSubtle]?.hex}
-                        semanticMapping={{
-                          background: "brandBackgroundSecondary",
-                          foreground: "#000000",
-                          border: "brandBorderSubtle"
-                        }}
-                      />
+                    <div className="text-xs text-muted-foreground mb-2 mt-4">Secondary Background with Neutral Foregrounds</div>
+                    <ColorPairing
+                      background={ramp[semanticIndices.backgroundSecondary]?.hex}
+                      foreground="#000000"
+                      secondaryForeground="#4B4B4B"
+                      tertiaryForeground="#5E5E5E"
+                      border={ramp[semanticIndices.borderSubtle]?.hex}
+                      semanticMapping={{
+                        background: "brandBackgroundSecondary",
+                        foreground: "#000000",
+                        border: "brandBorderSubtle"
+                      }}
+                    />
 
-                      <h5 className="text-xs font-medium mb-2 mt-6">Primary on Neutral</h5>
-                      <div className="text-xs text-muted-foreground mb-2">Primary Content on Neutral Background</div>
-                      <ColorPairing
-                        title="Example"
-                        background="#FFFFFF"
-                        foreground={ramp[semanticIndices.contentPrimary]?.hex}
-                        border={ramp[semanticIndices.borderAccessible]?.hex}
-                        alternativeBackground="#F3F3F3"
-                        semanticMapping={{
-                          background: "#FFFFFF",
-                          foreground: "brandContentPrimary",
-                          border: "brandBorderAccessible"
-                        }}
-                      />
+                    <h5 className="text-xs font-medium mb-2 mt-6">Primary on Neutral</h5>
+                    <div className="text-xs text-muted-foreground mb-2">Primary Content on Neutral Background</div>
+                    <ColorPairing
+                      background="#FFFFFF"
+                      foreground={ramp[semanticIndices.contentPrimary]?.hex}
+                      border={ramp[semanticIndices.borderAccessible]?.hex}
+                      alternativeBackground="#F3F3F3"
+                      semanticMapping={{
+                        background: "#FFFFFF",
+                        foreground: "brandContentPrimary",
+                        border: "brandBorderAccessible"
+                      }}
+                    />
 
-                      {/* Progress bar */}
-                      <div className="mt-4 w-full h-2 bg-white rounded-full overflow-hidden">
-                        <div 
-                          className="h-full w-full animate-progress"
-                          style={{ 
-                            background: `linear-gradient(90deg, ${ramp[semanticIndices.backgroundPrimary]?.hex} 0%, ${ramp[semanticIndices.backgroundPrimary]?.hex} 100%)`,
-                            animation: 'progress 2s linear infinite'
-                          }}
-                        />
-                      </div>
-
-                      <h5 className="text-xs font-medium mb-2 mt-6">Disabled</h5>
-                      <div className="text-xs text-muted-foreground mb-2">Disabled State Example</div>
-                      <ColorPairing
-                        title="Example"
-                        background={ramp[semanticIndices.backgroundDisabled]?.hex}
-                        foreground={ramp[semanticIndices.contentDisabled]?.hex}
-                        semanticMapping={{
-                          background: "brandBackgroundDisabled",
-                          foreground: "brandContentDisabled"
+                    {/* Progress bar */}
+                    <div className="mt-4 w-full h-2 bg-white rounded-full overflow-hidden">
+                      <div 
+                        className="h-full w-full animate-progress"
+                        style={{ 
+                          background: `linear-gradient(90deg, ${ramp[semanticIndices.backgroundPrimary]?.hex} 0%, ${ramp[semanticIndices.backgroundPrimary]?.hex} 100%)`,
+                          animation: 'progress 2s linear infinite'
                         }}
                       />
                     </div>
+
+                    <h5 className="text-xs font-medium mb-2 mt-6">Disabled</h5>
+                    <div className="text-xs text-muted-foreground mb-2">Disabled State Example</div>
+                    <ColorPairing
+                      background={ramp[semanticIndices.backgroundDisabled]?.hex}
+                      foreground={ramp[semanticIndices.contentDisabled]?.hex}
+                      semanticMapping={{
+                        background: "brandBackgroundDisabled",
+                        foreground: "brandContentDisabled"
+                      }}
+                    />
                   </div>
                 </div>
               </div>
