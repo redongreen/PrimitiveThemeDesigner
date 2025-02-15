@@ -15,7 +15,7 @@ export function ColorRamp({ colors }: ColorRampProps) {
 
   const copyToClipboard = () => {
     const text = colors
-      .map((color, i) => `Step ${i + 1}: ${color.hex}`)
+      .map((color, i) => `${50 + (i * 750 / (colors.length - 1))}: ${color.hex}`)
       .join('\n');
 
     navigator.clipboard.writeText(text).then(() => {
@@ -50,6 +50,7 @@ export function ColorRamp({ colors }: ColorRampProps) {
       <div className="flex">
         {colors.map((color, i) => {
           const contrast = getBestContrastColor(color.hex);
+          const brightnessValue = Math.round(50 + (i * 750 / (colors.length - 1)));
           return (
             <div
               key={i}
@@ -60,7 +61,7 @@ export function ColorRamp({ colors }: ColorRampProps) {
                 className="absolute inset-0 p-2 flex flex-col justify-between text-[10px] font-mono"
                 style={{ color: contrast.color }}
               >
-                <div>Step {i + 1}</div>
+                <div>{brightnessValue}</div>
                 <div>{contrast.ratio.toFixed(2)}:1 {getAccessibilityLevel(contrast.ratio)}</div>
               </div>
             </div>
