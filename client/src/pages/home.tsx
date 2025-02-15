@@ -239,6 +239,40 @@ const findDarkestWithContrast = (ramp: ColorStop[], against: string, minContrast
   return 0;
 };
 
+const findDisabledContentColor = (ramp: ColorStop[], backgroundDisabledHex: string, contentOnSecondaryIndex: number): number => {
+  if (!ramp.length) return 0;
+
+  // Start searching from colors lighter than contentOnSecondary
+  const candidates = ramp.slice(0, contentOnSecondaryIndex).reverse();
+
+  for (const color of candidates) {
+    const contrast = getContrastRatio(color.hex, backgroundDisabledHex);
+    // Check if contrast is between 1.20:1 and 2.2:1
+    if (contrast >= 1.20 && contrast <= 2.2) {
+      return ramp.findIndex(c => c.hex === color.hex);
+    }
+  }
+
+  // If no color meets the criteria, return the closest one
+  let bestIndex = 0;
+  let closestToTarget = Number.MAX_VALUE;
+
+  candidates.forEach(color => {
+    const contrast = getContrastRatio(color.hex, backgroundDisabledHex);
+    const distanceToIdeal = Math.min(
+      Math.abs(contrast - 1.20),
+      Math.abs(contrast - 2.2)
+    );
+
+    if (distanceToIdeal < closestToTarget) {
+      closestToTarget = distanceToIdeal;
+      bestIndex = ramp.findIndex(c => c.hex === color.hex);
+    }
+  });
+
+  return bestIndex;
+};
+
 const Home = () => {
   const [baseColor, setBaseColor] = useState('#6366f1');
   const [steps, setSteps] = useState(12);
@@ -280,7 +314,7 @@ const Home = () => {
     // Find backgroundSecondary first as other colors depend on it
     const backgroundSecondaryIndex = findLightestWithContrast(ramp, '#5E5E5E', 4.5);
 
-    // Rest of the indices calculation remains the same
+    // Rest of the indices calculation remains the same until contentDisabled
     const backgroundPrimary = findBestMatchingPrimitive(ramp, baseColor);
     const contentPrimaryIndex = findDarkestWithContrast(ramp, '#F3F3F3', 4.5);
     const contentOnSecondaryIndex = findDarkestWithContrast(
@@ -288,25 +322,28 @@ const Home = () => {
       ramp[backgroundSecondaryIndex]?.hex || '#FFFFFF',
       4.5
     );
-    const contentDisabledIndex = Math.min(
-      ramp.length - 1,
-      Math.max(0, contentOnSecondaryIndex - 2)
+
+    // Update contentDisabled calculation
+    const contentDisabledIndex = findDisabledContentColor(
+      ramp,
+      ramp[backgroundSecondaryIndex]?.hex || '#FFFFFF',
+      contentOnSecondaryIndex
     );
 
     // For borderSubtle, go 1-2 steps darker than backgroundSecondary
     const borderSubtleIndex = Math.max(
-      backgroundSecondaryIndex - 2, // Go 2 steps darker
+      backgroundSecondaryIndex - 2,
       0
     );
 
     return {
       backgroundPrimary,
       backgroundSecondary: backgroundSecondaryIndex,
-      backgroundDisabled: backgroundSecondaryIndex, // Use same index as backgroundSecondary
+      backgroundDisabled: backgroundSecondaryIndex,
       contentPrimary: contentPrimaryIndex,
       contentOnSecondary: contentOnSecondaryIndex,
       contentDisabled: contentDisabledIndex,
-      borderAccessible: contentPrimaryIndex, // Use same index as contentPrimary
+      borderAccessible: contentPrimaryIndex,
       borderSubtle: borderSubtleIndex,
     };
   }, [baseColor]);
