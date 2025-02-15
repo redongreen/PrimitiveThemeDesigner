@@ -20,9 +20,10 @@ const defaultCurvePoints = [
 
 export default function Home() {
   const [baseColor, setBaseColor] = useState('#6366f1');
+  const [lastValidColor, setLastValidColor] = useState('#6366f1');
   const [steps, setSteps] = useState(12);
   const [ramp, setRamp] = useState<ColorStop[]>(() => 
-    generateRamp(baseColor, steps)
+    generateRamp(lastValidColor, steps)
   );
 
   const [lightnessCurve, setLightnessCurve] = useState([...defaultCurvePoints]);
@@ -30,17 +31,18 @@ export default function Home() {
   const [hueCurve, setHueCurve] = useState([...defaultCurvePoints]);
 
   const updateRamp = useCallback(() => {
-    let newRamp = generateRamp(baseColor, steps);
+    let newRamp = generateRamp(lastValidColor, steps);
     newRamp = adjustRampWithCurve(newRamp, lightnessCurve, 'l');
     newRamp = adjustRampWithCurve(newRamp, chromaCurve, 'c');
     newRamp = adjustRampWithCurve(newRamp, hueCurve, 'h');
     setRamp(newRamp);
-  }, [baseColor, steps, lightnessCurve, chromaCurve, hueCurve]);
+  }, [lastValidColor, steps, lightnessCurve, chromaCurve, hueCurve]);
 
   const handleColorChange = (newColor: string) => {
     setBaseColor(newColor);
-    // Only generate new ramp if we have a complete valid hex color
+    // Only update lastValidColor and regenerate ramp if we have a complete valid hex color
     if (/^#[0-9A-Fa-f]{6}$/.test(newColor)) {
+      setLastValidColor(newColor);
       updateRamp();
     }
   };
