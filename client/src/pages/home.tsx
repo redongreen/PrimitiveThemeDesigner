@@ -394,7 +394,7 @@ export default function Home() {
 
             <h3 className="font-medium mb-4 mt-6">Foreground</h3>
             <ColorToken 
-              color={ramp[7]?.hex} 
+              color={ramp[6]?.hex} 
               name="brandContentPrimary" 
               slot="700"
               contrastWith="#FFFFFF"
@@ -412,7 +412,7 @@ export default function Home() {
               contrastWith={ramp[11]?.hex}
             />
             <ColorToken 
-              color={ramp[3]?.hex} 
+              color={ramp[8]?.hex} 
               name="brandContentDisabled" 
               slot="300"
             />
