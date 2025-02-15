@@ -44,6 +44,34 @@ export default function Home() {
     }))
   );
 
+  // Helper function to interpolate values for new steps
+  const interpolatePoints = (currentPoints: Point[], newStepCount: number): Point[] => {
+    if (currentPoints.length === 0) return [];
+    if (currentPoints.length === 1) {
+      return Array.from({ length: newStepCount }, (_, i) => ({
+        step: i,
+        value: currentPoints[0].value
+      }));
+    }
+
+    const sorted = [...currentPoints].sort((a, b) => a.step - b.step);
+    return Array.from({ length: newStepCount }, (_, i) => {
+      const position = i / (newStepCount - 1) * (sorted.length - 1);
+      const index = Math.floor(position);
+      const fraction = position - index;
+
+      if (index >= sorted.length - 1) {
+        return { step: i, value: sorted[sorted.length - 1].value };
+      }
+
+      const start = sorted[index].value;
+      const end = sorted[index + 1].value;
+      const interpolatedValue = start + (end - start) * fraction;
+
+      return { step: i, value: interpolatedValue };
+    });
+  };
+
   const updateRamp = useCallback(() => {
     const baseRamp = generateRamp(baseColor, steps);
 
@@ -95,8 +123,30 @@ export default function Home() {
   const handleStepsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSteps = parseInt(e.target.value) || 12;
     if (newSteps >= 2 && newSteps <= 20) {
+      // Interpolate existing points for the new step count
+      const newLightnessPoints = interpolatePoints(lightnessPoints, newSteps);
+      const newChromaPoints = interpolatePoints(chromaPoints, newSteps);
+      const newHuePoints = interpolatePoints(huePoints, newSteps);
+
       setSteps(newSteps);
-      handleGenerateRamp(); // Regenerate ramp with new step count
+      setLightnessPoints(newLightnessPoints);
+      setChromaPoints(newChromaPoints);
+      setHuePoints(newHuePoints);
+
+      // Update the ramp with interpolated values
+      const baseRamp = generateRamp(baseColor, newSteps);
+      const newRamp = baseRamp.map((color, i) => {
+        const l = newLightnessPoints[i].value / 100;
+        const c = newChromaPoints[i].value / 100;
+        const h = newHuePoints[i].value;
+
+        return {
+          oklch: { l, c, h },
+          hex: oklchToHex({ l, c, h })
+        };
+      });
+
+      setRamp(newRamp);
     }
   };
 
