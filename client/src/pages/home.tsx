@@ -21,12 +21,7 @@ export default function Home() {
   const [baseColor, setBaseColor] = useState('#6366f1');
   const [steps, setSteps] = useState(12);
   const [vibrance, setVibrance] = useState(0.5);
-  const [ramp, setRamp] = useState<ColorStop[]>(() => {
-    const initialRamp = generateRamp(baseColor, steps, vibrance);
-    const initialVibrance = calculateRampVibrance(initialRamp);
-    setVibrance(initialVibrance);
-    return initialRamp;
-  });
+  const [ramp, setRamp] = useState<ColorStop[]>(() => generateRamp(baseColor, steps, vibrance));
 
   // Initialize points for each curve with default values
   const [lightnessPoints, setLightnessPoints] = useState<Point[]>(() =>
@@ -157,7 +152,27 @@ export default function Home() {
   };
 
   const handleVibranceChange = (value: number[]) => {
-    setVibrance(value[0]);
+    const newVibrance = value[0];
+    setVibrance(newVibrance);
+
+    // Generate a new base ramp with the updated vibrance
+    const newRamp = generateRamp(baseColor, steps, newVibrance);
+
+    // Update the curve points to reflect the new vibrance
+    setLightnessPoints(newRamp.map((color, i) => ({
+      step: i,
+      value: color.oklch.l * 100
+    })));
+
+    setChromaPoints(newRamp.map((color, i) => ({
+      step: i,
+      value: color.oklch.c * 100
+    })));
+
+    setHuePoints(newRamp.map((color, i) => ({
+      step: i,
+      value: color.oklch.h
+    })));
   };
 
   return (
@@ -205,6 +220,8 @@ export default function Home() {
       </div>
 
       <div className="space-y-4">
+        <ColorRamp colors={ramp} />
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <CurveEditor
             points={lightnessPoints}
@@ -231,8 +248,6 @@ export default function Home() {
             label="Hue Curve"
           />
         </div>
-
-        <ColorRamp colors={ramp} />
       </div>
     </div>
   );

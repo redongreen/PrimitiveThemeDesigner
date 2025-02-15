@@ -35,7 +35,7 @@ export function getBestContrastColor(bgColor: string): { color: string; ratio: n
   const whiteContrast = getContrastRatio(bgColor, '#ffffff');
   const blackContrast = getContrastRatio(bgColor, '#000000');
 
-  return whiteContrast > blackContrast 
+  return whiteContrast > blackContrast
     ? { color: '#ffffff', ratio: whiteContrast }
     : { color: '#000000', ratio: blackContrast };
 }
@@ -104,7 +104,9 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
   const ramp: ColorStop[] = [];
 
   // Adjust base chroma based on vibrance
-  const maxChroma = base.c * (vibrance * 1.5 + 0.5); // Scale from 0.5x to 2x of original chroma
+  // Map vibrance [0,1] to a multiplier range [0.2, 2.0]
+  const vibranceMultiplier = 0.2 + (vibrance * 1.8);
+  const maxChroma = base.c * vibranceMultiplier;
 
   // Generate lightness values from 0.15 to 0.95 to avoid pure black/white
   for (let i = 0; i < steps; i++) {
@@ -112,7 +114,10 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
 
     // Adjust chroma based on lightness and vibrance
     const chromaFactor = 1 - Math.abs(0.5 - l) * 1.5;
-    const c = maxChroma * Math.max(0, Math.min(1, chromaFactor));
+    let c = maxChroma * Math.max(0, Math.min(1, chromaFactor));
+
+    // Ensure chroma doesn't exceed OKLCH limits
+    c = Math.min(c, 0.4);
 
     // Keep the original hue
     const h = base.h;
