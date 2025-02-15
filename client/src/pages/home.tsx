@@ -21,7 +21,8 @@ export default function Home() {
   const [baseColor, setBaseColor] = useState('#6366f1');
   const [steps, setSteps] = useState(12);
   const [vibrance, setVibrance] = useState(0.5);
-  const [ramp, setRamp] = useState<ColorStop[]>(() => generateRamp(baseColor, steps, vibrance));
+  const [hueTorsion, setHueTorsion] = useState(0.5);
+  const [ramp, setRamp] = useState<ColorStop[]>(() => generateRamp(baseColor, steps, vibrance, hueTorsion));
 
   // Initialize points for each curve with default values
   const [lightnessPoints, setLightnessPoints] = useState<Point[]>(() =>
@@ -74,7 +75,7 @@ export default function Home() {
   };
 
   const updateRamp = useCallback(() => {
-    const baseRamp = generateRamp(baseColor, steps, vibrance);
+    const baseRamp = generateRamp(baseColor, steps, vibrance, hueTorsion);
 
     // Apply curve adjustments
     const newRamp = baseRamp.map((color, i) => {
@@ -89,19 +90,19 @@ export default function Home() {
     });
 
     setRamp(newRamp);
-  }, [baseColor, steps, vibrance, lightnessPoints, chromaPoints, huePoints]);
+  }, [baseColor, steps, vibrance, hueTorsion, lightnessPoints, chromaPoints, huePoints]);
 
   // Update ramp when curve points or vibrance change
   useEffect(() => {
     updateRamp();
-  }, [lightnessPoints, chromaPoints, huePoints, vibrance, updateRamp]);
+  }, [lightnessPoints, chromaPoints, huePoints, vibrance, hueTorsion, updateRamp]);
 
   const handleColorChange = (newColor: string) => {
     setBaseColor(newColor);
   };
 
   const handleGenerateRamp = () => {
-    const newRamp = generateRamp(baseColor, steps, vibrance);
+    const newRamp = generateRamp(baseColor, steps, vibrance, hueTorsion);
     setRamp(newRamp);
 
     // Update curve points with new values
@@ -135,7 +136,7 @@ export default function Home() {
       setHuePoints(newHuePoints);
 
       // Update the ramp with interpolated values
-      const baseRamp = generateRamp(baseColor, newSteps, vibrance);
+      const baseRamp = generateRamp(baseColor, newSteps, vibrance, hueTorsion);
       const newRamp = baseRamp.map((color, i) => {
         const l = newLightnessPoints[i].value / 100;
         const c = newChromaPoints[i].value / 100;
@@ -156,9 +157,33 @@ export default function Home() {
     setVibrance(newVibrance);
 
     // Generate a new base ramp with the updated vibrance
-    const newRamp = generateRamp(baseColor, steps, newVibrance);
+    const newRamp = generateRamp(baseColor, steps, newVibrance, hueTorsion);
 
     // Update the curve points to reflect the new vibrance
+    setLightnessPoints(newRamp.map((color, i) => ({
+      step: i,
+      value: color.oklch.l * 100
+    })));
+
+    setChromaPoints(newRamp.map((color, i) => ({
+      step: i,
+      value: color.oklch.c * 100
+    })));
+
+    setHuePoints(newRamp.map((color, i) => ({
+      step: i,
+      value: color.oklch.h
+    })));
+  };
+
+  const handleHueTorsionChange = (value: number[]) => {
+    const newHueTorsion = value[0];
+    setHueTorsion(newHueTorsion);
+
+    // Generate a new base ramp with the updated hue torsion
+    const newRamp = generateRamp(baseColor, steps, vibrance, newHueTorsion);
+
+    // Update the curve points to reflect the new hue torsion
     setLightnessPoints(newRamp.map((color, i) => ({
       step: i,
       value: color.oklch.l * 100
@@ -215,6 +240,23 @@ export default function Home() {
               className="flex-1"
             />
             <span className="text-sm text-muted-foreground">Vibrant</span>
+          </div>
+        </div>
+
+        <div className="w-full">
+          <Label htmlFor="hueTorsion">Hue Torsion</Label>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">Cool</span>
+            <Slider
+              id="hueTorsion"
+              min={0}
+              max={1}
+              step={0.01}
+              value={[hueTorsion]}
+              onValueChange={handleHueTorsionChange}
+              className="flex-1"
+            />
+            <span className="text-sm text-muted-foreground">Warm</span>
           </div>
         </div>
       </div>

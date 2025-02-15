@@ -98,8 +98,8 @@ export function oklchToHex({ l, c, h }: { l: number; c: number; h: number }) {
   }
 }
 
-// Modified to support vibrance adjustment
-export function generateRamp(baseColor: string, steps: number, vibrance: number = 0.5): ColorStop[] {
+// Modified to support vibrance and hue torsion adjustment
+export function generateRamp(baseColor: string, steps: number, vibrance: number = 0.5, hueTorsion: number = 0.5): ColorStop[] {
   const base = hexToOklch(baseColor);
   const ramp: ColorStop[] = [];
 
@@ -107,6 +107,11 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
   // Map vibrance [0,1] to a multiplier range [0.2, 2.0]
   const vibranceMultiplier = 0.2 + (vibrance * 1.8);
   const maxChroma = base.c * vibranceMultiplier;
+
+  // Calculate hue torsion effect
+  // At 0.5, there's no torsion. The range is -30 to +30 degrees
+  const torsionRange = 30;
+  const torsionOffset = (hueTorsion - 0.5) * 2 * torsionRange;
 
   // Generate lightness values from 0.15 to 0.95 to avoid pure black/white
   for (let i = 0; i < steps; i++) {
@@ -119,15 +124,25 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
     // Ensure chroma doesn't exceed OKLCH limits
     c = Math.min(c, 0.4);
 
-    // Keep the original hue
-    const h = base.h;
+    // Apply hue torsion based on position in the ramp
+    // More torsion at the ends, less in the middle
+    const position = i / (steps - 1);
+    const torsionFactor = position * 2 - 1; // -1 to 1
+    const h = base.h + (torsionFactor * torsionOffset);
 
-    const oklchValues = { l, c, h };
+    // Normalize hue to 0-360 range
+    const normalizedHue = ((h % 360) + 360) % 360;
+
+    const oklchValues = { l, c, normalizedHue };
     const hex = oklchToHex(oklchValues);
 
     ramp.push({
       hex,
-      oklch: oklchValues
+      oklch: {
+        l,
+        c,
+        h: normalizedHue
+      }
     });
   }
 
