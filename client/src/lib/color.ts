@@ -32,8 +32,8 @@ export function getContrastRatio(color1: string, color2: string): number {
 
 // Get the best contrast color (black or white) for a given background
 export function getBestContrastColor(bgColor: string): { color: string; ratio: number } {
-  const whiteContrast = getContrastRatio(bgColor, '#ffffff');
-  const blackContrast = getContrastRatio(bgColor, '#000000');
+  const whiteContrast = getContrastRatio('#ffffff', bgColor);
+  const blackContrast = getContrastRatio('#000000', bgColor);
 
   return whiteContrast > blackContrast
     ? { color: '#ffffff', ratio: whiteContrast }

@@ -31,22 +31,25 @@ interface ColorTokenProps {
 
 const ColorToken: React.FC<ColorTokenProps> = ({ color, name, slot, contrastWith }) => {
   const contrastRatio = contrastWith ? getContrastRatio(color, contrastWith) : null;
-
-  // Display "Black" or "White" for auto slot
   const displaySlot = slot === "auto" ? (color === "#000000" ? "Black" : "White") : slot;
 
   return (
-    <div className="flex items-center gap-3 mb-2">
-      <div 
-        className="w-6 h-6 rounded border border-border"
-        style={{ backgroundColor: color }}
-      />
-      <span className="font-mono text-sm flex-1">{name} = {displaySlot}</span>
-      {contrastRatio && (
-        <span className="text-xs text-muted-foreground">
-          {contrastRatio.toFixed(1)}:1
-        </span>
-      )}
+    <div className="flex flex-col mb-4">
+      <div className="flex items-center gap-3">
+        <div 
+          className="w-6 h-6 rounded border border-border"
+          style={{ backgroundColor: color }}
+        />
+        <span className="font-mono text-sm flex-1">{name} = {displaySlot}</span>
+        {contrastRatio && (
+          <span className="text-xs text-muted-foreground">
+            {contrastRatio.toFixed(1)}:1
+          </span>
+        )}
+      </div>
+      <span className="font-mono text-xs text-muted-foreground ml-9 mt-1">
+        {color}
+      </span>
     </div>
   );
 };
@@ -59,27 +62,37 @@ interface ColorPairingProps {
   subtitle?: string;
 }
 
-const ColorPairing: React.FC<ColorPairingProps> = ({ title, background, foreground, border, subtitle }) => (
-  <div 
-    className="rounded-lg p-4 mb-4"
-    style={{ 
-      backgroundColor: background,
-      border: border ? `1px solid ${border}` : undefined
-    }}
-  >
-    <p style={{ color: foreground }}>
-      {title}
-    </p>
-    {subtitle && (
-      <p className="text-xs mt-1" style={{ color: foreground }}>
-        {subtitle}
+const ColorPairing: React.FC<ColorPairingProps> = ({ title, background, foreground, border, subtitle }) => {
+  const contrastRatio = getContrastRatio(foreground, background);
+  const isAccessible = contrastRatio >= 4.5;
+
+  return (
+    <div 
+      className="rounded-lg p-4 mb-4"
+      style={{ 
+        backgroundColor: background,
+        border: border ? `1px solid ${border}` : undefined
+      }}
+    >
+      <p style={{ color: foreground }}>
+        {title}
       </p>
-    )}
-    <div className="text-xs mt-2" style={{ color: foreground }}>
-      Contrast ratio: {getContrastRatio(foreground, background).toFixed(1)}:1
+      {subtitle && (
+        <p className="text-xs mt-1" style={{ color: foreground }}>
+          {subtitle}
+        </p>
+      )}
+      <div className="text-xs mt-2" style={{ color: foreground }}>
+        Contrast ratio: {contrastRatio.toFixed(1)}:1
+        {!isAccessible && (
+          <span className="text-red-500 ml-2">
+            (Below WCAG AA)
+          </span>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default function Home() {
   const [baseColor, setBaseColor] = useState('#6366f1');
