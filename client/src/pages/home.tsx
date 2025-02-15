@@ -32,13 +32,16 @@ interface ColorTokenProps {
 const ColorToken: React.FC<ColorTokenProps> = ({ color, name, slot, contrastWith }) => {
   const contrastRatio = contrastWith ? getContrastRatio(color, contrastWith) : null;
 
+  // Display "Black" or "White" for auto slot
+  const displaySlot = slot === "auto" ? (color === "#000000" ? "Black" : "White") : slot;
+
   return (
     <div className="flex items-center gap-3 mb-2">
       <div 
         className="w-6 h-6 rounded border border-border"
         style={{ backgroundColor: color }}
       />
-      <span className="font-mono text-sm flex-1">{name} = {slot}</span>
+      <span className="font-mono text-sm flex-1">{name} = {displaySlot}</span>
       {contrastRatio && (
         <span className="text-xs text-muted-foreground">
           {contrastRatio.toFixed(1)}:1
@@ -372,7 +375,6 @@ export default function Home() {
         </TabsContent>
 
         <TabsContent value="theme" className="flex gap-8">
-          {/* Color Tokens List */}
           <div className="w-96">
             <h2 className="text-lg font-semibold mb-6">Semantic Tokens</h2>
 
@@ -445,13 +447,13 @@ export default function Home() {
               >
                 <div className="w-full h-full rounded-[42px] overflow-hidden bg-background">
                   <div className="p-4">
-                    <h4 className="text-sm font-medium mb-4">Accessibility Pairings</h4>
+                    <h4 className="text-sm font-medium mb-4">Accessible Pairings</h4>
 
                     <h5 className="text-xs text-muted-foreground mb-2">Primary</h5>
                     <ColorPairing
                       title="Primary Background with On Primary Content"
                       background={ramp[6]?.hex}
-                      foreground="#FFFFFF"
+                      foreground={getBestContrastColor(ramp[6]?.hex)}
                     />
 
                     <h5 className="text-xs text-muted-foreground mb-2">Secondary</h5>
@@ -469,23 +471,34 @@ export default function Home() {
                       border={ramp[10]?.hex}
                     />
 
-                    <h5 className="text-xs text-muted-foreground mb-2">Primary on Neutral</h5>
-                    <ColorPairing
-                      title="Primary Content on Neutral Background"
-                      subtitle="brandContentPrimary on #FFFFFF with brandBorderAccessible"
-                      background="#FFFFFF"
-                      foreground={ramp[4]?.hex}
-                      border={ramp[6]?.hex}
-                    />
-
-                    <div className="mt-8">
-                      <h5 className="text-xs text-muted-foreground mb-2">Disabled</h5>
+                    <div className="mt-4">
+                      <h5 className="text-xs text-muted-foreground mb-2">Primary on Neutral</h5>
                       <ColorPairing
-                        title="Disabled State Example"
-                        background={ramp[11]?.hex} 
-                        foreground={ramp[8]?.hex} 
+                        title="Primary Content on Neutral Background"
+                        subtitle="brandContentPrimary on #FFFFFF with brandBorderAccessible"
+                        background="#FFFFFF"
+                        foreground={ramp[4]?.hex}
+                        border={ramp[6]?.hex}
                       />
+
+                      {/* Progress bar */}
+                      <div className="mt-4 w-full h-2 bg-white rounded-full overflow-hidden">
+                        <div 
+                          className="h-full w-full animate-progress"
+                          style={{ 
+                            background: `linear-gradient(90deg, ${ramp[6]?.hex} 0%, ${ramp[6]?.hex} 100%)`,
+                            animation: 'progress 2s linear infinite'
+                          }}
+                        />
+                      </div>
                     </div>
+
+                    <h5 className="text-xs text-muted-foreground mb-2">Disabled</h5>
+                    <ColorPairing
+                      title="Disabled State Example"
+                      background={ramp[11]?.hex} 
+                      foreground={ramp[8]?.hex} 
+                    />
                   </div>
                 </div>
               </div>

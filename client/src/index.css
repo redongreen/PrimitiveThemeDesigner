@@ -54,3 +54,17 @@
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03", "cv04";
   }
 }
+
+@keyframes progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-progress {
+  animation: progress 2s linear infinite;
+  background-color: var(--brand-border-accessible); /* Added for clarity */
+}
