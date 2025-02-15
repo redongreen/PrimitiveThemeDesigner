@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { Slider } from '@/components/ui/slider';
 
 interface ColorInputProps {
@@ -52,8 +54,9 @@ function hexToHSL(hex: string): { h: number; s: number; l: number } {
 
 // Convert HSL to hex
 function HSLToHex(h: number, s: number, l: number): string {
-  s /= 100;
-  l /= 100;
+  h = h % 360;
+  s = Math.max(0, Math.min(100, s)) / 100;
+  l = Math.max(0, Math.min(100, l)) / 100;
 
   const c = (1 - Math.abs(2 * l - 1)) * s;
   const x = c * (1 - Math.abs((h / 60) % 2 - 1));
@@ -74,7 +77,6 @@ function HSLToHex(h: number, s: number, l: number): string {
     r = c; g = 0; b = x;
   }
 
-  // Convert to hex
   const toHex = (n: number) => {
     const hex = Math.round((n + m) * 255).toString(16);
     return hex.length === 1 ? '0' + hex : hex;
@@ -85,13 +87,15 @@ function HSLToHex(h: number, s: number, l: number): string {
 
 export function ColorInput({ value, onChange, onGenerate, label }: ColorInputProps) {
   const [hsl, setHSL] = useState(() => hexToHSL(value));
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     // Update HSL when hex value changes externally
     setHSL(hexToHSL(value));
   }, [value]);
 
-  const handleHSLChange = (type: 'h' | 's' | 'l', newValue: number) => {
+  const handleHSLInputChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'h' | 's' | 'l') => {
+    const newValue = parseInt(e.target.value) || 0;
     const newHSL = { ...hsl, [type]: newValue };
     setHSL(newHSL);
     onChange(HSLToHex(newHSL.h, newHSL.s, newHSL.l));
@@ -107,10 +111,16 @@ export function ColorInput({ value, onChange, onGenerate, label }: ColorInputPro
     }
   };
 
+  const handleHSLChange = (type: 'h' | 's' | 'l', newValue: number) => {
+    const newHSL = { ...hsl, [type]: newValue };
+    setHSL(newHSL);
+    onChange(HSLToHex(newHSL.h, newHSL.s, newHSL.l));
+  };
+
   return (
-    <div className="space-y-4">
+    <div>
       <Label>{label}</Label>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 mt-1">
         <Input
           type="text"
           value={value}
@@ -118,12 +128,61 @@ export function ColorInput({ value, onChange, onGenerate, label }: ColorInputPro
           placeholder="#000000"
           className="w-32 font-mono"
         />
-        <Input
-          type="color"
-          value={/^#[0-9A-Fa-f]{6}$/.test(value) ? value : '#000000'}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-10 h-10 p-1 rounded-md"
-        />
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+          <PopoverTrigger asChild>
+            <Button 
+              variant="outline" 
+              className={cn(
+                "w-[60px] h-[35px] p-1",
+                !value && "text-muted-foreground"
+              )}
+              style={{ 
+                background: value,
+                border: '1px solid var(--border)',
+              }}
+            >
+              <span className="sr-only">Open color picker</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[240px]">
+            <div className="grid gap-4">
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <div className="grid gap-1.5 flex-1">
+                    <Label htmlFor="h">H</Label>
+                    <Input
+                      id="h"
+                      type="number"
+                      value={hsl.h}
+                      onChange={(e) => handleHSLInputChange(e, 'h')}
+                      className="h-8"
+                    />
+                  </div>
+                  <div className="grid gap-1.5 flex-1">
+                    <Label htmlFor="s">S</Label>
+                    <Input
+                      id="s"
+                      type="number"
+                      value={hsl.s}
+                      onChange={(e) => handleHSLInputChange(e, 's')}
+                      className="h-8"
+                    />
+                  </div>
+                  <div className="grid gap-1.5 flex-1">
+                    <Label htmlFor="l">L</Label>
+                    <Input
+                      id="l"
+                      type="number"
+                      value={hsl.l}
+                      onChange={(e) => handleHSLInputChange(e, 'l')}
+                      className="h-8"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
         <Button 
           onClick={onGenerate}
           disabled={!/^#[0-9A-Fa-f]{6}$/.test(value)}
@@ -131,7 +190,6 @@ export function ColorInput({ value, onChange, onGenerate, label }: ColorInputPro
           Generate Ramp
         </Button>
       </div>
-
       <div className="space-y-6">
         <div className="space-y-2">
           <div className="flex justify-between items-center">
