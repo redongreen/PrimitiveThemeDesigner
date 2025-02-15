@@ -508,20 +508,22 @@ const Home = () => {
 
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
-      <h1 className="text-4xl font-bold mb-2">
-        {activeTab === 'primitive' ? 'Primitive color creation' : 'Semantic token accessible pairing'}
-      </h1>
-      <p className="mb-8 text-muted-foreground">
-        Tool created by{' '}
-        <a 
-          href="https://www.linkedin.com/in/iguisard/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-foreground"
-        >
-          Ian Guisard
-        </a>
-      </p>
+      <div className="flex items-baseline gap-4 mb-6">
+        <h1 className="text-2xl font-bold">
+          {activeTab === 'primitive' ? 'Primitive color creation' : 'Semantic token accessible pairing'}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Tool created by{' '}
+          <a 
+            href="https://www.linkedin.com/in/iguisard/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-foreground"
+          >
+            Ian Guisard
+          </a>
+        </p>
+      </div>
 
       <Tabs defaultValue="primitive" className="w-full" onValueChange={(value) => setActiveTab(value)}>
         <TabsList className="grid w-full grid-cols-2 mb-8">
