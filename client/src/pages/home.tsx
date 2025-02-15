@@ -5,6 +5,8 @@ import { ColorRamp } from '@/components/ColorRamp';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
 import {
   generateRamp,
   oklchToHex,
@@ -16,6 +18,22 @@ interface Point {
   step: number;
   value: number;
 }
+
+interface ColorTokenProps {
+  color: string;
+  name: string;
+  slot: string;
+}
+
+const ColorToken: React.FC<ColorTokenProps> = ({ color, name, slot }) => (
+  <div className="flex items-center gap-3 mb-2">
+    <div 
+      className="w-6 h-6 rounded border border-border"
+      style={{ backgroundColor: color }}
+    />
+    <span className="font-mono text-sm">{name} = {slot}</span>
+  </div>
+);
 
 export default function Home() {
   const [baseColor, setBaseColor] = useState('#6366f1');
@@ -190,117 +208,177 @@ export default function Home() {
     <div className="container max-w-6xl mx-auto py-8 px-4">
       <h1 className="text-4xl font-bold mb-8">Color Ramp Generator</h1>
 
-      <div className="flex flex-col gap-6 mb-8">
-        <div className="flex gap-4">
-          <ColorInput 
-            value={baseColor} 
-            onChange={handleColorChange}
-            onGenerate={handleGenerateRamp}
-          />
+      <Tabs defaultValue="primitive" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-8">
+          <TabsTrigger value="primitive">Primitive</TabsTrigger>
+          <TabsTrigger value="theme">Theme</TabsTrigger>
+        </TabsList>
 
-          <div>
-            <Label htmlFor="steps">Steps</Label>
-            <Input
-              id="steps"
-              type="number"
-              min="2"
-              max="20"
-              value={steps}
-              onChange={handleStepsChange}
-              className="w-24 mt-1"
-            />
-          </div>
-        </div>
+        <TabsContent value="primitive">
+          <div className="flex flex-col gap-6 mb-8">
+            <div className="flex gap-4">
+              <ColorInput 
+                value={baseColor} 
+                onChange={handleColorChange}
+                onGenerate={handleGenerateRamp}
+              />
 
-        <div className="w-full">
-          <Label htmlFor="vibrance" className="mb-8">Vibrance</Label>
-          <div className="flex items-center gap-4 mt-8">
-            <div className="w-16 text-right">
-              <span className="text-sm text-muted-foreground">Pastel</span>
-            </div>
-            <div className="relative flex-1">
-              <div className="absolute -top-8 left-0 right-0 flex justify-between text-xs text-muted-foreground">
-                <span>0%</span>
-                <span>25%</span>
-                <span>50%</span>
-                <span>75%</span>
-                <span>100%</span>
+              <div>
+                <Label htmlFor="steps">Steps</Label>
+                <Input
+                  id="steps"
+                  type="number"
+                  min="2"
+                  max="20"
+                  value={steps}
+                  onChange={handleStepsChange}
+                  className="w-24 mt-1"
+                />
               </div>
-              <Slider
-                id="vibrance"
-                min={0}
-                max={1}
-                step={0.01}
-                value={[vibrance]}
-                onValueChange={handleVibranceChange}
+            </div>
+
+            <div className="w-full">
+              <Label htmlFor="vibrance" className="mb-8">Vibrance</Label>
+              <div className="flex items-center gap-4 mt-8">
+                <div className="w-16 text-right">
+                  <span className="text-sm text-muted-foreground">Pastel</span>
+                </div>
+                <div className="relative flex-1">
+                  <div className="absolute -top-8 left-0 right-0 flex justify-between text-xs text-muted-foreground">
+                    <span>0%</span>
+                    <span>25%</span>
+                    <span>50%</span>
+                    <span>75%</span>
+                    <span>100%</span>
+                  </div>
+                  <Slider
+                    id="vibrance"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    value={[vibrance]}
+                    onValueChange={handleVibranceChange}
+                  />
+                </div>
+                <div className="w-16">
+                  <span className="text-sm text-muted-foreground">Vibrant</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full">
+              <Label htmlFor="hueTorsion" className="mb-8">Hue Torsion</Label>
+              <div className="flex items-center gap-4 mt-8">
+                <div className="w-16 text-right">
+                  <span className="text-sm text-muted-foreground">Cool</span>
+                </div>
+                <div className="relative flex-1">
+                  <div className="absolute -top-8 left-0 right-0 flex justify-between text-xs text-muted-foreground">
+                    <span>0%</span>
+                    <span>25%</span>
+                    <span>50%</span>
+                    <span>75%</span>
+                    <span>100%</span>
+                  </div>
+                  <Slider
+                    id="hueTorsion"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    value={[hueTorsion]}
+                    onValueChange={handleHueTorsionChange}
+                  />
+                </div>
+                <div className="w-16">
+                  <span className="text-sm text-muted-foreground">Warm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <ColorRamp colors={ramp} />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <CurveEditor
+                points={lightnessPoints}
+                steps={steps}
+                minValue={15}
+                maxValue={95}
+                onChange={setLightnessPoints}
+                label="Lightness Curve"
+              />
+              <CurveEditor
+                points={chromaPoints}
+                steps={steps}
+                minValue={0}
+                maxValue={100}
+                onChange={setChromaPoints}
+                label="Chroma Curve"
+              />
+              <CurveEditor
+                points={huePoints}
+                steps={steps}
+                minValue={0}
+                maxValue={360}
+                onChange={setHuePoints}
+                label="Hue Curve"
               />
             </div>
-            <div className="w-16">
-              <span className="text-sm text-muted-foreground">Vibrant</span>
-            </div>
           </div>
-        </div>
+        </TabsContent>
 
-        <div className="w-full">
-          <Label htmlFor="hueTorsion" className="mb-8">Hue Torsion</Label>
-          <div className="flex items-center gap-4 mt-8">
-            <div className="w-16 text-right">
-              <span className="text-sm text-muted-foreground">Cool</span>
-            </div>
-            <div className="relative flex-1">
-              <div className="absolute -top-8 left-0 right-0 flex justify-between text-xs text-muted-foreground">
-                <span>0%</span>
-                <span>25%</span>
-                <span>50%</span>
-                <span>75%</span>
-                <span>100%</span>
+        <TabsContent value="theme" className="flex gap-8">
+          <div className="w-64">
+            <h3 className="font-medium mb-4">Background</h3>
+            <ColorToken color={ramp[6]?.hex} name="brandBackgroundPrimary" slot="500" />
+            <ColorToken color={ramp[1]?.hex} name="brandBackgroundSecondary" slot="100" />
+            <ColorToken color={ramp[0]?.hex} name="brandBackgroundDisabled" slot="50" />
+
+            <h3 className="font-medium mb-4 mt-6">Foreground</h3>
+            <ColorToken color={ramp[7]?.hex} name="brandContentPrimary" slot="700" />
+            <ColorToken color="#FFFFFF" name="brandContentOnPrimary" slot="950" />
+            <ColorToken color={ramp[8]?.hex} name="brandContentOnSecondary" slot="800" />
+            <ColorToken color={ramp[3]?.hex} name="brandContentDisabled" slot="300" />
+
+            <h3 className="font-medium mb-4 mt-6">Border</h3>
+            <ColorToken color={ramp[6]?.hex} name="brandBorderAccessible" slot="600" />
+            <ColorToken color={ramp[2]?.hex} name="brandBorderSubtle" slot="200" />
+          </div>
+
+          <div className="flex-1">
+            <div className="relative mx-auto" style={{ width: '390px' }}>
+              <div 
+                className="absolute inset-0 rounded-[48px]"
+                style={{ 
+                  border: '6px solid rgba(0, 0, 0, 0.4)',
+                  height: '844px',
+                }}
+              >
+                <div className="w-full h-full rounded-[42px] overflow-hidden bg-background">
+                  <div className="p-4">
+                    <Card className="mb-4 p-4" style={{ backgroundColor: ramp[6]?.hex }}>
+                      <h4 style={{ color: '#FFFFFF' }}>Primary Background</h4>
+                    </Card>
+
+                    <Card className="mb-4 p-4" style={{ backgroundColor: ramp[1]?.hex }}>
+                      <h4 style={{ color: ramp[8]?.hex }}>Secondary Background</h4>
+                    </Card>
+
+                    <div className="rounded-lg p-4 mb-4" style={{ border: `1px solid ${ramp[6]?.hex}` }}>
+                      <p style={{ color: ramp[7]?.hex }}>Content with accessible border</p>
+                    </div>
+
+                    <div className="rounded-lg p-4" style={{ border: `1px solid ${ramp[2]?.hex}` }}>
+                      <p style={{ color: ramp[3]?.hex }}>Disabled content with subtle border</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <Slider
-                id="hueTorsion"
-                min={0}
-                max={1}
-                step={0.01}
-                value={[hueTorsion]}
-                onValueChange={handleHueTorsionChange}
-              />
-            </div>
-            <div className="w-16">
-              <span className="text-sm text-muted-foreground">Warm</span>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <ColorRamp colors={ramp} />
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <CurveEditor
-            points={lightnessPoints}
-            steps={steps}
-            minValue={15}
-            maxValue={95}
-            onChange={setLightnessPoints}
-            label="Lightness Curve"
-          />
-          <CurveEditor
-            points={chromaPoints}
-            steps={steps}
-            minValue={0}
-            maxValue={100}
-            onChange={setChromaPoints}
-            label="Chroma Curve"
-          />
-          <CurveEditor
-            points={huePoints}
-            steps={steps}
-            minValue={0}
-            maxValue={360}
-            onChange={setHuePoints}
-            label="Hue Curve"
-          />
-        </div>
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
