@@ -16,6 +16,9 @@ import {
   getBestContrastColor,
   getContrastRatio
 } from '@/lib/color';
+import { Button } from "@/components/ui/button";
+import { Copy } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Point {
   step: number;
@@ -30,9 +33,19 @@ interface ColorTokenProps {
 }
 
 const ColorToken: React.FC<ColorTokenProps> = ({ color, name, rampIndex, contrastWith }) => {
+  const { toast } = useToast();
   const contrastRatio = contrastWith ? getContrastRatio(color, contrastWith) : null;
-  const slot = getBrightnessValue(rampIndex);
-  const displaySlot = color === "#000000" ? "Black" : color === "#FFFFFF" ? "White" : slot;
+  const primitiveValue = rampIndex === -1 ? "auto" : ((rampIndex + 1) * 100).toString();
+  const displayValue = color === "#000000" ? "Black" : color === "#FFFFFF" ? "White" : `Primitive-${primitiveValue}`;
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(color).then(() => {
+      toast({
+        title: "Copied!",
+        description: `${color} has been copied to your clipboard`
+      });
+    });
+  };
 
   return (
     <div className="flex flex-col mb-4">
@@ -43,8 +56,17 @@ const ColorToken: React.FC<ColorTokenProps> = ({ color, name, rampIndex, contras
         />
         <div className="flex-1">
           <span className="font-mono text-sm">{name}</span>
-          <div className="text-xs text-muted-foreground mt-0.5">
-            maps to primitive/{displaySlot}
+          <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
+            {displayValue} <span className="text-muted-foreground">({color})</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-4 w-4 p-0 opacity-50 hover:opacity-100"
+              onClick={copyToClipboard}
+            >
+              <Copy className="h-3 w-3" />
+              <span className="sr-only">Copy hex code</span>
+            </Button>
           </div>
         </div>
         {contrastRatio && (
@@ -53,9 +75,6 @@ const ColorToken: React.FC<ColorTokenProps> = ({ color, name, rampIndex, contras
           </span>
         )}
       </div>
-      <span className="font-mono text-xs text-muted-foreground ml-9 mt-1">
-        {color}
-      </span>
     </div>
   );
 };
@@ -535,9 +554,4 @@ export default function Home() {
       </Tabs>
     </div>
   );
-}
-
-function getBrightnessValue(index: number): string {
-  if (index === -1) return "auto";
-  return ((index + 1) * 100).toString();
 }
