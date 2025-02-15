@@ -279,6 +279,7 @@ const Home = () => {
   const [steps, setSteps] = useState(12);
   const [vibrance, setVibrance] = useState(0.5);
   const [hueTorsion, setHueTorsion] = useState(0.5);
+  const [activeTab, setActiveTab] = useState('primitive');
   const [ramp, setRamp] = useState<ColorStop[]>(() => generateRamp(baseColor, steps, vibrance, hueTorsion));
   const [lightnessPoints, setLightnessPoints] = useState<Point[]>(() =>
     Array.from({ length: steps }, (_, i) => ({
@@ -507,9 +508,22 @@ const Home = () => {
 
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
-      <h1 className="text-4xl font-bold mb-8">Color Ramp Generator</h1>
+      <h1 className="text-4xl font-bold mb-2">
+        {activeTab === 'primitive' ? 'Primitive color creation' : 'Semantic token accessible pairing'}
+      </h1>
+      <p className="mb-8 text-muted-foreground">
+        Tool created by{' '}
+        <a 
+          href="https://www.linkedin.com/in/iguisard/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-foreground"
+        >
+          Ian Guisard
+        </a>
+      </p>
 
-      <Tabs defaultValue="primitive" className="w-full">
+      <Tabs defaultValue="primitive" className="w-full" onValueChange={(value) => setActiveTab(value)}>
         <TabsList className="grid w-full grid-cols-2 mb-8">
           <TabsTrigger value="primitive">Primitive</TabsTrigger>
           <TabsTrigger value="theme">Theme</TabsTrigger>
@@ -522,6 +536,7 @@ const Home = () => {
                 value={baseColor} 
                 onChange={handleColorChange}
                 onGenerate={handleGenerateRamp}
+                label="Source color"
               />
 
               <div>
@@ -534,6 +549,37 @@ const Home = () => {
                   value={steps}
                   onChange={handleStepsChange}
                   className="w-24 mt-1"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <ColorRamp colors={ramp} brandPrimaryIndex={semanticIndices.backgroundPrimary} />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <CurveEditor
+                  points={lightnessPoints}
+                  steps={steps}
+                  minValue={15}
+                  maxValue={95}
+                  onChange={setLightnessPoints}
+                  label="Lightness Curve"
+                />
+                <CurveEditor
+                  points={chromaPoints}
+                  steps={steps}
+                  minValue={0}
+                  maxValue={100}
+                  onChange={setChromaPoints}
+                  label="Chroma Curve"
+                />
+                <CurveEditor
+                  points={huePoints}
+                  steps={steps}
+                  minValue={0}
+                  maxValue={360}
+                  onChange={setHuePoints}
+                  label="Hue Curve"
                 />
               </div>
             </div>
@@ -594,37 +640,6 @@ const Home = () => {
                   <span className="text-sm text-muted-foreground">Warm</span>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <ColorRamp colors={ramp} brandPrimaryIndex={semanticIndices.backgroundPrimary} />
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <CurveEditor
-                points={lightnessPoints}
-                steps={steps}
-                minValue={15}
-                maxValue={95}
-                onChange={setLightnessPoints}
-                label="Lightness Curve"
-              />
-              <CurveEditor
-                points={chromaPoints}
-                steps={steps}
-                minValue={0}
-                maxValue={100}
-                onChange={setChromaPoints}
-                label="Chroma Curve"
-              />
-              <CurveEditor
-                points={huePoints}
-                steps={steps}
-                minValue={0}
-                maxValue={360}
-                onChange={setHuePoints}
-                label="Hue Curve"
-              />
             </div>
           </div>
         </TabsContent>
