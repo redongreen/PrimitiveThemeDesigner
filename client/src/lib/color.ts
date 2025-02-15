@@ -128,7 +128,7 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
 
     // Calculate hue adjustment using a smooth curve
     let hueAdjustment = 0;
-    const curve = (x: number) => Math.sin(x * Math.PI) * 0.05; // 5% maximum adjustment
+    const curve = (x: number) => Math.sin(x * Math.PI * 2) / 2 * 0.1; // Smoother curve, smaller max adjustment
 
     // Define the positions for step 3 and step 8 effect (30% and 80% through the ramp)
     const step3Pos = 0.3;
@@ -149,7 +149,7 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
     }
 
     // Apply the hue adjustment to the base hue
-    const h = base.h * (1 + hueAdjustment);
+    const h = base.h + hueAdjustment * 360;
 
     // Normalize hue to 0-360 range
     const normalizedHue = ((h % 360) + 360) % 360;
