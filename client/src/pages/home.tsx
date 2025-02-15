@@ -372,7 +372,10 @@ export default function Home() {
         </TabsContent>
 
         <TabsContent value="theme" className="flex gap-8">
-          <div className="w-72">
+          {/* Color Tokens List */}
+          <div className="w-96">
+            <h2 className="text-lg font-semibold mb-6">Semantic Tokens</h2>
+
             <h3 className="font-medium mb-4">Background</h3>
             <ColorToken 
               color={ramp[6]?.hex} 
