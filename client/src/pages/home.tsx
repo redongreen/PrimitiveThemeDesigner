@@ -275,85 +275,58 @@ const Home = () => {
       borderSubtle: 0,
     };
 
-    // Convert base color to OKLCH for comparison
-    const baseOklch = hexToOklch(baseColor);
-
-    // First, filter colors that meet contrast requirement against #F3F3F3
-    const validPrimaryColors = ramp.filter(color => 
-      getContrastRatio(color.hex, '#F3F3F3') >= 4.5
-    );
-
-    if (validPrimaryColors.length === 0) return {
-      backgroundPrimary: 0,
-      backgroundSecondary: 0,
-      backgroundDisabled: 0,
-      contentPrimary: 0,
-      contentOnSecondary: 0,
-      contentDisabled: 0,
-      borderAccessible: 0,
-      borderSubtle: 0,
-    };
-
-    // Find the closest match to the base color among valid colors
-    let minDiff = Number.MAX_VALUE;
-    let bestMatchIndex = 0;
-
-    validPrimaryColors.forEach((color, index) => {
-      // Calculate weighted difference in OKLCH space
-      const lDiff = Math.abs(color.oklch.l - baseOklch.l);
-      const cDiff = Math.abs(color.oklch.c - baseOklch.c);
-
-      // Handle hue wraparound
-      let hDiff = Math.abs(color.oklch.h - baseOklch.h);
-      if (hDiff > 180) hDiff = 360 - hDiff;
-      hDiff = hDiff / 360; // Normalize to [0,1]
-
-      // Weight the components (L more important than C, which is more important than H)
-      const diff = (lDiff * 2) + (cDiff * 1.5) + (hDiff * 1);
-
-      if (diff < minDiff) {
-        minDiff = diff;
-        bestMatchIndex = index;
-      }
-    });
-
-    // Map back to original ramp index
-    const backgroundPrimary = ramp.findIndex(color => 
-      color.hex === validPrimaryColors[bestMatchIndex]?.hex
-    );
-
-    // Find the lightest color with sufficient contrast against #5E5E5E for secondary background
+    // Find backgroundSecondary first as other colors depend on it
     const backgroundSecondaryIndex = findLightestWithContrast(ramp, '#5E5E5E', 4.5);
 
-    // Background disabled should be similar to secondary but one step lighter
-    const backgroundDisabledIndex = Math.max(0, backgroundSecondaryIndex - 1);
+    // For backgroundDisabled, find a color similar to backgroundSecondary
+    // We'll look for a color with similar lightness and chroma but slightly different
+    const backgroundSecondaryColor = ramp[backgroundSecondaryIndex];
+    let backgroundDisabledIndex = backgroundSecondaryIndex;
+    let minColorDiff = Number.MAX_VALUE;
 
-    // Content primary must contrast with #F3F3F3
+    // Look for similar colors within a small range around backgroundSecondary
+    const searchRange = 2; // Look 2 steps before and after
+    const startIdx = Math.max(0, backgroundSecondaryIndex - searchRange);
+    const endIdx = Math.min(ramp.length - 1, backgroundSecondaryIndex + searchRange);
+
+    for (let i = startIdx; i <= endIdx; i++) {
+      if (i === backgroundSecondaryIndex) continue; // Skip the same color
+
+      const currentColor = ramp[i];
+      // Calculate difference in OKLCH space
+      const lDiff = Math.abs(currentColor.oklch.l - backgroundSecondaryColor.oklch.l);
+      const cDiff = Math.abs(currentColor.oklch.c - backgroundSecondaryColor.oklch.c);
+      const colorDiff = lDiff + cDiff;
+
+      if (colorDiff < minColorDiff) {
+        minColorDiff = colorDiff;
+        backgroundDisabledIndex = i;
+      }
+    }
+
+    // For borderAccessible, ensure 3:1 contrast against both backgrounds
+    const borderAccessibleIndex = ramp.findIndex(color => 
+      getContrastRatio(color.hex, ramp[backgroundSecondaryIndex].hex) >= 3 &&
+      getContrastRatio(color.hex, '#F3F3F3') >= 3
+    );
+
+    // For borderSubtle, go 1-2 steps darker than backgroundSecondary
+    const borderSubtleIndex = Math.min(
+      backgroundSecondaryIndex + Math.floor(Math.random() * 2) + 1, // Random between 1-2 steps
+      ramp.length - 1
+    );
+
+    // Rest of the indices calculation remains the same
+    const backgroundPrimary = findBestMatchingPrimitive(ramp, baseColor);
     const contentPrimaryIndex = findDarkestWithContrast(ramp, '#F3F3F3', 4.5);
-
-    // Content on secondary must contrast with background secondary
     const contentOnSecondaryIndex = findDarkestWithContrast(
       ramp, 
       ramp[backgroundSecondaryIndex]?.hex || '#FFFFFF',
       4.5
     );
-
-    // Content disabled is lighter version of content
     const contentDisabledIndex = Math.min(
       ramp.length - 1,
       Math.max(0, contentOnSecondaryIndex - 2)
-    );
-
-    // Border accessible needs 3:1 contrast with both secondary and #F3F3F3
-    const borderAccessibleIndex = ramp.findIndex(color =>
-      getContrastRatio(color.hex, ramp[backgroundSecondaryIndex]?.hex || '#FFFFFF') >= 3 &&
-      getContrastRatio(color.hex, '#F3F3F3') >= 3
-    );
-
-    // Border subtle should be 1-2 steps darker than background secondary
-    const borderSubtleIndex = Math.min(
-      ramp.length - 1,
-      backgroundSecondaryIndex + 2
     );
 
     return {
