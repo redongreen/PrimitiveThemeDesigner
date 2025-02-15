@@ -278,44 +278,6 @@ const Home = () => {
     // Find backgroundSecondary first as other colors depend on it
     const backgroundSecondaryIndex = findLightestWithContrast(ramp, '#5E5E5E', 4.5);
 
-    // For backgroundDisabled, find a color similar to backgroundSecondary
-    // We'll look for a color with similar lightness and chroma but slightly different
-    const backgroundSecondaryColor = ramp[backgroundSecondaryIndex];
-    let backgroundDisabledIndex = backgroundSecondaryIndex;
-    let minColorDiff = Number.MAX_VALUE;
-
-    // Look for similar colors within a small range around backgroundSecondary
-    const searchRange = 2; // Look 2 steps before and after
-    const startIdx = Math.max(0, backgroundSecondaryIndex - searchRange);
-    const endIdx = Math.min(ramp.length - 1, backgroundSecondaryIndex + searchRange);
-
-    for (let i = startIdx; i <= endIdx; i++) {
-      if (i === backgroundSecondaryIndex) continue; // Skip the same color
-
-      const currentColor = ramp[i];
-      // Calculate difference in OKLCH space
-      const lDiff = Math.abs(currentColor.oklch.l - backgroundSecondaryColor.oklch.l);
-      const cDiff = Math.abs(currentColor.oklch.c - backgroundSecondaryColor.oklch.c);
-      const colorDiff = lDiff + cDiff;
-
-      if (colorDiff < minColorDiff) {
-        minColorDiff = colorDiff;
-        backgroundDisabledIndex = i;
-      }
-    }
-
-    // For borderAccessible, ensure 3:1 contrast against both backgrounds
-    const borderAccessibleIndex = ramp.findIndex(color => 
-      getContrastRatio(color.hex, ramp[backgroundSecondaryIndex].hex) >= 3 &&
-      getContrastRatio(color.hex, '#F3F3F3') >= 3
-    );
-
-    // For borderSubtle, go 1-2 steps darker than backgroundSecondary
-    const borderSubtleIndex = Math.min(
-      backgroundSecondaryIndex + Math.floor(Math.random() * 2) + 1, // Random between 1-2 steps
-      ramp.length - 1
-    );
-
     // Rest of the indices calculation remains the same
     const backgroundPrimary = findBestMatchingPrimitive(ramp, baseColor);
     const contentPrimaryIndex = findDarkestWithContrast(ramp, '#F3F3F3', 4.5);
@@ -329,14 +291,20 @@ const Home = () => {
       Math.max(0, contentOnSecondaryIndex - 2)
     );
 
+    // For borderSubtle, go 1-2 steps darker than backgroundSecondary
+    const borderSubtleIndex = Math.min(
+      backgroundSecondaryIndex + 2, 
+      ramp.length - 1
+    );
+
     return {
-      backgroundPrimary: Math.max(0, backgroundPrimary),
+      backgroundPrimary,
       backgroundSecondary: backgroundSecondaryIndex,
-      backgroundDisabled: backgroundDisabledIndex,
+      backgroundDisabled: backgroundSecondaryIndex, // Use same index as backgroundSecondary
       contentPrimary: contentPrimaryIndex,
       contentOnSecondary: contentOnSecondaryIndex,
       contentDisabled: contentDisabledIndex,
-      borderAccessible: borderAccessibleIndex >= 0 ? borderAccessibleIndex : contentPrimaryIndex,
+      borderAccessible: contentPrimaryIndex, // Use same index as contentPrimary
       borderSubtle: borderSubtleIndex,
     };
   }, [baseColor]);
