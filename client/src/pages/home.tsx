@@ -177,11 +177,12 @@ export default function Home() {
   };
 
   const handleHueTorsionChange = (value: number[]) => {
-    const newHueTorsion = value[0];
-    setHueTorsion(newHueTorsion);
+    // Snap to nearest quarter
+    const newValue = Math.round(value[0] * 4) / 4;
+    setHueTorsion(newValue);
 
     // Generate a new base ramp with the updated hue torsion
-    const newRamp = generateRamp(baseColor, steps, vibrance, newHueTorsion);
+    const newRamp = generateRamp(baseColor, steps, vibrance, newValue);
 
     // Update the curve points to reflect the new hue torsion
     setLightnessPoints(newRamp.map((color, i) => ({
@@ -251,7 +252,7 @@ export default function Home() {
               id="hueTorsion"
               min={0}
               max={1}
-              step={0.01}
+              step={0.25}
               value={[hueTorsion]}
               onValueChange={handleHueTorsionChange}
               className="flex-1"
