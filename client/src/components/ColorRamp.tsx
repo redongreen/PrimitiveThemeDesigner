@@ -19,23 +19,13 @@ export function ColorRamp({ colors }: ColorRampProps) {
     return (index - 1) * 100 + 100;
   };
 
-  const copyToClipboard = () => {
-    const text = colors
-      .map((color, i) => `${getBrightnessValue(i)}: ${color.hex}`)
-      .join('\n');
-
-    navigator.clipboard.writeText(text).then(() => {
+  const copyToClipboard = (hex: string) => {
+    navigator.clipboard.writeText(hex).then(() => {
       toast({
-        title: "Copied to clipboard",
-        description: "Color values have been copied to your clipboard"
+        title: "Copied!",
+        description: `${hex} has been copied to your clipboard`
       });
     });
-  };
-
-  const getAccessibilityLevel = (ratio: number): string => {
-    if (ratio >= 7) return "AAA";
-    if (ratio >= 4.5) return "AA";
-    return "";
   };
 
   return (
@@ -45,7 +35,7 @@ export function ColorRamp({ colors }: ColorRampProps) {
         <Button
           variant="outline"
           size="sm"
-          onClick={copyToClipboard}
+          onClick={() => copyToClipboard(colors.map(c => c.hex).join('\n'))}
           className="flex items-center gap-2"
         >
           <Copy className="h-4 w-4" />
@@ -61,7 +51,7 @@ export function ColorRamp({ colors }: ColorRampProps) {
           return (
             <div
               key={i}
-              className="flex-1 h-20 relative"
+              className="flex-1 h-20 relative group"
               style={{ backgroundColor: color.hex }}
             >
               <div 
@@ -69,7 +59,19 @@ export function ColorRamp({ colors }: ColorRampProps) {
                 style={{ color: contrast.color }}
               >
                 <div>{brightnessValue}</div>
-                <div>{contrast.ratio.toFixed(2)}:1 {getAccessibilityLevel(contrast.ratio)}</div>
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                  <span>{color.hex}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-4 w-4 p-0 opacity-50 hover:opacity-100"
+                    onClick={() => copyToClipboard(color.hex)}
+                  >
+                    <Copy className="h-3 w-3" />
+                    <span className="sr-only">Copy hex code</span>
+                  </Button>
+                </div>
+                <div>{contrast.ratio.toFixed(2)}:1</div>
               </div>
             </div>
           );
