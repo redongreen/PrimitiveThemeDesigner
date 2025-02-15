@@ -26,6 +26,12 @@ export function ColorRamp({ colors }: ColorRampProps) {
     });
   };
 
+  const getAccessibilityLevel = (ratio: number): string => {
+    if (ratio >= 7) return "AAA";
+    if (ratio >= 4.5) return "AA";
+    return "";
+  };
+
   return (
     <Card className="p-4">
       <div className="flex justify-between items-center mb-4">
@@ -55,7 +61,7 @@ export function ColorRamp({ colors }: ColorRampProps) {
                 style={{ color: contrast.color }}
               >
                 <div>Step {i + 1}</div>
-                <div>{contrast.ratio.toFixed(2)}:1</div>
+                <div>{contrast.ratio.toFixed(2)}:1 {getAccessibilityLevel(contrast.ratio)}</div>
               </div>
             </div>
           );
