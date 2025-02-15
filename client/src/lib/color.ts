@@ -10,12 +10,26 @@ export interface ColorStop {
 }
 
 export function hexToOklch(hex: string) {
-  const color = oklch(parse(hex));
-  return {
-    l: color.l || 0,
-    c: color.c || 0,
-    h: color.h || 0
-  };
+  try {
+    // Ensure we have a valid hex color
+    if (!hex.startsWith('#') || hex.length !== 7) {
+      return { l: 0, c: 0, h: 0 };
+    }
+
+    const color = oklch(parse(hex));
+    if (!color) {
+      return { l: 0, c: 0, h: 0 };
+    }
+
+    return {
+      l: color.l || 0,
+      c: color.c || 0,
+      h: color.h || 0
+    };
+  } catch (e) {
+    console.error('Error parsing color:', e);
+    return { l: 0, c: 0, h: 0 };
+  }
 }
 
 export function oklchToHex({ l, c, h }: { l: number; c: number; h: number }) {

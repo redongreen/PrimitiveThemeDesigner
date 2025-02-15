@@ -10,8 +10,14 @@ interface ColorInputProps {
 export function ColorInput({ value, onChange }: ColorInputProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    if (/^#[0-9A-Fa-f]{0,6}$/.test(newValue)) {
+    // Only allow # followed by valid hex characters, and ensure it's a complete color
+    if (/^#([0-9A-Fa-f]{0,6})$/.test(newValue)) {
       onChange(newValue);
+      // If we have a complete 6-digit hex, pad with zeros
+      if (newValue.length < 7) {
+        const paddedValue = newValue.padEnd(7, '0');
+        onChange(paddedValue);
+      }
     }
   };
 
