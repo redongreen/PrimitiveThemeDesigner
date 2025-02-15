@@ -24,6 +24,19 @@
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
     --radius: 0.375rem;
+
+    /* Brand Semantic Tokens */
+    --brand-background-primary: var(--primary);
+    --brand-background-secondary: 240 4.8% 95.9%;
+    --brand-background-disabled: 240 4.8% 97.9%;
+
+    --brand-content-primary: 240 5.9% 10%;
+    --brand-content-on-primary: 0 0% 100%;
+    --brand-content-on-secondary: 240 5.9% 10%;
+    --brand-content-disabled: 240 3.8% 46.1%;
+
+    --brand-border-accessible: 240 5.9% 40%;
+    --brand-border-subtle: 240 4.8% 90%;
   }
 }
 
