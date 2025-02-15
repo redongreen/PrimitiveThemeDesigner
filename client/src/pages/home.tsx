@@ -292,9 +292,9 @@ const Home = () => {
     );
 
     // For borderSubtle, go 1-2 steps darker than backgroundSecondary
-    const borderSubtleIndex = Math.min(
-      backgroundSecondaryIndex + 2, 
-      ramp.length - 1
+    const borderSubtleIndex = Math.max(
+      backgroundSecondaryIndex - 2, // Go 2 steps darker
+      0
     );
 
     return {
