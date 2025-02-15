@@ -128,7 +128,7 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
     // Create localized wave effects for positions
     const waveEffect = (center: number, width: number) => {
       const distanceFromCenter = Math.abs(position - center);
-      // Create exponential falloff for more dramatic movement near the center
+      // Create an exponential falloff for more dramatic movement near the center
       const exponentialFalloff = Math.exp(-Math.pow(distanceFromCenter / (width * 0.5), 2));
       // Add wave-like movement that diminishes exponentially from center
       const wave = Math.cos(distanceFromCenter * Math.PI / width) * exponentialFalloff;
