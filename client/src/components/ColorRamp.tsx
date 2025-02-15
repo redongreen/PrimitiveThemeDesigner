@@ -2,15 +2,16 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Copy } from 'lucide-react';
-import type { ColorStop } from '@/lib/color';
-import { getBestContrastColor } from '@/lib/color';
+import type { ColorStop, ColorBlindnessType } from '@/lib/color';
+import { getBestContrastColor, simulateColorBlindness } from '@/lib/color';
 import { useToast } from '@/hooks/use-toast';
 
 interface ColorRampProps {
   colors: ColorStop[];
+  colorBlindnessType?: ColorBlindnessType;
 }
 
-export function ColorRamp({ colors }: ColorRampProps) {
+export function ColorRamp({ colors, colorBlindnessType }: ColorRampProps) {
   const { toast } = useToast();
 
   const getBrightnessValue = (index: number): number => {
@@ -41,7 +42,9 @@ export function ColorRamp({ colors }: ColorRampProps) {
   return (
     <Card className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="font-medium">Color Ramp</h3>
+        <h3 className="font-medium">
+          Color Ramp {colorBlindnessType ? `(${colorBlindnessType} simulation)` : ''}
+        </h3>
         <Button
           variant="outline"
           size="sm"
@@ -55,13 +58,15 @@ export function ColorRamp({ colors }: ColorRampProps) {
 
       <div className="flex">
         {colors.map((color, i) => {
-          const contrast = getBestContrastColor(color.hex);
+          const simulatedHex = simulateColorBlindness(color.hex, colorBlindnessType);
+          const contrast = getBestContrastColor(simulatedHex);
           const brightnessValue = getBrightnessValue(i);
+
           return (
             <div
               key={i}
               className="flex-1 h-20 relative"
-              style={{ backgroundColor: color.hex }}
+              style={{ backgroundColor: simulatedHex }}
             >
               <div 
                 className="absolute inset-0 p-2 flex flex-col justify-between text-[10px] font-mono"

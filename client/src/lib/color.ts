@@ -1,4 +1,4 @@
-import { oklch, parse, formatHex } from 'culori';
+import { oklch, parse, formatHex, deficiency } from 'culori';
 
 // Calculate relative luminance for a color
 function getLuminance(hex: string): number {
@@ -163,6 +163,39 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
   return ramp;
 }
 
+export type ColorBlindnessType = 'deuteranopia' | 'protanopia' | 'tritanopia' | null;
+
+export function simulateColorBlindness(hex: string, type: ColorBlindnessType): string {
+  if (!type) return hex;
+
+  try {
+    const color = parse(hex);
+    if (!color) return hex;
+
+    let simulatedColor;
+    const severity = 1; // Maximum severity for simulation
+
+    switch (type) {
+      case 'deuteranopia':
+        simulatedColor = deficiency({ method: 'brettel', type: 'deutan', severity })(color);
+        break;
+      case 'protanopia':
+        simulatedColor = deficiency({ method: 'brettel', type: 'protan', severity })(color);
+        break;
+      case 'tritanopia':
+        simulatedColor = deficiency({ method: 'brettel', type: 'tritan', severity })(color);
+        break;
+      default:
+        return hex;
+    }
+
+    return formatHex(simulatedColor) || hex;
+  } catch (e) {
+    console.error('Error simulating color blindness:', e);
+    return hex;
+  }
+}
+
 export function adjustRampWithCurve(
   ramp: ColorStop[],
   curve: { x: number; y: number }[],
@@ -201,4 +234,35 @@ function interpolateCurve(curve: { x: number; y: number }[], x: number): number 
 
   const t = (x - p0.x) / (p1.x - p0.x);
   return p0.y + t * (p1.y - p0.y);
+}
+
+export function simulateColorBlindness(hex: string, type: ColorBlindnessType): string {
+  if (!type) return hex;
+
+  try {
+    const color = parse(hex);
+    if (!color) return hex;
+
+    let simulatedColor;
+    const severity = 1; // Maximum severity for simulation
+
+    switch (type) {
+      case 'deuteranopia':
+        simulatedColor = deficiency({ method: 'brettel', type: 'deutan', severity })(color);
+        break;
+      case 'protanopia':
+        simulatedColor = deficiency({ method: 'brettel', type: 'protan', severity })(color);
+        break;
+      case 'tritanopia':
+        simulatedColor = deficiency({ method: 'brettel', type: 'tritan', severity })(color);
+        break;
+      default:
+        return hex;
+    }
+
+    return formatHex(simulatedColor) || hex;
+  } catch (e) {
+    console.error('Error simulating color blindness:', e);
+    return hex;
+  }
 }

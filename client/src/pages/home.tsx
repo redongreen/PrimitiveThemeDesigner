@@ -9,8 +9,10 @@ import {
   generateRamp,
   oklchToHex,
   calculateRampVibrance,
-  type ColorStop
+  type ColorStop,
+  type ColorBlindnessType
 } from '@/lib/color';
+import { ColorBlindnessToggle } from '@/components/ColorBlindnessToggle';
 
 interface Point {
   step: number;
@@ -23,30 +25,26 @@ export default function Home() {
   const [vibrance, setVibrance] = useState(0.5);
   const [hueTorsion, setHueTorsion] = useState(0.5);
   const [ramp, setRamp] = useState<ColorStop[]>(() => generateRamp(baseColor, steps, vibrance, hueTorsion));
-
-  // Initialize points for each curve with default values
   const [lightnessPoints, setLightnessPoints] = useState<Point[]>(() =>
     Array.from({ length: steps }, (_, i) => ({
       step: i,
       value: ramp[i].oklch.l * 100
     }))
   );
-
   const [chromaPoints, setChromaPoints] = useState<Point[]>(() =>
     Array.from({ length: steps }, (_, i) => ({
       step: i,
       value: ramp[i].oklch.c * 100
     }))
   );
-
   const [huePoints, setHuePoints] = useState<Point[]>(() =>
     Array.from({ length: steps }, (_, i) => ({
       step: i,
       value: ramp[i].oklch.h
     }))
   );
+  const [colorBlindnessType, setColorBlindnessType] = useState<ColorBlindnessType>(null);
 
-  // Helper function to interpolate values for new steps
   const interpolatePoints = (currentPoints: Point[], newStepCount: number): Point[] => {
     if (currentPoints.length === 0) return [];
     if (currentPoints.length === 1) {
@@ -77,7 +75,6 @@ export default function Home() {
   const updateRamp = useCallback(() => {
     const baseRamp = generateRamp(baseColor, steps, vibrance, hueTorsion);
 
-    // Apply curve adjustments
     const newRamp = baseRamp.map((color, i) => {
       const l = lightnessPoints.find(p => p.step === i)?.value! / 100;
       const c = chromaPoints.find(p => p.step === i)?.value! / 100;
@@ -92,7 +89,6 @@ export default function Home() {
     setRamp(newRamp);
   }, [baseColor, steps, vibrance, hueTorsion, lightnessPoints, chromaPoints, huePoints]);
 
-  // Update ramp when curve points or vibrance change
   useEffect(() => {
     updateRamp();
   }, [lightnessPoints, chromaPoints, huePoints, vibrance, hueTorsion, updateRamp]);
@@ -105,7 +101,6 @@ export default function Home() {
     const newRamp = generateRamp(baseColor, steps, vibrance, hueTorsion);
     setRamp(newRamp);
 
-    // Update curve points with new values
     setLightnessPoints(newRamp.map((color, i) => ({
       step: i,
       value: color.oklch.l * 100
@@ -125,7 +120,6 @@ export default function Home() {
   const handleStepsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSteps = parseInt(e.target.value) || 12;
     if (newSteps >= 2 && newSteps <= 20) {
-      // Interpolate existing points for the new step count
       const newLightnessPoints = interpolatePoints(lightnessPoints, newSteps);
       const newChromaPoints = interpolatePoints(chromaPoints, newSteps);
       const newHuePoints = interpolatePoints(huePoints, newSteps);
@@ -135,7 +129,6 @@ export default function Home() {
       setChromaPoints(newChromaPoints);
       setHuePoints(newHuePoints);
 
-      // Update the ramp with interpolated values
       const baseRamp = generateRamp(baseColor, newSteps, vibrance, hueTorsion);
       const newRamp = baseRamp.map((color, i) => {
         const l = newLightnessPoints[i].value / 100;
@@ -156,10 +149,8 @@ export default function Home() {
     const newVibrance = value[0];
     setVibrance(newVibrance);
 
-    // Generate a new base ramp with the updated vibrance
     const newRamp = generateRamp(baseColor, steps, newVibrance, hueTorsion);
 
-    // Update the curve points to reflect the new vibrance
     setLightnessPoints(newRamp.map((color, i) => ({
       step: i,
       value: color.oklch.l * 100
@@ -180,10 +171,8 @@ export default function Home() {
     const newValue = value[0];
     setHueTorsion(newValue);
 
-    // Generate a new base ramp with the updated hue torsion
     const newRamp = generateRamp(baseColor, steps, vibrance, newValue);
 
-    // Update the curve points to reflect the new hue torsion
     setLightnessPoints(newRamp.map((color, i) => ({
       step: i,
       value: color.oklch.l * 100
@@ -283,10 +272,14 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <ColorBlindnessToggle
+          value={colorBlindnessType}
+          onValueChange={setColorBlindnessType}
+        />
       </div>
 
       <div className="space-y-4">
-        <ColorRamp colors={ramp} />
+        <ColorRamp colors={ramp} colorBlindnessType={colorBlindnessType} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <CurveEditor
