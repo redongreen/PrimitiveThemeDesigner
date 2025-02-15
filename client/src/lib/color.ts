@@ -127,29 +127,23 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
 
     // Create localized wave effects for positions
     const waveEffect = (center: number, width: number) => {
-      const distanceFromCenter = Math.abs(position - center);
-      // Create an exponential falloff for more dramatic movement near the center
-      const exponentialFalloff = Math.exp(-Math.pow(distanceFromCenter / (width * 0.5), 2));
-      // Add wave-like movement that diminishes exponentially from center
-      const wave = Math.cos(distanceFromCenter * Math.PI / width) * exponentialFalloff;
-      return wave;
+      // Convert position to step numbers for consistent scaling
+      const currentStep = Math.floor(position * (steps - 1));
+      const centerStep = Math.floor(center * (steps - 1));
+
+      const distance = Math.abs(currentStep - centerStep);
+      const maxDistance = steps / 2;
+      const sigma = maxDistance / 3; // Makes the falloff more gradual
+
+      return Math.exp(-(distance * distance) / (2 * sigma * sigma));
     };
 
     // Calculate effects centered at 20% and 80% through the ramp
-    // Adjust width based on step count to maintain consistent effect
-    const baseWidth = 0.2; // Base width of the effect
-    const adjustedWidth = Math.max(baseWidth, 1 / steps); // Ensure width is never smaller than one step
+    const darkEffect = waveEffect(0.2, 0);  // Width not used anymore
+    const lightEffect = waveEffect(0.8, 0); // Width not used anymore
 
-    const darkWave = waveEffect(0.2, adjustedWidth) * 0.05;  // Effect for darker colors
-    const lightWave = waveEffect(0.8, adjustedWidth) * 0.05; // Effect for lighter colors
-
-    // When torsionStrength is positive (slider > 50%):
-    // - darkWave moves up (positive)
-    // - lightWave moves down (negative)
-    // When torsionStrength is negative (slider < 50%):
-    // - darkWave moves down (negative)
-    // - lightWave moves up (positive)
-    const hueAdjustment = (darkWave - lightWave) * torsionStrength * 360;
+    // Calculate hue adjustment based on the combined effects
+    const hueAdjustment = (darkEffect - lightEffect) * torsionStrength * 60; // Reduced range for subtler effect
 
     // Apply the hue adjustment to the base hue
     const h = base.h + hueAdjustment;
