@@ -4,9 +4,11 @@ import { CurveEditor } from '@/components/CurveEditor';
 import { ColorRamp } from '@/components/ColorRamp';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 import {
   generateRamp,
   oklchToHex,
+  calculateRampVibrance,
   type ColorStop
 } from '@/lib/color';
 
@@ -18,9 +20,13 @@ interface Point {
 export default function Home() {
   const [baseColor, setBaseColor] = useState('#6366f1');
   const [steps, setSteps] = useState(12);
-  const [ramp, setRamp] = useState<ColorStop[]>(() => 
-    generateRamp(baseColor, steps)
-  );
+  const [vibrance, setVibrance] = useState(0.5);
+  const [ramp, setRamp] = useState<ColorStop[]>(() => {
+    const initialRamp = generateRamp(baseColor, steps, vibrance);
+    const initialVibrance = calculateRampVibrance(initialRamp);
+    setVibrance(initialVibrance);
+    return initialRamp;
+  });
 
   // Initialize points for each curve with default values
   const [lightnessPoints, setLightnessPoints] = useState<Point[]>(() =>
@@ -73,7 +79,7 @@ export default function Home() {
   };
 
   const updateRamp = useCallback(() => {
-    const baseRamp = generateRamp(baseColor, steps);
+    const baseRamp = generateRamp(baseColor, steps, vibrance);
 
     // Apply curve adjustments
     const newRamp = baseRamp.map((color, i) => {
@@ -88,19 +94,19 @@ export default function Home() {
     });
 
     setRamp(newRamp);
-  }, [baseColor, steps, lightnessPoints, chromaPoints, huePoints]);
+  }, [baseColor, steps, vibrance, lightnessPoints, chromaPoints, huePoints]);
 
-  // Update ramp when curve points change
+  // Update ramp when curve points or vibrance change
   useEffect(() => {
     updateRamp();
-  }, [lightnessPoints, chromaPoints, huePoints, updateRamp]);
+  }, [lightnessPoints, chromaPoints, huePoints, vibrance, updateRamp]);
 
   const handleColorChange = (newColor: string) => {
     setBaseColor(newColor);
   };
 
   const handleGenerateRamp = () => {
-    const newRamp = generateRamp(baseColor, steps);
+    const newRamp = generateRamp(baseColor, steps, vibrance);
     setRamp(newRamp);
 
     // Update curve points with new values
@@ -134,7 +140,7 @@ export default function Home() {
       setHuePoints(newHuePoints);
 
       // Update the ramp with interpolated values
-      const baseRamp = generateRamp(baseColor, newSteps);
+      const baseRamp = generateRamp(baseColor, newSteps, vibrance);
       const newRamp = baseRamp.map((color, i) => {
         const l = newLightnessPoints[i].value / 100;
         const c = newChromaPoints[i].value / 100;
@@ -150,28 +156,51 @@ export default function Home() {
     }
   };
 
+  const handleVibranceChange = (value: number[]) => {
+    setVibrance(value[0]);
+  };
+
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
       <h1 className="text-4xl font-bold mb-8">Color Ramp Generator</h1>
 
-      <div className="flex gap-4 mb-8">
-        <ColorInput 
-          value={baseColor} 
-          onChange={handleColorChange}
-          onGenerate={handleGenerateRamp}
-        />
-
-        <div>
-          <Label htmlFor="steps">Steps</Label>
-          <Input
-            id="steps"
-            type="number"
-            min="2"
-            max="20"
-            value={steps}
-            onChange={handleStepsChange}
-            className="w-24 mt-1"
+      <div className="flex flex-col gap-6 mb-8">
+        <div className="flex gap-4">
+          <ColorInput 
+            value={baseColor} 
+            onChange={handleColorChange}
+            onGenerate={handleGenerateRamp}
           />
+
+          <div>
+            <Label htmlFor="steps">Steps</Label>
+            <Input
+              id="steps"
+              type="number"
+              min="2"
+              max="20"
+              value={steps}
+              onChange={handleStepsChange}
+              className="w-24 mt-1"
+            />
+          </div>
+        </div>
+
+        <div className="w-full">
+          <Label htmlFor="vibrance">Vibrance</Label>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">Pastel</span>
+            <Slider
+              id="vibrance"
+              min={0}
+              max={1}
+              step={0.01}
+              value={[vibrance]}
+              onValueChange={handleVibranceChange}
+              className="flex-1"
+            />
+            <span className="text-sm text-muted-foreground">Vibrant</span>
+          </div>
         </div>
       </div>
 

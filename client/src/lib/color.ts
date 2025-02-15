@@ -49,9 +49,16 @@ export interface ColorStop {
   };
 }
 
+// Calculate average vibrance (chroma) of a color ramp
+export function calculateRampVibrance(ramp: ColorStop[]): number {
+  if (ramp.length === 0) return 0;
+  const avgChroma = ramp.reduce((sum, stop) => sum + stop.oklch.c, 0) / ramp.length;
+  // Normalize to 0-1 range, assuming max chroma of 0.4 in OKLCH
+  return Math.min(avgChroma / 0.4, 1);
+}
+
 export function hexToOklch(hex: string) {
   try {
-    // Ensure we have a valid hex color
     if (!hex.startsWith('#') || hex.length !== 7) {
       console.log('Invalid hex format:', hex);
       return { l: 0.5, c: 0, h: 0 };
@@ -91,18 +98,21 @@ export function oklchToHex({ l, c, h }: { l: number; c: number; h: number }) {
   }
 }
 
-export function generateRamp(baseColor: string, steps: number): ColorStop[] {
+// Modified to support vibrance adjustment
+export function generateRamp(baseColor: string, steps: number, vibrance: number = 0.5): ColorStop[] {
   const base = hexToOklch(baseColor);
   const ramp: ColorStop[] = [];
+
+  // Adjust base chroma based on vibrance
+  const maxChroma = base.c * (vibrance * 1.5 + 0.5); // Scale from 0.5x to 2x of original chroma
 
   // Generate lightness values from 0.15 to 0.95 to avoid pure black/white
   for (let i = 0; i < steps; i++) {
     const l = 0.15 + (0.8 * i) / (steps - 1);
 
-    // Adjust chroma based on lightness while maintaining the base chroma
-    // Reduce chroma more at the extremes of lightness to prevent oversaturation
+    // Adjust chroma based on lightness and vibrance
     const chromaFactor = 1 - Math.abs(0.5 - l) * 1.5;
-    const c = base.c * Math.max(0, Math.min(1, chromaFactor));
+    const c = maxChroma * Math.max(0, Math.min(1, chromaFactor));
 
     // Keep the original hue
     const h = base.h;
@@ -148,7 +158,6 @@ export function adjustRampWithCurve(
 }
 
 function interpolateCurve(curve: { x: number; y: number }[], x: number): number {
-  // Find the two control points that surround x
   const i1 = curve.findIndex(p => p.x > x);
   if (i1 === -1) return curve[curve.length - 1].y;
   if (i1 === 0) return curve[0].y;
@@ -156,7 +165,6 @@ function interpolateCurve(curve: { x: number; y: number }[], x: number): number 
   const p0 = curve[i1 - 1];
   const p1 = curve[i1];
 
-  // Linear interpolation
   const t = (x - p0.x) / (p1.x - p0.x);
   return p0.y + t * (p1.y - p0.y);
 }
