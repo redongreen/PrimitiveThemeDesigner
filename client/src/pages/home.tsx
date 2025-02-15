@@ -382,17 +382,66 @@ export default function Home() {
   const getSemanticsIndices = useCallback((ramp: ColorStop[]) => {
     if (!ramp.length) return {};
 
+    // Find the lightest color with sufficient contrast against #5E5E5E for secondary background
     const backgroundSecondaryIndex = findLightestWithContrast(ramp, '#5E5E5E', 4.5);
 
+    // Find best matching primitive color
+    const backgroundPrimaryIndex = findBestMatchingPrimitive(ramp, baseColor);
+
+    // Background disabled should be similar to secondary but one step lighter
+    const backgroundDisabledIndex = Math.max(0, backgroundSecondaryIndex - 1);
+
+    // Content primary must contrast with #F3F3F3
+    const contentPrimaryIndex = findDarkestWithContrast(ramp, '#F3F3F3', 4.5);
+
+    // Content on secondary must contrast with background secondary
+    const contentOnSecondaryIndex = findDarkestWithContrast(
+      ramp, 
+      ramp[backgroundSecondaryIndex]?.hex || '#FFFFFF',
+      4.5
+    );
+
+    // Content disabled is lighter version of content
+    const contentDisabledIndex = Math.min(
+      ramp.length - 1,
+      Math.max(0, contentOnSecondaryIndex - 2)
+    );
+
+    // Border accessible needs 3:1 contrast with both secondary and #F3F3F3
+    const borderAccessibleCandidates = ramp.map((color, index) => ({
+      index,
+      contrastSecondary: getContrastRatio(color.hex, ramp[backgroundSecondaryIndex]?.hex || '#FFFFFF'),
+      contrastNeutral: getContrastRatio(color.hex, '#F3F3F3')
+    }));
+
+    const borderAccessibleIndex = borderAccessibleCandidates.reduce((best, current) => {
+      if (current.contrastSecondary >= 3 && current.contrastNeutral >= 3) {
+        if (best === -1) return current.index;
+        const bestContrast = Math.min(
+          borderAccessibleCandidates[best].contrastSecondary,
+          borderAccessibleCandidates[best].contrastNeutral
+        );
+        const currentContrast = Math.min(current.contrastSecondary, current.contrastNeutral);
+        return currentContrast > bestContrast ? current.index : best;
+      }
+      return best;
+    }, -1);
+
+    // Border subtle should be 1-2 steps darker than background secondary
+    const borderSubtleIndex = Math.min(
+      ramp.length - 1,
+      backgroundSecondaryIndex + 2
+    );
+
     return {
-      backgroundPrimary: findBestMatchingPrimitive(ramp, baseColor),
+      backgroundPrimary: backgroundPrimaryIndex,
       backgroundSecondary: backgroundSecondaryIndex,
-      backgroundDisabled: Math.max(0, backgroundSecondaryIndex - 1),
-      contentPrimary: findDarkestWithContrast(ramp, '#F3F3F3', 4.5),
-      contentOnSecondary: findDarkestWithContrast(ramp, ramp[backgroundSecondaryIndex]?.hex || '#FFFFFF', 4.5),
-      contentDisabled: findLightestWithContrast(ramp, '#FFFFFF', 2),
-      borderAccessible: findDarkestWithContrast(ramp, '#F3F3F3', 3),
-      borderSubtle: Math.min(ramp.length - 1, backgroundSecondaryIndex + 1),
+      backgroundDisabled: backgroundDisabledIndex,
+      contentPrimary: contentPrimaryIndex,
+      contentOnSecondary: contentOnSecondaryIndex,
+      contentDisabled: contentDisabledIndex,
+      borderAccessible: borderAccessibleIndex >= 0 ? borderAccessibleIndex : contentPrimaryIndex,
+      borderSubtle: borderSubtleIndex,
     };
   }, [baseColor]);
 
