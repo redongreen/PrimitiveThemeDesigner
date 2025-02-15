@@ -202,27 +202,29 @@ const findBestMatchingPrimitive = (ramp: ColorStop[], targetHex: string): number
 const findLightestWithContrast = (ramp: ColorStop[], against: string, minContrast: number): number => {
   if (!ramp.length) return 0;
 
-  // Filter colors that meet both lightness and contrast requirements
-  const validColors = ramp.filter((color, index) => {
-    const meetsLightness = color.oklch.l >= 0.84 && color.oklch.l <= 0.92; // 84-92% lightness
+  // First try to find colors within the preferred lightness range (86-94%)
+  const preferredColors = ramp.filter(color => {
+    const meetsLightness = color.oklch.l >= 0.86 && color.oklch.l <= 0.94; // 86-94% lightness
     const meetsContrast = getContrastRatio(color.hex, against) >= minContrast;
-    const notLastColor = index < ramp.length - 1; // Exclude the last color
-
-    return meetsLightness && meetsContrast && notLastColor;
+    return meetsLightness && meetsContrast;
   });
 
-  if (validColors.length === 0) {
-    // If no color meets all criteria, fall back to the first color that meets contrast
-    // (excluding the last color)
-    for (let i = 0; i < ramp.length - 1; i++) {
-      if (getContrastRatio(ramp[i].hex, against) >= minContrast) {
-        return i;
-      }
-    }
-    return Math.min(ramp.length - 2, 11); // Max index should be 11 (1100), never last color
+  if (preferredColors.length > 0) {
+    // Return the lightest color from the preferred range that meets contrast
+    return ramp.findIndex(color => color.hex === preferredColors[0].hex);
   }
 
-  // Find the original index of the first valid color (lightest that meets all criteria)
+  // If no color in the preferred range meets contrast, find any color that meets contrast
+  const validColors = ramp.filter(color => 
+    getContrastRatio(color.hex, against) >= minContrast
+  );
+
+  if (validColors.length === 0) {
+    // If no color meets contrast, return the lightest color (usually white/near-white)
+    return ramp.length - 1;
+  }
+
+  // Return the lightest color that meets contrast
   return ramp.findIndex(color => color.hex === validColors[0].hex);
 };
 
