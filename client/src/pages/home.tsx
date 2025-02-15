@@ -315,7 +315,12 @@ const Home = () => {
     // Find backgroundSecondary first as other colors depend on it
     const backgroundSecondaryIndex = findLightestWithContrast(ramp, '#5E5E5E', 4.5);
 
-    // Rest of the indices calculation remains the same until contentDisabled
+    // Calculate backgroundDisabled index
+    const backgroundDisabledIndex = backgroundSecondaryIndex === ramp.length - 1 
+      ? backgroundSecondaryIndex  // If backgroundSecondary is at the last step, use same index
+      : Math.min(backgroundSecondaryIndex + 1, ramp.length - 1);  // Otherwise, use one step lighter
+
+    // Rest of the indices calculation remains the same
     const backgroundPrimary = findBestMatchingPrimitive(ramp, baseColor);
     const contentPrimaryIndex = findDarkestWithContrast(ramp, '#F3F3F3', 4.5);
     const contentOnSecondaryIndex = findDarkestWithContrast(
@@ -324,10 +329,10 @@ const Home = () => {
       4.5
     );
 
-    // Update contentDisabled calculation
+    // Update contentDisabled calculation to use backgroundDisabled hex
     const contentDisabledIndex = findDisabledContentColor(
       ramp,
-      ramp[backgroundSecondaryIndex]?.hex || '#FFFFFF',
+      ramp[backgroundDisabledIndex]?.hex || '#FFFFFF',
       contentOnSecondaryIndex
     );
 
@@ -340,7 +345,7 @@ const Home = () => {
     return {
       backgroundPrimary,
       backgroundSecondary: backgroundSecondaryIndex,
-      backgroundDisabled: backgroundSecondaryIndex,
+      backgroundDisabled: backgroundDisabledIndex,
       contentPrimary: contentPrimaryIndex,
       contentOnSecondary: contentOnSecondaryIndex,
       contentDisabled: contentDisabledIndex,
