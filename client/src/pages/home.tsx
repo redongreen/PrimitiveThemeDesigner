@@ -469,8 +469,9 @@ export default function Home() {
                     <h5 className="text-xs text-muted-foreground mb-2">Primary on Neutral</h5>
                     <ColorPairing
                       title="Primary Content on Neutral Background"
+                      subtitle="brandContentPrimary on #FFFFFF with brandBorderAccessible"
                       background="#FFFFFF"
-                      foreground={ramp[7]?.hex}
+                      foreground={ramp[4]?.hex}
                       border={ramp[6]?.hex}
                     />
 
