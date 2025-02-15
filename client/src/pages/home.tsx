@@ -38,7 +38,7 @@ const ColorToken: React.FC<ColorTokenProps> = ({ color, name, rampIndex, contras
 
   let displayValue = "auto";
   if (rampIndex >= 0 && color) {
-    displayValue = `${(rampIndex + 1) * 100}`;
+    displayValue = `${(rampIndex + 1) * 100}`; // Start from 100
   } else if (color) {
     if (color.toUpperCase() === "#000000") {
       displayValue = "Black";
