@@ -15,6 +15,41 @@ interface CurveEditorProps {
   onChange: (points: Point[]) => void;
 }
 
+function cubicInterpolate(
+  points: Point[],
+  t: number,
+  minStep: number,
+  maxStep: number
+): number {
+  // Find the points that bracket the target step
+  const p = points.sort((a, b) => a.step - b.step);
+  const i1 = p.findIndex(pt => pt.step > t);
+
+  if (i1 === -1) return p[p.length - 1].value;
+  if (i1 === 0) return p[0].value;
+
+  const i0 = i1 - 1;
+  const t0 = p[i0].step;
+  const t1 = p[i1].step;
+  const v0 = p[i0].value;
+  const v1 = p[i1].value;
+
+  // Calculate tension vectors
+  const tension = 0.5;
+  const m0 = i0 > 0 ? (p[i1].value - p[i0 - 1].value) * tension : (v1 - v0) * tension;
+  const m1 = i1 < p.length - 1 ? (p[i1 + 1].value - v0) * tension : (v1 - v0) * tension;
+
+  // Cubic Hermite spline interpolation
+  const t2 = (t - t0) / (t1 - t0);
+  const t3 = t2 * t2;
+  const t4 = t3 * t2;
+
+  return (2 * t4 - 3 * t3 + 1) * v0 +
+         (t4 - 2 * t3 + t2) * m0 +
+         (-2 * t4 + 3 * t3) * v1 +
+         (t4 - t3) * m1;
+}
+
 export function CurveEditor({ label, points, steps, minValue, maxValue, onChange }: CurveEditorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
@@ -53,7 +88,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       ctx.stroke();
     }
 
-    // Horizontal lines for values
+    // Horizontal lines
     const numLines = 5;
     for (let i = 0; i <= numLines; i++) {
       const y = (canvas.height * i) / numLines;
@@ -68,23 +103,24 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     ctx.lineWidth = 2;
     ctx.beginPath();
 
-    // Sort points by step
-    const sortedPoints = [...points].sort((a, b) => a.step - b.step);
+    // Draw smooth curve
+    const numSegments = canvas.width;
+    for (let i = 0; i <= numSegments; i++) {
+      const t = (i / numSegments) * (steps - 1);
+      const value = cubicInterpolate(points, t, 0, steps - 1);
+      const x = (i / numSegments) * canvas.width;
+      const y = canvas.height - ((value - minValue) / (maxValue - minValue)) * canvas.height;
 
-    // Draw lines between points
-    if (sortedPoints.length > 0) {
-      const start = toCanvasCoords(sortedPoints[0], canvas.width, canvas.height);
-      ctx.moveTo(start.x, start.y);
-
-      for (let i = 1; i < sortedPoints.length; i++) {
-        const current = toCanvasCoords(sortedPoints[i], canvas.width, canvas.height);
-        ctx.lineTo(current.x, current.y);
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
       }
-      ctx.stroke();
     }
+    ctx.stroke();
 
     // Draw points
-    sortedPoints.forEach((point) => {
+    points.sort((a, b) => a.step - b.step).forEach((point) => {
       const { x, y } = toCanvasCoords(point, canvas.width, canvas.height);
       ctx.fillStyle = '#000';
       ctx.beginPath();
