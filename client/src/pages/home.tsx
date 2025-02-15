@@ -242,9 +242,10 @@ const findDarkestWithContrast = (ramp: ColorStop[], against: string, minContrast
 const findDisabledContentColor = (ramp: ColorStop[], backgroundDisabledHex: string, contentOnSecondaryIndex: number): number => {
   if (!ramp.length) return 0;
 
-  // Start searching from colors lighter than contentOnSecondary
-  const candidates = ramp.slice(0, contentOnSecondaryIndex).reverse();
+  // Look for colors between white (end of ramp) and contentOnSecondary
+  const candidates = ramp.slice(contentOnSecondaryIndex + 1);
 
+  // Find first color that meets our contrast ratio requirements
   for (const color of candidates) {
     const contrast = getContrastRatio(color.hex, backgroundDisabledHex);
     // Check if contrast is between 1.20:1 and 2.2:1
@@ -253,8 +254,8 @@ const findDisabledContentColor = (ramp: ColorStop[], backgroundDisabledHex: stri
     }
   }
 
-  // If no color meets the criteria, return the closest one
-  let bestIndex = 0;
+  // If no color meets the criteria exactly, find the closest one
+  let bestIndex = contentOnSecondaryIndex;
   let closestToTarget = Number.MAX_VALUE;
 
   candidates.forEach(color => {
