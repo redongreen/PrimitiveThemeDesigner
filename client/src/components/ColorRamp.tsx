@@ -12,10 +12,11 @@ interface ColorRampProps {
 
 export function ColorRamp({ colors }: ColorRampProps) {
   const { toast } = useToast();
+  const brightnessValues = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100];
 
   const copyToClipboard = () => {
     const text = colors
-      .map((color, i) => `${50 + (i * 750 / (colors.length - 1))}: ${color.hex}`)
+      .map((color, i) => `${brightnessValues[i] || brightnessValues[brightnessValues.length - 1]}: ${color.hex}`)
       .join('\n');
 
     navigator.clipboard.writeText(text).then(() => {
@@ -50,7 +51,7 @@ export function ColorRamp({ colors }: ColorRampProps) {
       <div className="flex">
         {colors.map((color, i) => {
           const contrast = getBestContrastColor(color.hex);
-          const brightnessValue = Math.round(50 + (i * 750 / (colors.length - 1)));
+          const brightnessValue = brightnessValues[i] || brightnessValues[brightnessValues.length - 1];
           return (
             <div
               key={i}
