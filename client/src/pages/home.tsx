@@ -42,6 +42,7 @@ export default function Home() {
     setBaseColor(newColor);
     // Only update lastValidColor and regenerate ramp if we have a complete valid hex color
     if (/^#[0-9A-Fa-f]{6}$/.test(newColor)) {
+      console.log('Updating ramp with new color:', newColor);
       setLastValidColor(newColor);
       updateRamp();
     }

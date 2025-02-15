@@ -13,31 +13,51 @@ export function hexToOklch(hex: string) {
   try {
     // Ensure we have a valid hex color
     if (!hex.startsWith('#') || hex.length !== 7) {
-      return { l: 0, c: 0, h: 0 };
+      console.log('Invalid hex format:', hex);
+      return { l: 0.5, c: 0, h: 0 };
     }
 
-    const color = oklch(parse(hex));
+    const parsed = parse(hex);
+    console.log('Parsed color:', parsed);
+
+    if (!parsed) {
+      console.log('Failed to parse color:', hex);
+      return { l: 0.5, c: 0, h: 0 };
+    }
+
+    const color = oklch(parsed);
+    console.log('OKLCH color:', color);
+
     if (!color) {
-      return { l: 0, c: 0, h: 0 };
+      console.log('Failed to convert to OKLCH:', hex);
+      return { l: 0.5, c: 0, h: 0 };
     }
 
     return {
-      l: color.l || 0,
-      c: color.c || 0,
-      h: color.h || 0
+      l: color.l ?? 0.5,
+      c: color.c ?? 0,
+      h: color.h ?? 0
     };
   } catch (e) {
-    console.error('Error parsing color:', e);
-    return { l: 0, c: 0, h: 0 };
+    console.error('Error parsing color:', hex, e);
+    return { l: 0.5, c: 0, h: 0 };
   }
 }
 
 export function oklchToHex({ l, c, h }: { l: number; c: number; h: number }) {
-  return formatHex(oklch({ mode: 'oklch', l, c, h }));
+  try {
+    const color = oklch({ mode: 'oklch', l, c, h });
+    return formatHex(color) || '#000000';
+  } catch (e) {
+    console.error('Error converting OKLCH to hex:', { l, c, h }, e);
+    return '#000000';
+  }
 }
 
 export function generateRamp(baseColor: string, steps: number): ColorStop[] {
   const base = hexToOklch(baseColor);
+  console.log('Base color OKLCH:', base);
+
   const ramp: ColorStop[] = [];
 
   // Generate lightness values from 0.15 to 0.95 to avoid pure black/white
