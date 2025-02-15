@@ -14,9 +14,7 @@ export function ColorRamp({ colors }: ColorRampProps) {
   const { toast } = useToast();
 
   const getBrightnessValue = (index: number): number => {
-    if (index === 0) return 50;
-    if (index === 1) return 100;
-    return (index - 1) * 100 + 100;
+    return (index + 1) * 100;
   };
 
   const copyToClipboard = (hex: string) => {
