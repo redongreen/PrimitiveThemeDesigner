@@ -20,10 +20,9 @@ const defaultCurvePoints = [
 
 export default function Home() {
   const [baseColor, setBaseColor] = useState('#6366f1');
-  const [lastValidColor, setLastValidColor] = useState('#6366f1');
   const [steps, setSteps] = useState(12);
   const [ramp, setRamp] = useState<ColorStop[]>(() => 
-    generateRamp(lastValidColor, steps)
+    generateRamp(baseColor, steps)
   );
 
   const [lightnessCurve, setLightnessCurve] = useState([...defaultCurvePoints]);
@@ -31,21 +30,20 @@ export default function Home() {
   const [hueCurve, setHueCurve] = useState([...defaultCurvePoints]);
 
   const updateRamp = useCallback(() => {
-    let newRamp = generateRamp(lastValidColor, steps);
+    let newRamp = generateRamp(baseColor, steps);
     newRamp = adjustRampWithCurve(newRamp, lightnessCurve, 'l');
     newRamp = adjustRampWithCurve(newRamp, chromaCurve, 'c');
     newRamp = adjustRampWithCurve(newRamp, hueCurve, 'h');
     setRamp(newRamp);
-  }, [lastValidColor, steps, lightnessCurve, chromaCurve, hueCurve]);
+  }, [baseColor, steps, lightnessCurve, chromaCurve, hueCurve]);
 
   const handleColorChange = (newColor: string) => {
     setBaseColor(newColor);
-    // Only update lastValidColor and regenerate ramp if we have a complete valid hex color
-    if (/^#[0-9A-Fa-f]{6}$/.test(newColor)) {
-      console.log('Updating ramp with new color:', newColor);
-      setLastValidColor(newColor);
-      updateRamp();
-    }
+  };
+
+  const handleGenerateRamp = () => {
+    console.log('Generating ramp with color:', baseColor);
+    updateRamp();
   };
 
   const handleStepsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +72,11 @@ export default function Home() {
       <h1 className="text-4xl font-bold mb-8">Color Ramp Generator</h1>
 
       <div className="flex gap-4 mb-8">
-        <ColorInput value={baseColor} onChange={handleColorChange} />
+        <ColorInput 
+          value={baseColor} 
+          onChange={handleColorChange}
+          onGenerate={handleGenerateRamp}
+        />
 
         <div>
           <Label htmlFor="steps">Steps</Label>
