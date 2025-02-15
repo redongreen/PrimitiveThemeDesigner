@@ -1,16 +1,17 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy } from 'lucide-react';
+import { Copy, Star } from 'lucide-react';
 import type { ColorStop } from '@/lib/color';
 import { getBestContrastColor } from '@/lib/color';
 import { useToast } from '@/hooks/use-toast';
 
 interface ColorRampProps {
   colors: ColorStop[];
+  brandPrimaryIndex?: number;
 }
 
-export function ColorRamp({ colors }: ColorRampProps) {
+export function ColorRamp({ colors, brandPrimaryIndex }: ColorRampProps) {
   const { toast } = useToast();
 
   const getBrightnessValue = (index: number): number => {
@@ -45,6 +46,7 @@ export function ColorRamp({ colors }: ColorRampProps) {
         {colors.map((color, i) => {
           const contrast = getBestContrastColor(color.hex);
           const brightnessValue = getBrightnessValue(i);
+          const isPrimary = i === brandPrimaryIndex;
 
           return (
             <div
@@ -52,6 +54,14 @@ export function ColorRamp({ colors }: ColorRampProps) {
               className="flex-1 h-20 relative group"
               style={{ backgroundColor: color.hex }}
             >
+              {isPrimary && (
+                <div 
+                  className="absolute -top-6 left-1/2 transform -translate-x-1/2"
+                  style={{ color: contrast.color }}
+                >
+                  <Star className="h-4 w-4 fill-current" />
+                </div>
+              )}
               <div 
                 className="absolute inset-0 p-2 flex flex-col justify-between text-[10px] font-mono"
                 style={{ color: contrast.color }}
