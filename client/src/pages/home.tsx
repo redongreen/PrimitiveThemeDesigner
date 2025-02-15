@@ -229,7 +229,9 @@ export default function Home() {
         <div className="w-full">
           <Label htmlFor="vibrance">Vibrance</Label>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Pastel</span>
+            <div className="w-16 text-right">
+              <span className="text-sm text-muted-foreground">Pastel</span>
+            </div>
             <div className="relative flex-1">
               <div className="absolute -top-6 left-0 right-0 flex justify-between text-xs text-muted-foreground">
                 <span>0%</span>
@@ -247,14 +249,18 @@ export default function Home() {
                 onValueChange={handleVibranceChange}
               />
             </div>
-            <span className="text-sm text-muted-foreground">Vibrant</span>
+            <div className="w-16">
+              <span className="text-sm text-muted-foreground">Vibrant</span>
+            </div>
           </div>
         </div>
 
         <div className="w-full">
           <Label htmlFor="hueTorsion">Hue Torsion</Label>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Cool</span>
+            <div className="w-16 text-right">
+              <span className="text-sm text-muted-foreground">Cool</span>
+            </div>
             <div className="relative flex-1">
               <div className="absolute -top-6 left-0 right-0 flex justify-between text-xs text-muted-foreground">
                 <span>0%</span>
@@ -272,7 +278,9 @@ export default function Home() {
                 onValueChange={handleHueTorsionChange}
               />
             </div>
-            <span className="text-sm text-muted-foreground">Warm</span>
+            <div className="w-16">
+              <span className="text-sm text-muted-foreground">Warm</span>
+            </div>
           </div>
         </div>
       </div>
