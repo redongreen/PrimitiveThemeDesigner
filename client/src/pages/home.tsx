@@ -34,30 +34,28 @@ interface ColorTokenProps {
 
 const ColorToken: React.FC<ColorTokenProps> = ({ color, name, rampIndex, contrastWith }) => {
   const { toast } = useToast();
-  const contrastRatio = contrastWith ? getContrastRatio(color, contrastWith) : null;
+  const contrastRatio = contrastWith ? getContrastRatio(color || '#000000', contrastWith) : null;
 
-  // Calculate the primitive value and display text
-  let displayValue: string;
-  if (rampIndex === -1) {
-    // Handle special colors
+  let displayValue = "auto";
+  if (rampIndex >= 0 && color) {
+    displayValue = `${(rampIndex + 1) * 100}`;
+  } else if (color) {
     if (color.toUpperCase() === "#000000") {
       displayValue = "Black";
     } else if (color.toUpperCase() === "#FFFFFF") {
       displayValue = "White";
-    } else {
-      displayValue = "auto";
     }
-  } else {
-    displayValue = `Primitive-${(rampIndex + 1) * 100}`;
   }
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(color).then(() => {
-      toast({
-        title: "Copied!",
-        description: `${color} has been copied to your clipboard`
+    if (color) {
+      navigator.clipboard.writeText(color).then(() => {
+        toast({
+          title: "Copied!",
+          description: `${color} has been copied to your clipboard`
+        });
       });
-    });
+    }
   };
 
   return (
@@ -166,14 +164,18 @@ const ColorPairing: React.FC<ColorPairingProps> = ({
 };
 
 const findBestMatchingPrimitive = (ramp: ColorStop[], targetHex: string): number => {
+  if (!ramp.length) return 0;
+
   let minDiff = Number.MAX_VALUE;
   let bestIndex = 0;
 
+  const targetColor = ramp[0]; // Using first color as reference
+
   ramp.forEach((color, index) => {
     const diff = Math.abs(
-      color.oklch.l - ramp[0].oklch.l +
-      color.oklch.c - ramp[0].oklch.c +
-      color.oklch.h - ramp[0].oklch.h
+      color.oklch.l - targetColor.oklch.l +
+      color.oklch.c - targetColor.oklch.c +
+      color.oklch.h - targetColor.oklch.h
     );
     if (diff < minDiff) {
       minDiff = diff;
@@ -181,19 +183,23 @@ const findBestMatchingPrimitive = (ramp: ColorStop[], targetHex: string): number
     }
   });
 
-  return bestIndex;
+  return Math.min(bestIndex, ramp.length - 1);
 };
 
 const findLightestWithContrast = (ramp: ColorStop[], against: string, minContrast: number): number => {
+  if (!ramp.length) return 0;
+
   for (let i = 0; i < ramp.length; i++) {
     if (getContrastRatio(ramp[i].hex, against) >= minContrast) {
       return i;
     }
   }
-  return ramp.length - 1;
+  return Math.min(ramp.length - 1, 11); // Max index should be 11 (1100)
 };
 
 const findDarkestWithContrast = (ramp: ColorStop[], against: string, minContrast: number): number => {
+  if (!ramp.length) return 0;
+
   for (let i = ramp.length - 1; i >= 0; i--) {
     if (getContrastRatio(ramp[i].hex, against) >= minContrast) {
       return i;
@@ -372,19 +378,21 @@ export default function Home() {
     })));
   };
 
-  // Find appropriate indices based on contrast requirements
+  // Update semantic indices calculation
   const getSemanticsIndices = useCallback((ramp: ColorStop[]) => {
     if (!ramp.length) return {};
 
+    const backgroundSecondaryIndex = findLightestWithContrast(ramp, '#5E5E5E', 4.5);
+
     return {
       backgroundPrimary: findBestMatchingPrimitive(ramp, baseColor),
-      backgroundSecondary: findLightestWithContrast(ramp, '#5E5E5E', 4.5),
-      backgroundDisabled: findLightestWithContrast(ramp, '#5E5E5E', 4.5) - 1,
+      backgroundSecondary: backgroundSecondaryIndex,
+      backgroundDisabled: Math.max(0, backgroundSecondaryIndex - 1),
       contentPrimary: findDarkestWithContrast(ramp, '#F3F3F3', 4.5),
-      contentOnSecondary: findDarkestWithContrast(ramp, ramp[findLightestWithContrast(ramp, '#5E5E5E', 4.5)].hex, 4.5),
+      contentOnSecondary: findDarkestWithContrast(ramp, ramp[backgroundSecondaryIndex]?.hex || '#FFFFFF', 4.5),
       contentDisabled: findLightestWithContrast(ramp, '#FFFFFF', 2),
       borderAccessible: findDarkestWithContrast(ramp, '#F3F3F3', 3),
-      borderSubtle: findLightestWithContrast(ramp, '#5E5E5E', 4.5) + 1,
+      borderSubtle: Math.min(ramp.length - 1, backgroundSecondaryIndex + 1),
     };
   }, [baseColor]);
 
