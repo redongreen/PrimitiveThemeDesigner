@@ -125,23 +125,24 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
     // Calculate normalized position in the ramp (0 to 1)
     const position = i / (steps - 1);
 
-    // Create a smooth wave-like effect
-    // Use a combination of sine waves to create a more natural curve
-    const wave = (x: number, phase: number) =>
-      Math.sin(2 * Math.PI * x + phase) *
-      Math.exp(-Math.pow((x - 0.5), 2) / 0.5); // Gaussian envelope
+    // Create localized wave effects for steps 3 and 8
+    const waveEffect = (center: number, width: number) => {
+      const distanceFromCenter = Math.abs(position - center);
+      // Create a very focused Gaussian falloff
+      return Math.exp(-Math.pow(distanceFromCenter / width, 2) * 20);
+    };
 
-    // Calculate the wave effect centered around step 3 (0.3) and step 8 (0.8)
-    // Note: We invert the effects so step 3 moves up and step 8 moves down at 100%
-    const step3Effect = wave(position - 0.3, 0) * 0.05;
-    const step8Effect = wave(position - 0.8, 0) * 0.05;
+    // Calculate effects centered at 30% and 80% through the ramp
+    const step3Wave = waveEffect(0.3, 0.1) * 0.05; // Narrow width of 0.1
+    const step8Wave = waveEffect(0.8, 0.1) * 0.05; // Narrow width of 0.1
 
-    // Combine the effects and apply torsion strength
-    // The negative sign before torsionStrength inverts the overall effect
-    const hueAdjustment = -(step3Effect - step8Effect) * torsionStrength;
+    // When torsionStrength is positive (slider > 50%):
+    // - step3Wave will move up (positive)
+    // - step8Wave will move down (negative)
+    const hueAdjustment = (step3Wave - step8Wave) * torsionStrength * 360;
 
     // Apply the hue adjustment to the base hue
-    const h = base.h + hueAdjustment * 360;
+    const h = base.h + hueAdjustment;
 
     // Normalize hue to 0-360 range
     const normalizedHue = ((h % 360) + 360) % 360;
