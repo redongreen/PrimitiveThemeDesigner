@@ -104,7 +104,6 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
   const ramp: ColorStop[] = [];
 
   // Adjust base chroma based on vibrance
-  // Map vibrance [0,1] to a multiplier range [0.2, 2.0]
   const vibranceMultiplier = 0.2 + (vibrance * 1.8);
   const maxChroma = base.c * vibranceMultiplier;
 
@@ -126,27 +125,18 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
     // Calculate normalized position in the ramp (0 to 1)
     const position = i / (steps - 1);
 
-    // Calculate hue adjustment using a smooth curve
-    let hueAdjustment = 0;
-    const curve = (x: number) => Math.sin(x * Math.PI * 2) / 2 * 0.1; // Smoother curve, smaller max adjustment
+    // Create a smooth wave-like effect
+    // Use a combination of sine waves to create a more natural curve
+    const wave = (x: number, phase: number) =>
+      Math.sin(2 * Math.PI * x + phase) *
+      Math.exp(-Math.pow((x - 0.5), 2) / 0.5); // Gaussian envelope
 
-    // Define the positions for step 3 and step 8 effect (30% and 80% through the ramp)
-    const step3Pos = 0.3;
-    const step8Pos = 0.8;
-    const effectRange = 0.15; // Range of influence around each position
+    // Calculate the wave effect centered around step 3 (0.3) and step 8 (0.8)
+    const step3Effect = wave(position - 0.3, 0) * 0.05;
+    const step8Effect = -wave(position - 0.8, 0) * 0.05;
 
-    // Apply effect near step 3 and step 8
-    if (Math.abs(position - step3Pos) < effectRange) {
-      // Positive adjustment at 100% torsion, negative at 0% for step 3
-      const normalizedDist = 1 - Math.abs(position - step3Pos) / effectRange;
-      hueAdjustment += curve(normalizedDist) * torsionStrength;
-    }
-
-    if (Math.abs(position - step8Pos) < effectRange) {
-      // Negative adjustment at 100% torsion, positive at 0% for step 8
-      const normalizedDist = 1 - Math.abs(position - step8Pos) / effectRange;
-      hueAdjustment -= curve(normalizedDist) * torsionStrength;
-    }
+    // Combine the effects and apply torsion strength
+    const hueAdjustment = (step3Effect + step8Effect) * torsionStrength;
 
     // Apply the hue adjustment to the base hue
     const h = base.h + hueAdjustment * 360;
