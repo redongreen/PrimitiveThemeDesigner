@@ -165,6 +165,44 @@ const ColorPairing: React.FC<ColorPairingProps> = ({
   );
 };
 
+const findBestMatchingPrimitive = (ramp: ColorStop[], targetHex: string): number => {
+  let minDiff = Number.MAX_VALUE;
+  let bestIndex = 0;
+
+  ramp.forEach((color, index) => {
+    const diff = Math.abs(
+      color.oklch.l - ramp[0].oklch.l +
+      color.oklch.c - ramp[0].oklch.c +
+      color.oklch.h - ramp[0].oklch.h
+    );
+    if (diff < minDiff) {
+      minDiff = diff;
+      bestIndex = index;
+    }
+  });
+
+  return bestIndex;
+};
+
+const findLightestWithContrast = (ramp: ColorStop[], against: string, minContrast: number): number => {
+  for (let i = 0; i < ramp.length; i++) {
+    if (getContrastRatio(ramp[i].hex, against) >= minContrast) {
+      return i;
+    }
+  }
+  return ramp.length - 1;
+};
+
+const findDarkestWithContrast = (ramp: ColorStop[], against: string, minContrast: number): number => {
+  for (let i = ramp.length - 1; i >= 0; i--) {
+    if (getContrastRatio(ramp[i].hex, against) >= minContrast) {
+      return i;
+    }
+  }
+  return 0;
+};
+
+
 export default function Home() {
   const [baseColor, setBaseColor] = useState('#6366f1');
   const [steps, setSteps] = useState(12);
@@ -334,6 +372,29 @@ export default function Home() {
     })));
   };
 
+  // Find appropriate indices based on contrast requirements
+  const getSemanticsIndices = useCallback((ramp: ColorStop[]) => {
+    if (!ramp.length) return {};
+
+    return {
+      backgroundPrimary: findBestMatchingPrimitive(ramp, baseColor),
+      backgroundSecondary: findLightestWithContrast(ramp, '#5E5E5E', 4.5),
+      backgroundDisabled: findLightestWithContrast(ramp, '#5E5E5E', 4.5) - 1,
+      contentPrimary: findDarkestWithContrast(ramp, '#F3F3F3', 4.5),
+      contentOnSecondary: findDarkestWithContrast(ramp, ramp[findLightestWithContrast(ramp, '#5E5E5E', 4.5)].hex, 4.5),
+      contentDisabled: findLightestWithContrast(ramp, '#FFFFFF', 2),
+      borderAccessible: findDarkestWithContrast(ramp, '#F3F3F3', 3),
+      borderSubtle: findLightestWithContrast(ramp, '#5E5E5E', 4.5) + 1,
+    };
+  }, [baseColor]);
+
+  // Update indices when ramp changes
+  const [semanticIndices, setSemanticIndices] = useState(() => getSemanticsIndices(ramp));
+
+  useEffect(() => {
+    setSemanticIndices(getSemanticsIndices(ramp));
+  }, [ramp, getSemanticsIndices]);
+
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
       <h1 className="text-4xl font-bold mb-8">Color Ramp Generator</h1>
@@ -465,63 +526,63 @@ export default function Home() {
             <Card className="p-4 mb-6">
               <h3 className="text-sm font-medium mb-4">Background</h3>
               <ColorToken 
-                color={ramp[4]?.hex} 
+                color={ramp[semanticIndices.backgroundPrimary]?.hex}
                 name="brandBackgroundPrimary"
-                rampIndex={4}
+                rampIndex={semanticIndices.backgroundPrimary}
                 contrastWith="#000000"
               />
               <ColorToken 
-                color={ramp[1]?.hex}
+                color={ramp[semanticIndices.backgroundSecondary]?.hex}
                 name="brandBackgroundSecondary"
-                rampIndex={1}
-                contrastWith="#4B4B4B"
+                rampIndex={semanticIndices.backgroundSecondary}
+                contrastWith="#5E5E5E"
               />
               <ColorToken 
-                color={ramp[0]?.hex}
+                color={ramp[semanticIndices.backgroundDisabled]?.hex}
                 name="brandBackgroundDisabled"
-                rampIndex={0}
+                rampIndex={semanticIndices.backgroundDisabled}
               />
             </Card>
 
             <Card className="p-4 mb-6">
               <h3 className="text-sm font-medium mb-4">Foreground</h3>
               <ColorToken 
-                color={ramp[7]?.hex}
+                color={ramp[semanticIndices.contentPrimary]?.hex}
                 name="brandContentPrimary"
-                rampIndex={7}
+                rampIndex={semanticIndices.contentPrimary}
                 contrastWith="#FFFFFF"
               />
               <ColorToken 
-                color={getBestContrastColor(ramp[4]?.hex)?.color}
+                color={getBestContrastColor(ramp[semanticIndices.backgroundPrimary]?.hex)?.color}
                 name="brandContentOnPrimary"
                 rampIndex={-1}
-                contrastWith={ramp[4]?.hex}
+                contrastWith={ramp[semanticIndices.backgroundPrimary]?.hex}
               />
               <ColorToken 
-                color={ramp[8]?.hex}
+                color={ramp[semanticIndices.contentOnSecondary]?.hex}
                 name="brandContentOnSecondary"
-                rampIndex={8}
-                contrastWith={ramp[1]?.hex}
+                rampIndex={semanticIndices.contentOnSecondary}
+                contrastWith={ramp[semanticIndices.backgroundSecondary]?.hex}
               />
               <ColorToken 
-                color={ramp[3]?.hex}
+                color={ramp[semanticIndices.contentDisabled]?.hex}
                 name="brandContentDisabled"
-                rampIndex={3}
+                rampIndex={semanticIndices.contentDisabled}
               />
             </Card>
 
             <Card className="p-4">
               <h3 className="text-sm font-medium mb-4">Border</h3>
               <ColorToken 
-                color={ramp[6]?.hex}
+                color={ramp[semanticIndices.borderAccessible]?.hex}
                 name="brandBorderAccessible"
-                rampIndex={6}
+                rampIndex={semanticIndices.borderAccessible}
                 contrastWith="#FFFFFF"
               />
               <ColorToken 
-                color={ramp[2]?.hex}
+                color={ramp[semanticIndices.borderSubtle]?.hex}
                 name="brandBorderSubtle"
-                rampIndex={2}
+                rampIndex={semanticIndices.borderSubtle}
               />
             </Card>
           </div>
@@ -543,8 +604,8 @@ export default function Home() {
                       <h5 className="text-xs text-muted-foreground mb-2">Primary</h5>
                       <ColorPairing
                         title="Primary Background with On Primary Content"
-                        background={ramp[4]?.hex}
-                        foreground={getBestContrastColor(ramp[4]?.hex)?.color}
+                        background={ramp[semanticIndices.backgroundPrimary]?.hex}
+                        foreground={getBestContrastColor(ramp[semanticIndices.backgroundPrimary]?.hex)?.color}
                         semanticMapping={{
                           background: "brandBackgroundPrimary",
                           foreground: "brandContentOnPrimary"
@@ -554,8 +615,8 @@ export default function Home() {
                       <h5 className="text-xs text-muted-foreground mb-2 mt-6">Secondary</h5>
                       <ColorPairing
                         title="Secondary Background with On Secondary Content"
-                        background={ramp[1]?.hex}
-                        foreground={ramp[8]?.hex}
+                        background={ramp[semanticIndices.backgroundSecondary]?.hex}
+                        foreground={ramp[semanticIndices.contentOnSecondary]?.hex}
                         semanticMapping={{
                           background: "brandBackgroundSecondary",
                           foreground: "brandContentOnSecondary"
@@ -564,11 +625,11 @@ export default function Home() {
 
                       <ColorPairing
                         title="Secondary Background with Neutral Foregrounds"
-                        background={ramp[1]?.hex}
+                        background={ramp[semanticIndices.backgroundSecondary]?.hex}
                         foreground="#000000"
                         secondaryForeground="#4B4B4B"
                         tertiaryForeground="#5E5E5E"
-                        border={ramp[2]?.hex}
+                        border={ramp[semanticIndices.borderSubtle]?.hex}
                         semanticMapping={{
                           background: "brandBackgroundSecondary",
                           foreground: "#000000",
@@ -580,8 +641,8 @@ export default function Home() {
                       <ColorPairing
                         title="Primary Content on Neutral Background"
                         background="#FFFFFF"
-                        foreground={ramp[7]?.hex}
-                        border={ramp[6]?.hex}
+                        foreground={ramp[semanticIndices.contentPrimary]?.hex}
+                        border={ramp[semanticIndices.borderAccessible]?.hex}
                         alternativeBackground="#F3F3F3"
                         semanticMapping={{
                           background: "#FFFFFF",
@@ -595,7 +656,7 @@ export default function Home() {
                         <div 
                           className="h-full w-full animate-progress"
                           style={{ 
-                            background: `linear-gradient(90deg, ${ramp[4]?.hex} 0%, ${ramp[4]?.hex} 100%)`,
+                            background: `linear-gradient(90deg, ${ramp[semanticIndices.backgroundPrimary]?.hex} 0%, ${ramp[semanticIndices.backgroundPrimary]?.hex} 100%)`,
                             animation: 'progress 2s linear infinite'
                           }}
                         />
@@ -606,8 +667,8 @@ export default function Home() {
                       <h5 className="text-xs text-muted-foreground mb-2">Disabled</h5>
                       <ColorPairing
                         title="Disabled State Example"
-                        background={ramp[0]?.hex}
-                        foreground={ramp[3]?.hex}
+                        background={ramp[semanticIndices.backgroundDisabled]?.hex}
+                        foreground={ramp[semanticIndices.contentDisabled]?.hex}
                         semanticMapping={{
                           background: "brandBackgroundDisabled",
                           foreground: "brandContentDisabled"
