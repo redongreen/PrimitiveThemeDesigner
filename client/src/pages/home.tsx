@@ -25,13 +25,14 @@ interface Point {
 interface ColorTokenProps {
   color: string;
   name: string;
-  slot: string;
+  rampIndex: number;
   contrastWith?: string;
 }
 
-const ColorToken: React.FC<ColorTokenProps> = ({ color, name, slot, contrastWith }) => {
+const ColorToken: React.FC<ColorTokenProps> = ({ color, name, rampIndex, contrastWith }) => {
   const contrastRatio = contrastWith ? getContrastRatio(color, contrastWith) : null;
-  const displaySlot = slot === "auto" ? (color === "#000000" ? "Black" : "White") : slot;
+  const slot = getBrightnessValue(rampIndex);
+  const displaySlot = color === "#000000" ? "Black" : color === "#FFFFFF" ? "White" : slot;
 
   return (
     <div className="flex flex-col mb-4">
@@ -40,7 +41,12 @@ const ColorToken: React.FC<ColorTokenProps> = ({ color, name, slot, contrastWith
           className="w-6 h-6 rounded border border-border"
           style={{ backgroundColor: color }}
         />
-        <span className="font-mono text-sm flex-1">{name} = {displaySlot}</span>
+        <div className="flex-1">
+          <span className="font-mono text-sm">{name}</span>
+          <div className="text-xs text-muted-foreground mt-0.5">
+            maps to primitive/{displaySlot}
+          </div>
+        </div>
         {contrastRatio && (
           <span className="text-xs text-muted-foreground">
             {contrastRatio.toFixed(2)}:1
@@ -391,62 +397,68 @@ export default function Home() {
           <div className="w-96">
             <h2 className="text-lg font-semibold mb-6">Semantic Tokens</h2>
 
-            <h3 className="font-medium mb-4">Background</h3>
-            <ColorToken 
-              color={ramp[6]?.hex} 
-              name="brandBackgroundPrimary" 
-              slot="500"
-              contrastWith="#000000"
-            />
-            <ColorToken 
-              color={ramp[11]?.hex} 
-              name="brandBackgroundSecondary" 
-              slot="100" 
-              contrastWith="#4B4B4B"
-            />
-            <ColorToken 
-              color={ramp[11]?.hex} 
-              name="brandBackgroundDisabled" 
-              slot="50"
-            />
+            <Card className="p-4 mb-6">
+              <h3 className="text-sm font-medium mb-4">Background</h3>
+              <ColorToken 
+                color={ramp[6]?.hex} 
+                name="brandBackgroundPrimary"
+                rampIndex={6}
+                contrastWith="#000000"
+              />
+              <ColorToken 
+                color={ramp[1]?.hex}
+                name="brandBackgroundSecondary"
+                rampIndex={1}
+                contrastWith="#4B4B4B"
+              />
+              <ColorToken 
+                color={ramp[0]?.hex}
+                name="brandBackgroundDisabled"
+                rampIndex={0}
+              />
+            </Card>
 
-            <h3 className="font-medium mb-4 mt-6">Foreground</h3>
-            <ColorToken 
-              color={ramp[4]?.hex} 
-              name="brandContentPrimary" 
-              slot="700"
-              contrastWith="#FFFFFF"
-            />
-            <ColorToken 
-              color={getBestContrastColor(ramp[6]?.hex)?.color} 
-              name="brandContentOnPrimary" 
-              slot="auto"
-              contrastWith={ramp[6]?.hex}
-            />
-            <ColorToken 
-              color={ramp[5]?.hex} 
-              name="brandContentOnSecondary" 
-              slot="800"
-              contrastWith={ramp[11]?.hex}
-            />
-            <ColorToken 
-              color={ramp[8]?.hex} 
-              name="brandContentDisabled" 
-              slot="300"
-            />
+            <Card className="p-4 mb-6">
+              <h3 className="text-sm font-medium mb-4">Foreground</h3>
+              <ColorToken 
+                color={ramp[8]?.hex}
+                name="brandContentPrimary"
+                rampIndex={8}
+                contrastWith="#FFFFFF"
+              />
+              <ColorToken 
+                color={getBestContrastColor(ramp[6]?.hex)?.color}
+                name="brandContentOnPrimary"
+                rampIndex={-1}
+                contrastWith={ramp[6]?.hex}
+              />
+              <ColorToken 
+                color={ramp[9]?.hex}
+                name="brandContentOnSecondary"
+                rampIndex={9}
+                contrastWith={ramp[1]?.hex}
+              />
+              <ColorToken 
+                color={ramp[3]?.hex}
+                name="brandContentDisabled"
+                rampIndex={3}
+              />
+            </Card>
 
-            <h3 className="font-medium mb-4 mt-6">Border</h3>
-            <ColorToken 
-              color={ramp[6]?.hex} 
-              name="brandBorderAccessible" 
-              slot="600"
-              contrastWith="#FFFFFF"
-            />
-            <ColorToken 
-              color={ramp[10]?.hex} 
-              name="brandBorderSubtle" 
-              slot="200"
-            />
+            <Card className="p-4">
+              <h3 className="text-sm font-medium mb-4">Border</h3>
+              <ColorToken 
+                color={ramp[7]?.hex}
+                name="brandBorderAccessible"
+                rampIndex={7}
+                contrastWith="#FFFFFF"
+              />
+              <ColorToken 
+                color={ramp[2]?.hex}
+                name="brandBorderSubtle"
+                rampIndex={2}
+              />
+            </Card>
           </div>
 
           <div className="flex-1">
@@ -523,4 +535,9 @@ export default function Home() {
       </Tabs>
     </div>
   );
+}
+
+function getBrightnessValue(index: number): string {
+  if (index === -1) return "auto";
+  return ((index + 1) * 100).toString();
 }
