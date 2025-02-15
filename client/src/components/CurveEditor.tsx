@@ -18,7 +18,10 @@ interface CurveEditorProps {
 function calculateInfluence(draggedStep: number, currentStep: number, totalSteps: number): number {
   const distance = Math.abs(currentStep - draggedStep);
   const maxDistance = totalSteps / 2;
-  return Math.max(0, 1 - (distance / maxDistance));
+
+  // Exponential falloff - sigma controls the "spread" of the influence
+  const sigma = maxDistance / 3; // This makes the falloff more pronounced
+  return Math.exp(-(distance * distance) / (2 * sigma * sigma));
 }
 
 function cubicInterpolate(
@@ -40,7 +43,7 @@ function cubicInterpolate(
   const v0 = p[i0].value;
   const v1 = p[i1].value;
 
-  // Calculate tension vectors
+  // Calculate tension vectors with exponential influence
   const tension = 0.5;
   const m0 = i0 > 0 ? (p[i1].value - p[i0 - 1].value) * tension : (v1 - v0) * tension;
   const m1 = i1 < p.length - 1 ? (p[i1 + 1].value - v0) * tension : (v1 - v0) * tension;
