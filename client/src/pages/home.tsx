@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   generateRamp,
+  oklchToHex,
   type ColorStop
 } from '@/lib/color';
 
@@ -47,14 +48,16 @@ export default function Home() {
     const baseRamp = generateRamp(baseColor, steps);
 
     // Apply curve adjustments
-    const newRamp = baseRamp.map((color, i) => ({
-      ...color,
-      oklch: {
-        l: lightnessPoints.find(p => p.step === i)?.value! / 100,
-        c: chromaPoints.find(p => p.step === i)?.value! / 100,
-        h: huePoints.find(p => p.step === i)?.value!
-      }
-    }));
+    const newRamp = baseRamp.map((color, i) => {
+      const l = lightnessPoints.find(p => p.step === i)?.value! / 100;
+      const c = chromaPoints.find(p => p.step === i)?.value! / 100;
+      const h = huePoints.find(p => p.step === i)?.value!;
+
+      return {
+        oklch: { l, c, h },
+        hex: oklchToHex({ l, c, h })
+      };
+    });
 
     setRamp(newRamp);
   }, [baseColor, steps, lightnessPoints, chromaPoints, huePoints]);
@@ -69,7 +72,6 @@ export default function Home() {
   };
 
   const handleGenerateRamp = () => {
-    console.log('Generating ramp with color:', baseColor);
     const newRamp = generateRamp(baseColor, steps);
     setRamp(newRamp);
 

@@ -18,16 +18,12 @@ export function hexToOklch(hex: string) {
     }
 
     const parsed = parse(hex);
-    console.log('Parsed color:', parsed);
-
     if (!parsed) {
       console.log('Failed to parse color:', hex);
       return { l: 0.5, c: 0, h: 0 };
     }
 
     const color = oklch(parsed);
-    console.log('OKLCH color:', color);
-
     if (!color) {
       console.log('Failed to convert to OKLCH:', hex);
       return { l: 0.5, c: 0, h: 0 };
@@ -47,7 +43,8 @@ export function hexToOklch(hex: string) {
 export function oklchToHex({ l, c, h }: { l: number; c: number; h: number }) {
   try {
     const color = oklch({ mode: 'oklch', l, c, h });
-    return formatHex(color) || '#000000';
+    const hex = formatHex(color);
+    return hex || '#000000';
   } catch (e) {
     console.error('Error converting OKLCH to hex:', { l, c, h }, e);
     return '#000000';
@@ -56,8 +53,6 @@ export function oklchToHex({ l, c, h }: { l: number; c: number; h: number }) {
 
 export function generateRamp(baseColor: string, steps: number): ColorStop[] {
   const base = hexToOklch(baseColor);
-  console.log('Base color OKLCH:', base);
-
   const ramp: ColorStop[] = [];
 
   // Generate lightness values from 0.15 to 0.95 to avoid pure black/white
@@ -72,10 +67,12 @@ export function generateRamp(baseColor: string, steps: number): ColorStop[] {
     // Keep the original hue
     const h = base.h;
 
-    const hex = oklchToHex({ l, c, h });
+    const oklchValues = { l, c, h };
+    const hex = oklchToHex(oklchValues);
+
     ramp.push({
       hex,
-      oklch: { l, c, h }
+      oklch: oklchValues
     });
   }
 
