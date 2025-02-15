@@ -43,7 +43,7 @@ const ColorToken: React.FC<ColorTokenProps> = ({ color, name, slot, contrastWith
         <span className="font-mono text-sm flex-1">{name} = {displaySlot}</span>
         {contrastRatio && (
           <span className="text-xs text-muted-foreground">
-            {contrastRatio.toFixed(1)}:1
+            {contrastRatio.toFixed(2)}:1
           </span>
         )}
       </div>
@@ -83,7 +83,7 @@ const ColorPairing: React.FC<ColorPairingProps> = ({ title, background, foregrou
         </p>
       )}
       <div className="text-xs mt-2" style={{ color: foreground }}>
-        Contrast ratio: {contrastRatio.toFixed(1)}:1
+        Contrast ratio: {contrastRatio.toFixed(2)}:1
         {!isAccessible && (
           <span className="text-red-500 ml-2">
             (Below WCAG AA)
