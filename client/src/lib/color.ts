@@ -132,11 +132,13 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
       Math.exp(-Math.pow((x - 0.5), 2) / 0.5); // Gaussian envelope
 
     // Calculate the wave effect centered around step 3 (0.3) and step 8 (0.8)
+    // Note: We invert the effects so step 3 moves up and step 8 moves down at 100%
     const step3Effect = wave(position - 0.3, 0) * 0.05;
-    const step8Effect = -wave(position - 0.8, 0) * 0.05;
+    const step8Effect = wave(position - 0.8, 0) * 0.05;
 
     // Combine the effects and apply torsion strength
-    const hueAdjustment = (step3Effect + step8Effect) * torsionStrength;
+    // The negative sign before torsionStrength inverts the overall effect
+    const hueAdjustment = -(step3Effect - step8Effect) * torsionStrength;
 
     // Apply the hue adjustment to the base hue
     const h = base.h + hueAdjustment * 360;
