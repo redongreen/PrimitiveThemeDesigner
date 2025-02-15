@@ -179,6 +179,47 @@ export function ColorInput({ value, onChange, onGenerate, label }: ColorInputPro
                     />
                   </div>
                 </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label className="text-xs">Hue</Label>
+                      <span className="text-xs text-muted-foreground">{hsl.h}°</span>
+                    </div>
+                    <Slider
+                      value={[hsl.h]}
+                      min={0}
+                      max={360}
+                      step={1}
+                      onValueChange={(value) => handleHSLChange('h', value[0])}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label className="text-xs">Saturation</Label>
+                      <span className="text-xs text-muted-foreground">{hsl.s}%</span>
+                    </div>
+                    <Slider
+                      value={[hsl.s]}
+                      min={0}
+                      max={100}
+                      step={1}
+                      onValueChange={(value) => handleHSLChange('s', value[0])}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label className="text-xs">Lightness</Label>
+                      <span className="text-xs text-muted-foreground">{hsl.l}%</span>
+                    </div>
+                    <Slider
+                      value={[hsl.l]}
+                      min={0}
+                      max={100}
+                      step={1}
+                      onValueChange={(value) => handleHSLChange('l', value[0])}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </PopoverContent>
@@ -189,49 +230,6 @@ export function ColorInput({ value, onChange, onGenerate, label }: ColorInputPro
         >
           Generate Ramp
         </Button>
-      </div>
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <Label className="text-xs">Hue</Label>
-            <span className="text-xs text-muted-foreground">{hsl.h}°</span>
-          </div>
-          <Slider
-            value={[hsl.h]}
-            min={0}
-            max={360}
-            step={1}
-            onValueChange={(value) => handleHSLChange('h', value[0])}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <Label className="text-xs">Saturation</Label>
-            <span className="text-xs text-muted-foreground">{hsl.s}%</span>
-          </div>
-          <Slider
-            value={[hsl.s]}
-            min={0}
-            max={100}
-            step={1}
-            onValueChange={(value) => handleHSLChange('s', value[0])}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <Label className="text-xs">Lightness</Label>
-            <span className="text-xs text-muted-foreground">{hsl.l}%</span>
-          </div>
-          <Slider
-            value={[hsl.l]}
-            min={0}
-            max={100}
-            step={1}
-            onValueChange={(value) => handleHSLChange('l', value[0])}
-          />
-        </div>
       </div>
     </div>
   );
