@@ -15,6 +15,12 @@ interface CurveEditorProps {
   onChange: (points: Point[]) => void;
 }
 
+function calculateInfluence(draggedStep: number, currentStep: number, totalSteps: number): number {
+  const distance = Math.abs(currentStep - draggedStep);
+  const maxDistance = totalSteps / 2;
+  return Math.max(0, 1 - (distance / maxDistance));
+}
+
 function cubicInterpolate(
   points: Point[],
   t: number,
@@ -53,6 +59,7 @@ function cubicInterpolate(
 export function CurveEditor({ label, points, steps, minValue, maxValue, onChange }: CurveEditorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [initialPoints, setInitialPoints] = useState<Point[]>([]);
 
   // Convert between canvas and value coordinates
   const toCanvasCoords = (point: Point, width: number, height: number) => ({
@@ -62,7 +69,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
 
   const fromCanvasCoords = (x: number, y: number, width: number, height: number): Point => ({
     step: Math.round((x / width) * (steps - 1)),
-    value: maxValue - ((y / height) * (maxValue - minValue))
+    value: Math.max(minValue, Math.min(maxValue, maxValue - ((y / height) * (maxValue - minValue))))
   });
 
   useEffect(() => {
@@ -103,24 +110,30 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     ctx.lineWidth = 2;
     ctx.beginPath();
 
-    // Draw smooth curve
-    const numSegments = canvas.width;
-    for (let i = 0; i <= numSegments; i++) {
-      const t = (i / numSegments) * (steps - 1);
-      const value = cubicInterpolate(points, t, 0, steps - 1);
-      const x = (i / numSegments) * canvas.width;
-      const y = canvas.height - ((value - minValue) / (maxValue - minValue)) * canvas.height;
+    // Sort points and draw smooth curve
+    const sortedPoints = [...points].sort((a, b) => a.step - b.step);
+    if (sortedPoints.length > 0) {
+      const start = toCanvasCoords(sortedPoints[0], canvas.width, canvas.height);
+      ctx.moveTo(start.x, start.y);
 
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
+      // Draw curve segments
+      for (let i = 1; i < sortedPoints.length; i++) {
+        const prev = toCanvasCoords(sortedPoints[i - 1], canvas.width, canvas.height);
+        const curr = toCanvasCoords(sortedPoints[i], canvas.width, canvas.height);
+
+        // Use quadratic curves for smoother transitions
+        const cpX = (prev.x + curr.x) / 2;
+        ctx.quadraticCurveTo(cpX, (prev.y + curr.y) / 2, curr.x, curr.y);
       }
+
+      // Complete the curve to the last point
+      const last = toCanvasCoords(sortedPoints[sortedPoints.length - 1], canvas.width, canvas.height);
+      ctx.lineTo(last.x, last.y);
+      ctx.stroke();
     }
-    ctx.stroke();
 
     // Draw points
-    points.sort((a, b) => a.step - b.step).forEach((point) => {
+    sortedPoints.forEach((point) => {
       const { x, y } = toCanvasCoords(point, canvas.width, canvas.height);
       ctx.fillStyle = '#000';
       ctx.beginPath();
@@ -156,26 +169,42 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     const index = points.findIndex(p => p.step === pos.step);
     if (index !== -1) {
       setDraggingIndex(index);
+      setInitialPoints([...points]);
     }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (draggingIndex === null) return;
+    if (draggingIndex === null || !initialPoints.length) return;
 
     const pos = getMousePosition(e);
     if (!pos) return;
 
     const newPoints = [...points];
-    newPoints[draggingIndex] = {
-      step: points[draggingIndex].step,
-      value: Math.max(minValue, Math.min(maxValue, pos.value))
-    };
+    const draggedStep = points[draggingIndex].step;
+    const valueDelta = pos.value - initialPoints[draggingIndex].value;
+
+    // Update all points based on their distance from the dragged point
+    newPoints.forEach((point, i) => {
+      if (i !== draggingIndex) {
+        const influence = calculateInfluence(draggedStep, point.step, steps);
+        point.value = initialPoints[i].value + (valueDelta * influence);
+      }
+    });
+
+    // Update the dragged point
+    newPoints[draggingIndex].value = pos.value;
+
+    // Ensure values stay within bounds
+    newPoints.forEach(point => {
+      point.value = Math.max(minValue, Math.min(maxValue, point.value));
+    });
 
     onChange(newPoints);
   };
 
   const handleMouseUp = () => {
     setDraggingIndex(null);
+    setInitialPoints([]);
   };
 
   return (
