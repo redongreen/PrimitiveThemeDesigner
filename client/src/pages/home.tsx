@@ -405,7 +405,7 @@ export default function Home() {
               contrastWith="#FFFFFF"
             />
             <ColorToken 
-              color={getBestContrastColor(ramp[6]?.hex)} 
+              color={getBestContrastColor(ramp[6]?.hex)?.color} 
               name="brandContentOnPrimary" 
               slot="auto"
               contrastWith={ramp[6]?.hex}
@@ -453,10 +453,10 @@ export default function Home() {
                     <ColorPairing
                       title="Primary Background with On Primary Content"
                       background={ramp[6]?.hex}
-                      foreground={getBestContrastColor(ramp[6]?.hex)}
+                      foreground={getBestContrastColor(ramp[6]?.hex)?.color}
                     />
 
-                    <h5 className="text-xs text-muted-foreground mb-2">Secondary</h5>
+                    <h5 className="text-xs text-muted-foreground mb-2 mt-6">Secondary</h5>
                     <ColorPairing
                       title="Secondary Background with On Secondary Content"
                       subtitle="brandBackgroundSecondary with brandContentOnSecondary"
@@ -471,7 +471,7 @@ export default function Home() {
                       border={ramp[10]?.hex}
                     />
 
-                    <div className="mt-4">
+                    <div className="mt-6">
                       <h5 className="text-xs text-muted-foreground mb-2">Primary on Neutral</h5>
                       <ColorPairing
                         title="Primary Content on Neutral Background"
@@ -493,12 +493,14 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <h5 className="text-xs text-muted-foreground mb-2">Disabled</h5>
-                    <ColorPairing
-                      title="Disabled State Example"
-                      background={ramp[11]?.hex} 
-                      foreground={ramp[8]?.hex} 
-                    />
+                    <div className="mt-6">
+                      <h5 className="text-xs text-muted-foreground mb-2">Disabled</h5>
+                      <ColorPairing
+                        title="Disabled State Example"
+                        background={ramp[11]?.hex} 
+                        foreground={ramp[8]?.hex} 
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
