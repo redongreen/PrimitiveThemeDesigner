@@ -53,9 +53,10 @@ interface ColorPairingProps {
   background: string;
   foreground: string;
   border?: string;
+  subtitle?: string;
 }
 
-const ColorPairing: React.FC<ColorPairingProps> = ({ title, background, foreground, border }) => (
+const ColorPairing: React.FC<ColorPairingProps> = ({ title, background, foreground, border, subtitle }) => (
   <div 
     className="rounded-lg p-4 mb-4"
     style={{ 
@@ -66,6 +67,11 @@ const ColorPairing: React.FC<ColorPairingProps> = ({ title, background, foregrou
     <p style={{ color: foreground }}>
       {title}
     </p>
+    {subtitle && (
+      <p className="text-xs mt-1" style={{ color: foreground }}>
+        {subtitle}
+      </p>
+    )}
     <div className="text-xs mt-2" style={{ color: foreground }}>
       Contrast ratio: {getContrastRatio(foreground, background).toFixed(1)}:1
     </div>
@@ -375,7 +381,7 @@ export default function Home() {
               contrastWith="#000000"
             />
             <ColorToken 
-              color={ramp[1]?.hex} 
+              color={ramp[11]?.hex} 
               name="brandBackgroundSecondary" 
               slot="100" 
               contrastWith="#4B4B4B"
@@ -403,7 +409,7 @@ export default function Home() {
               color={ramp[8]?.hex} 
               name="brandContentOnSecondary" 
               slot="800"
-              contrastWith={ramp[1]?.hex}
+              contrastWith={ramp[11]?.hex}
             />
             <ColorToken 
               color={ramp[3]?.hex} 
@@ -419,7 +425,7 @@ export default function Home() {
               contrastWith="#FFFFFF"
             />
             <ColorToken 
-              color={ramp[2]?.hex} 
+              color={ramp[10]?.hex} 
               name="brandBorderSubtle" 
               slot="200"
             />
@@ -448,9 +454,16 @@ export default function Home() {
                     <h5 className="text-xs text-muted-foreground mb-2">Secondary</h5>
                     <ColorPairing
                       title="Secondary Background with On Secondary Content"
-                      background={ramp[1]?.hex}
+                      subtitle="brandBackgroundSecondary with brandContentOnSecondary"
+                      background={ramp[11]?.hex}
                       foreground={ramp[8]?.hex}
-                      border={ramp[2]?.hex}
+                    />
+                    <ColorPairing
+                      title="Secondary Background with Black Text"
+                      subtitle="brandBackgroundSecondary with #000000"
+                      background={ramp[11]?.hex}
+                      foreground="#000000"
+                      border={ramp[10]?.hex}
                     />
 
                     <h5 className="text-xs text-muted-foreground mb-2">Primary on Neutral</h5>
