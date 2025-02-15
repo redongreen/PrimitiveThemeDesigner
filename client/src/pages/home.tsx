@@ -403,9 +403,9 @@ export default function Home() {
               contrastWith="#FFFFFF"
             />
             <ColorToken 
-              color="#FFFFFF" 
+              color={getBestContrastColor(ramp[6]?.hex)} 
               name="brandContentOnPrimary" 
-              slot="950"
+              slot="auto"
               contrastWith={ramp[6]?.hex}
             />
             <ColorToken 
