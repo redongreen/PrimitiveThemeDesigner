@@ -130,10 +130,22 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
     let hueAdjustment = 0;
     const curve = (x: number) => Math.sin(x * Math.PI) * 0.05; // 5% maximum adjustment
 
-    // Apply stronger effect near steps 3 and 7 (30% and 70% through the ramp)
-    if (position >= 0.2 && position <= 0.8) {
-      const normalizedPos = (position - 0.2) / 0.6; // normalize to 0-1 range within our region of interest
-      hueAdjustment = curve(normalizedPos) * torsionStrength;
+    // Define the positions for step 3 and step 8 effect (30% and 80% through the ramp)
+    const step3Pos = 0.3;
+    const step8Pos = 0.8;
+    const effectRange = 0.15; // Range of influence around each position
+
+    // Apply effect near step 3 and step 8
+    if (Math.abs(position - step3Pos) < effectRange) {
+      // Positive adjustment at 100% torsion, negative at 0% for step 3
+      const normalizedDist = 1 - Math.abs(position - step3Pos) / effectRange;
+      hueAdjustment += curve(normalizedDist) * torsionStrength;
+    }
+
+    if (Math.abs(position - step8Pos) < effectRange) {
+      // Negative adjustment at 100% torsion, positive at 0% for step 8
+      const normalizedDist = 1 - Math.abs(position - step8Pos) / effectRange;
+      hueAdjustment -= curve(normalizedDist) * torsionStrength;
     }
 
     // Apply the hue adjustment to the base hue
