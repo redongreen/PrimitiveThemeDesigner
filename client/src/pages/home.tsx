@@ -476,11 +476,11 @@ export default function Home() {
                     />
 
                     <div className="mt-8">
-                      <h5 className="text-xs text-muted-foreground mb-2">States</h5>
+                      <h5 className="text-xs text-muted-foreground mb-2">Disabled</h5>
                       <ColorPairing
                         title="Disabled State Example"
-                        background={ramp[11]?.hex}
-                        foreground={ramp[3]?.hex}
+                        background={ramp[11]?.hex} 
+                        foreground={ramp[8]?.hex} 
                       />
                     </div>
                   </div>
