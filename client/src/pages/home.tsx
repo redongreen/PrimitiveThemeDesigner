@@ -227,13 +227,13 @@ export default function Home() {
         </div>
 
         <div className="w-full">
-          <Label htmlFor="vibrance">Vibrance</Label>
-          <div className="flex items-center gap-4">
+          <Label htmlFor="vibrance" className="mb-8">Vibrance</Label>
+          <div className="flex items-center gap-4 mt-8">
             <div className="w-16 text-right">
               <span className="text-sm text-muted-foreground">Pastel</span>
             </div>
             <div className="relative flex-1">
-              <div className="absolute -top-6 left-0 right-0 flex justify-between text-xs text-muted-foreground">
+              <div className="absolute -top-8 left-0 right-0 flex justify-between text-xs text-muted-foreground">
                 <span>0%</span>
                 <span>25%</span>
                 <span>50%</span>
@@ -256,13 +256,13 @@ export default function Home() {
         </div>
 
         <div className="w-full">
-          <Label htmlFor="hueTorsion">Hue Torsion</Label>
-          <div className="flex items-center gap-4">
+          <Label htmlFor="hueTorsion" className="mb-8">Hue Torsion</Label>
+          <div className="flex items-center gap-4 mt-8">
             <div className="w-16 text-right">
               <span className="text-sm text-muted-foreground">Cool</span>
             </div>
             <div className="relative flex-1">
-              <div className="absolute -top-6 left-0 right-0 flex justify-between text-xs text-muted-foreground">
+              <div className="absolute -top-8 left-0 right-0 flex justify-between text-xs text-muted-foreground">
                 <span>0%</span>
                 <span>25%</span>
                 <span>50%</span>
