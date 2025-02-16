@@ -42,11 +42,6 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        // Set the canvas size
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-
-        // Update the scale factor for high DPI displays
         const dpr = window.devicePixelRatio || 1;
         canvas.width = newWidth * dpr;
         canvas.height = newHeight * dpr;
@@ -178,7 +173,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
   };
 
   const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault(); // Prevent scrolling on touch devices
+    e.preventDefault();
     const pos = getEventPosition(e);
     if (!pos) return;
 
