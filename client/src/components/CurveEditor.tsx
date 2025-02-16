@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
+import { interpolatePointsSpline } from '@/lib/color';
 
 interface Point {
   step: number;
@@ -108,26 +109,27 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       ctx.stroke();
     }
 
+    // Use spline interpolation to generate smooth curve
+    const interpolatedPoints = interpolatePointsSpline(points, 100); // Use more points for smoother curve
+
     // Draw curve
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 2;
     ctx.beginPath();
 
-    const sortedPoints = [...points].sort((a, b) => a.step - b.step);
-    if (sortedPoints.length > 0) {
-      const start = toCanvasCoords(sortedPoints[0]);
+    if (interpolatedPoints.length > 0) {
+      const start = toCanvasCoords(interpolatedPoints[0]);
       ctx.moveTo(start.x, start.y);
 
-      for (let i = 1; i < sortedPoints.length; i++) {
-        const prev = toCanvasCoords(sortedPoints[i - 1]);
-        const curr = toCanvasCoords(sortedPoints[i]);
-        const cpX = (prev.x + curr.x) / 2;
-        ctx.quadraticCurveTo(cpX, (prev.y + curr.y) / 2, curr.x, curr.y);
+      for (let i = 1; i < interpolatedPoints.length; i++) {
+        const coords = toCanvasCoords(interpolatedPoints[i]);
+        ctx.lineTo(coords.x, coords.y);
       }
       ctx.stroke();
     }
 
-    // Draw points
+    // Draw control points
+    const sortedPoints = [...points].sort((a, b) => a.step - b.step);
     sortedPoints.forEach((point) => {
       const { x, y } = toCanvasCoords(point);
       ctx.fillStyle = '#000';
@@ -229,6 +231,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     const draggedStep = points[draggingIndex].step;
     const valueDelta = pos.value - initialPoints[draggingIndex].value;
 
+    // Apply smoother influence calculation
     newPoints.forEach((point, i) => {
       if (i !== draggingIndex) {
         const influence = calculateInfluence(draggedStep, point.step, steps);

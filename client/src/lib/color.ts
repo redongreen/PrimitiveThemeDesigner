@@ -1,5 +1,71 @@
 import { oklch, parse, formatHex } from 'culori';
 
+interface Point {
+  step: number;
+  value: number;
+}
+
+// Add Catmull-Rom spline interpolation
+function catmullRomSpline(p0: number, p1: number, p2: number, p3: number, t: number, tension: number = 0.5): number {
+  const t2 = t * t;
+  const t3 = t2 * t;
+
+  // Catmull-Rom matrix coefficients with tension parameter
+  const a = (-tension * p0 + (2 - tension) * p1 + (tension - 2) * p2 + tension * p3) * 0.5;
+  const b = (2 * tension * p0 + (tension - 3) * p1 + (3 - 2 * tension) * p2 - tension * p3) * 0.5;
+  const c = (-tension * p0 + tension * p2) * 0.5;
+  const d = p1;
+
+  return a * t3 + b * t2 + c * t + d;
+}
+
+// Interpolate array of points using Catmull-Rom spline
+export function interpolatePointsSpline(points: Point[], numPoints: number, tension: number = 0.5): Point[] {
+  if (points.length < 2) return points;
+
+  const result: Point[] = [];
+  const sortedPoints = [...points].sort((a, b) => a.step - b.step);
+
+  // Helper to get point with bounds checking
+  const getPoint = (i: number) => {
+    if (i < 0) return sortedPoints[0];
+    if (i >= sortedPoints.length) return sortedPoints[sortedPoints.length - 1];
+    return sortedPoints[i];
+  };
+
+  // Generate smooth curve
+  for (let i = 0; i < numPoints; i++) {
+    const t = i / (numPoints - 1);
+    const segmentIndex = Math.floor(t * (sortedPoints.length - 1));
+
+    // Find the four points needed for interpolation
+    const p0 = getPoint(segmentIndex - 1);
+    const p1 = getPoint(segmentIndex);
+    const p2 = getPoint(segmentIndex + 1);
+    const p3 = getPoint(segmentIndex + 2);
+
+    // Calculate local t value
+    const localT = (t * (sortedPoints.length - 1)) % 1;
+
+    // Interpolate value using Catmull-Rom spline
+    const value = catmullRomSpline(
+      p0.value,
+      p1.value,
+      p2.value,
+      p3.value,
+      localT,
+      tension
+    );
+
+    result.push({
+      step: i,
+      value: value
+    });
+  }
+
+  return result;
+}
+
 // Calculate relative luminance for a color
 function getLuminance(hex: string): number {
   const rgb = parse(hex);
@@ -173,9 +239,10 @@ export function adjustRampWithCurve(
   curve: { x: number; y: number }[],
   property: 'l' | 'c' | 'h'
 ): ColorStop[] {
+  //Using spline interpolation here instead of linear interpolation.  This assumes the curve array is already in the correct format.
+  const interpolatedCurvePoints = interpolatePointsSpline(curve.map((p,i) => ({step: i, value: p.y})), ramp.length);
   return ramp.map((stop, index) => {
-    const x = index / (ramp.length - 1);
-    const y = interpolateCurve(curve, x);
+    const y = interpolatedCurvePoints[index].value;
 
     const newOklch = { ...stop.oklch };
     if (property === 'l') {
@@ -196,14 +263,15 @@ export function adjustRampWithCurve(
   });
 }
 
-function interpolateCurve(curve: { x: number; y: number }[], x: number): number {
-  const i1 = curve.findIndex(p => p.x > x);
-  if (i1 === -1) return curve[curve.length - 1].y;
-  if (i1 === 0) return curve[0].y;
-
-  const p0 = curve[i1 - 1];
-  const p1 = curve[i1];
-
-  const t = (x - p0.x) / (p1.x - p0.x);
-  return p0.y + t * (p1.y - p0.y);
-}
+//Removed the old linear interpolation function.  Spline interpolation handles this now.
+//function interpolateCurve(curve: { x: number; y: number }[], x: number): number {
+//  const i1 = curve.findIndex(p => p.x > x);
+//  if (i1 === -1) return curve[curve.length - 1].y;
+//  if (i1 === 0) return curve[0].y;
+//
+//  const p0 = curve[i1 - 1];
+//  const p1 = curve[i1];
+//
+//  const t = (x - p0.x) / (p1.x - p0.x);
+//  return p0.y + t * (p1.y - p0.y);
+//}
