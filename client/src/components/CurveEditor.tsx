@@ -71,7 +71,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
 
   const fromCanvasCoords = (x: number, y: number): Point => ({
     step: Math.round(((x - PADDING) / (canvasSize.width - 2 * PADDING)) * (steps - 1)),
-    value: Math.max(minValue, Math.min(maxValue, 
+    value: Math.max(minValue, Math.min(maxValue,
       maxValue - (((y - PADDING) / (canvasSize.height - 2 * PADDING)) * (maxValue - minValue))
     ))
   });
@@ -110,7 +110,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     }
 
     // Use spline interpolation to generate smooth curve
-    const interpolatedPoints = interpolatePointsSpline(points, 100); // Use more points for smoother curve
+    const interpolatedPoints = interpolatePointsSpline(points, Math.max(200, steps * 10)); // Increased number of interpolation points
 
     // Draw curve
     ctx.strokeStyle = '#000';
@@ -198,7 +198,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       clientY = e.clientY;
     }
 
-    const mousePos = { 
+    const mousePos = {
       x: clientX - rect.left,
       y: clientY - rect.top
     };

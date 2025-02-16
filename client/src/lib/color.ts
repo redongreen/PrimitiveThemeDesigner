@@ -28,24 +28,60 @@ export function interpolatePointsSpline(points: Point[], numPoints: number, tens
 
   // Helper to get point with bounds checking
   const getPoint = (i: number) => {
-    if (i < 0) return sortedPoints[0];
-    if (i >= sortedPoints.length) return sortedPoints[sortedPoints.length - 1];
+    if (i < 0) {
+      // Extrapolate for start points
+      const p0 = sortedPoints[0];
+      const p1 = sortedPoints[1];
+      return {
+        step: p0.step - (p1.step - p0.step),
+        value: p0.value - (p1.value - p0.value)
+      };
+    }
+    if (i >= sortedPoints.length) {
+      // Extrapolate for end points
+      const pn = sortedPoints[sortedPoints.length - 1];
+      const pn1 = sortedPoints[sortedPoints.length - 2];
+      return {
+        step: pn.step + (pn.step - pn1.step),
+        value: pn.value + (pn.value - pn1.value)
+      };
+    }
     return sortedPoints[i];
   };
 
   // Generate smooth curve
   for (let i = 0; i < numPoints; i++) {
     const t = i / (numPoints - 1);
-    const segmentIndex = Math.floor(t * (sortedPoints.length - 1));
+    const targetStep = t * (sortedPoints[sortedPoints.length - 1].step - sortedPoints[0].step) + sortedPoints[0].step;
 
-    // Find the four points needed for interpolation
+    // Find the segment containing the target step
+    let segmentIndex = 0;
+    for (let j = 1; j < sortedPoints.length; j++) {
+      if (sortedPoints[j].step > targetStep) {
+        break;
+      }
+      segmentIndex = j;
+    }
+
+    // For exact control points, use the point value directly
+    const exactPoint = sortedPoints.find(p => Math.abs(p.step - targetStep) < 0.0001);
+    if (exactPoint) {
+      result.push({ step: i, value: exactPoint.value });
+      continue;
+    }
+
+    // Calculate local t value within the segment
+    const segmentStart = sortedPoints[segmentIndex].step;
+    const segmentEnd = segmentIndex < sortedPoints.length - 1 
+      ? sortedPoints[segmentIndex + 1].step 
+      : segmentStart + 1;
+    const localT = (targetStep - segmentStart) / (segmentEnd - segmentStart);
+
+    // Get the four points needed for interpolation
     const p0 = getPoint(segmentIndex - 1);
     const p1 = getPoint(segmentIndex);
     const p2 = getPoint(segmentIndex + 1);
     const p3 = getPoint(segmentIndex + 2);
-
-    // Calculate local t value
-    const localT = (t * (sortedPoints.length - 1)) % 1;
 
     // Interpolate value using Catmull-Rom spline
     const value = catmullRomSpline(
@@ -54,7 +90,7 @@ export function interpolatePointsSpline(points: Point[], numPoints: number, tens
       p2.value,
       p3.value,
       localT,
-      tension
+      0.3 // Reduced tension for better point adherence
     );
 
     result.push({
@@ -262,16 +298,3 @@ export function adjustRampWithCurve(
     };
   });
 }
-
-//Removed the old linear interpolation function.  Spline interpolation handles this now.
-//function interpolateCurve(curve: { x: number; y: number }[], x: number): number {
-//  const i1 = curve.findIndex(p => p.x > x);
-//  if (i1 === -1) return curve[curve.length - 1].y;
-//  if (i1 === 0) return curve[0].y;
-//
-//  const p0 = curve[i1 - 1];
-//  const p1 = curve[i1];
-//
-//  const t = (x - p0.x) / (p1.x - p0.x);
-//  return p0.y + t * (p1.y - p0.y);
-//}
