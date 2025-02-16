@@ -1,7 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
+import { getSplineCurve, calculateInfluence, Vector2D } from '@/lib/spline';
 
-interface Point {
+export interface Point {
   step: number;
   value: number;
 }
@@ -15,14 +16,14 @@ interface CurveEditorProps {
   onChange: (points: Point[]) => void;
 }
 
-function calculateInfluence(draggedStep: number, currentStep: number, totalSteps: number): number {
-  const distance = Math.abs(currentStep - draggedStep);
-  const maxDistance = totalSteps / 2;
-  const sigma = maxDistance / 3;
-  return Math.exp(-(distance * distance) / (2 * sigma * sigma));
-}
-
-export function CurveEditor({ label, points, steps, minValue, maxValue, onChange }: CurveEditorProps) {
+export function CurveEditor({ 
+  label, 
+  points, 
+  steps, 
+  minValue, 
+  maxValue, 
+  onChange 
+}: CurveEditorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
@@ -30,23 +31,35 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
   const [canvasSize, setCanvasSize] = useState({ width: 300, height: 200 });
 
   const PADDING = 20;
+  const POINT_RADIUS = 4;
+  const POINT_HOVER_RADIUS = 10;
+  const CURVE_SEGMENTS = 50;
 
-  const updateCanvasSize = () => {
+  // Convert between canvas and value coordinates
+  const toCanvasCoords = useCallback((point: Point): Vector2D => ({
+    x: PADDING + ((point.step / (steps - 1)) * (canvasSize.width - 2 * PADDING)),
+    y: PADDING + ((maxValue - point.value) / (maxValue - minValue)) * (canvasSize.height - 2 * PADDING)
+  }), [steps, maxValue, minValue, canvasSize]);
+
+  const fromCanvasCoords = useCallback((x: number, y: number): Point => ({
+    step: Math.round(((x - PADDING) / (canvasSize.width - 2 * PADDING)) * (steps - 1)),
+    value: Math.max(minValue, Math.min(maxValue, 
+      maxValue - (((y - PADDING) / (canvasSize.height - 2 * PADDING)) * (maxValue - minValue))
+    ))
+  }), [steps, maxValue, minValue, canvasSize]);
+
+  // Handle canvas resize
+  const updateCanvasSize = useCallback(() => {
     if (containerRef.current && canvasRef.current) {
       const container = containerRef.current;
       const newWidth = container.clientWidth;
-      const newHeight = Math.min(container.clientWidth * 0.66, 300); // Maintain aspect ratio with max height
+      const newHeight = Math.min(container.clientWidth * 0.66, 300);
 
       setCanvasSize({ width: newWidth, height: newHeight });
 
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        // Set the canvas size
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-
-        // Update the scale factor for high DPI displays
         const dpr = window.devicePixelRatio || 1;
         canvas.width = newWidth * dpr;
         canvas.height = newHeight * dpr;
@@ -55,27 +68,10 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
         ctx.scale(dpr, dpr);
       }
     }
-  };
-
-  useEffect(() => {
-    updateCanvasSize();
-    window.addEventListener('resize', updateCanvasSize);
-    return () => window.removeEventListener('resize', updateCanvasSize);
   }, []);
 
-  const toCanvasCoords = (point: Point) => ({
-    x: PADDING + ((point.step / (steps - 1)) * (canvasSize.width - 2 * PADDING)),
-    y: PADDING + ((maxValue - point.value) / (maxValue - minValue)) * (canvasSize.height - 2 * PADDING)
-  });
-
-  const fromCanvasCoords = (x: number, y: number): Point => ({
-    step: Math.round(((x - PADDING) / (canvasSize.width - 2 * PADDING)) * (steps - 1)),
-    value: Math.max(minValue, Math.min(maxValue, 
-      maxValue - (((y - PADDING) / (canvasSize.height - 2 * PADDING)) * (maxValue - minValue))
-    ))
-  });
-
-  useEffect(() => {
+  // Draw the curve editor
+  const drawCurve = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -89,7 +85,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     ctx.strokeStyle = '#e5e7eb';
     ctx.lineWidth = 1;
 
-    // Vertical lines
+    // Vertical grid lines
     for (let i = 0; i < steps; i++) {
       const x = PADDING + ((canvasSize.width - 2 * PADDING) * i) / (steps - 1);
       ctx.beginPath();
@@ -98,7 +94,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       ctx.stroke();
     }
 
-    // Horizontal lines
+    // Horizontal grid lines
     const numLines = 5;
     for (let i = 0; i <= numLines; i++) {
       const y = PADDING + ((canvasSize.height - 2 * PADDING) * i) / numLines;
@@ -108,37 +104,39 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       ctx.stroke();
     }
 
-    // Draw curve
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
+    // Draw spline curve
+    if (points.length >= 2) {
+      const curvePoints = getSplineCurve(points, CURVE_SEGMENTS);
 
-    const sortedPoints = [...points].sort((a, b) => a.step - b.step);
-    if (sortedPoints.length > 0) {
-      const start = toCanvasCoords(sortedPoints[0]);
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      const start = toCanvasCoords(points[0]);
       ctx.moveTo(start.x, start.y);
 
-      for (let i = 1; i < sortedPoints.length; i++) {
-        const prev = toCanvasCoords(sortedPoints[i - 1]);
-        const curr = toCanvasCoords(sortedPoints[i]);
-        const cpX = (prev.x + curr.x) / 2;
-        ctx.quadraticCurveTo(cpX, (prev.y + curr.y) / 2, curr.x, curr.y);
-      }
+      curvePoints.forEach((point) => {
+        ctx.lineTo(point.x, point.y);
+      });
+
       ctx.stroke();
     }
 
-    // Draw points
-    sortedPoints.forEach((point) => {
+    // Draw control points
+    points.forEach((point) => {
       const { x, y } = toCanvasCoords(point);
-      ctx.fillStyle = '#000';
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, 2 * Math.PI);
-      ctx.fill();
 
+      // Draw hover area
       ctx.strokeStyle = 'rgba(0,0,0,0.1)';
       ctx.beginPath();
-      ctx.arc(x, y, 10, 0, 2 * Math.PI);
+      ctx.arc(x, y, POINT_HOVER_RADIUS, 0, 2 * Math.PI);
       ctx.stroke();
+
+      // Draw point
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.arc(x, y, POINT_RADIUS, 0, 2 * Math.PI);
+      ctx.fill();
     });
 
     // Draw labels
@@ -149,65 +147,35 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       const x = PADDING + ((canvasSize.width - 2 * PADDING) * i) / (steps - 1);
       ctx.fillText(`${i + 1}`, x, canvasSize.height - 5);
     }
-  }, [points, steps, minValue, maxValue, canvasSize]);
+  }, [points, steps, canvasSize, toCanvasCoords]);
 
-  const getEventPosition = (e: React.MouseEvent | React.TouchEvent) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return null;
-
-    const rect = canvas.getBoundingClientRect();
-    let clientX, clientY;
-
-    if ('touches' in e) {
-      if (e.touches.length === 0) return null;
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
-
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
-    const clampedX = Math.max(PADDING, Math.min(canvasSize.width - PADDING, x));
-    const clampedY = Math.max(PADDING, Math.min(canvasSize.height - PADDING, y));
-
-    return fromCanvasCoords(clampedX, clampedY);
-  };
-
-  const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault(); // Prevent scrolling on touch devices
-    const pos = getEventPosition(e);
-    if (!pos) return;
-
+  // Event handlers
+  const handleStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    let clientX, clientY;
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
 
-    if ('touches' in e) {
-      if (e.touches.length === 0) return;
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
-
-    const mousePos = { 
+    const mousePos = {
       x: clientX - rect.left,
       y: clientY - rect.top
     };
 
+    // Find closest point
     let closestIndex = -1;
     let closestDistance = Infinity;
 
     points.forEach((point, index) => {
       const coords = toCanvasCoords(point);
-      const distance = Math.sqrt(Math.pow(coords.x - mousePos.x, 2) + Math.pow(coords.y - mousePos.y, 2));
-      if (distance < 15 && distance < closestDistance) {
+      const distance = Math.sqrt(
+        Math.pow(coords.x - mousePos.x, 2) + 
+        Math.pow(coords.y - mousePos.y, 2)
+      );
+
+      if (distance < POINT_HOVER_RADIUS && distance < closestDistance) {
         closestDistance = distance;
         closestIndex = index;
       }
@@ -217,34 +185,57 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       setDraggingIndex(closestIndex);
       setInitialPoints([...points]);
     }
-  };
+  }, [points, toCanvasCoords]);
 
-  const handleMove = (e: React.MouseEvent | React.TouchEvent) => {
+  const handleMove = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (draggingIndex === null || !initialPoints.length) return;
 
-    const pos = getEventPosition(e);
-    if (!pos) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    const newPos = fromCanvasCoords(
+      Math.max(PADDING, Math.min(canvasSize.width - PADDING, x)),
+      Math.max(PADDING, Math.min(canvasSize.height - PADDING, y))
+    );
 
     const newPoints = [...points];
-    const draggedStep = points[draggingIndex].step;
-    const valueDelta = pos.value - initialPoints[draggingIndex].value;
+    const valueDelta = newPos.value - initialPoints[draggingIndex].value;
 
+    // Update points with local influence
     newPoints.forEach((point, i) => {
       if (i !== draggingIndex) {
-        const influence = calculateInfluence(draggedStep, point.step, steps);
+        const influence = calculateInfluence(draggingIndex, i, points.length);
         point.value = initialPoints[i].value + (valueDelta * influence);
         point.value = Math.max(minValue, Math.min(maxValue, point.value));
       }
     });
 
-    newPoints[draggingIndex].value = pos.value;
+    newPoints[draggingIndex].value = newPos.value;
     onChange(newPoints);
-  };
+  }, [draggingIndex, initialPoints, points, fromCanvasCoords, canvasSize, onChange, maxValue, minValue]);
 
-  const handleEnd = () => {
+  const handleEnd = useCallback(() => {
     setDraggingIndex(null);
     setInitialPoints([]);
-  };
+  }, []);
+
+  // Setup effects
+  useEffect(() => {
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+    return () => window.removeEventListener('resize', updateCanvasSize);
+  }, [updateCanvasSize]);
+
+  useEffect(() => {
+    drawCurve();
+  }, [drawCurve]);
 
   return (
     <Card className="p-4 w-full">
