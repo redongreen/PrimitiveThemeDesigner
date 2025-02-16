@@ -42,6 +42,11 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       if (ctx) {
+        // Set the canvas size
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+
+        // Update the scale factor for high DPI displays
         const dpr = window.devicePixelRatio || 1;
         canvas.width = newWidth * dpr;
         canvas.height = newHeight * dpr;
@@ -117,7 +122,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
         const prev = toCanvasCoords(sortedPoints[i - 1]);
         const curr = toCanvasCoords(sortedPoints[i]);
         const cpX = (prev.x + curr.x) / 2;
-        ctx.quadraticCurveTo(cpX, prev.y, curr.x, curr.y);
+        ctx.quadraticCurveTo(cpX, (prev.y + curr.y) / 2, curr.x, curr.y);
       }
       ctx.stroke();
     }
@@ -140,7 +145,6 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     ctx.fillStyle = '#666';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
-
     for (let i = 0; i < steps; i++) {
       const x = PADDING + ((canvasSize.width - 2 * PADDING) * i) / (steps - 1);
       ctx.fillText(`${i + 1}`, x, canvasSize.height - 5);
@@ -173,7 +177,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
   };
 
   const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent scrolling on touch devices
     const pos = getEventPosition(e);
     if (!pos) return;
 

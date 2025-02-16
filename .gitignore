@@ -1,36 +1,6 @@
-# Dependencies
 node_modules
 dist
 .DS_Store
 server/public
-
-# Build files
-*.log
-build
-.env
-.env.*
-!.env.example
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Debug logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Development
-*.local
 vite.config.ts.*
 *.tar.gz
-
-# Testing
-coverage
