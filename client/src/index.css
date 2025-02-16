@@ -46,11 +46,12 @@
   }
 
   body {
-    @apply bg-background text-foreground font-mono antialiased;
+    @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03", "cv04";
   }
 
   code {
+    @apply font-mono;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03", "cv04";
   }
 }

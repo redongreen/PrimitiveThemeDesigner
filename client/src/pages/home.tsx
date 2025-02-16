@@ -526,15 +526,17 @@ const Home = () => {
 
         <TabsContent value="primitive">
           <div className="flex flex-col gap-6 mb-8">
-            <div className="flex gap-4">
-              <ColorInput 
-                value={baseColor} 
-                onChange={handleColorChange}
-                onGenerate={handleGenerateRamp}
-                label="Source color"
-              />
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <ColorInput 
+                  value={baseColor} 
+                  onChange={handleColorChange}
+                  onGenerate={handleGenerateRamp}
+                  label="Source color"
+                />
+              </div>
 
-              <div>
+              <div className="w-full sm:w-24">
                 <Label htmlFor="steps">Steps</Label>
                 <Input
                   id="steps"
@@ -543,7 +545,7 @@ const Home = () => {
                   max="20"
                   value={steps}
                   onChange={handleStepsChange}
-                  className="w-24 mt-1"
+                  className="mt-1"
                 />
               </div>
             </div>
