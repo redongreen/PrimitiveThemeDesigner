@@ -1,1 +1,0 @@
-// This file is intentionally empty.  The ColorBlindnessToggle component has been removed.
