@@ -803,12 +803,12 @@ const Home = () => {
       <div className="mt-16 pt-8 border-t text-xs text-muted-foreground text-center">
         Last updated on February 16, 2025,{' '}
         <a
-          href="https://github.com/PrimitiveThemeDesigner"
+          href="https://github.com/redongreen/PrimitiveThemeDesigner"
           target="_blank"
           rel="noopener noreferrer"
           className="underline hover:text-foreground"
         >
-          version 0.1.0
+          8ea71d6
         </a>
       </div>
     </div>
