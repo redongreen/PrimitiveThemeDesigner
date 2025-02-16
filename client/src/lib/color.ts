@@ -5,7 +5,7 @@ interface Point {
   value: number;
 }
 
-// Forced point interpolation to ensure curve passes through control points
+// Simple interpolation to ensure curve passes through control points
 export function interpolatePointsSpline(points: Point[], numPoints: number): Point[] {
   if (points.length < 2) return points;
 
@@ -37,20 +37,14 @@ export function interpolatePointsSpline(points: Point[], numPoints: number): Poi
     // Calculate local parameter between these points
     const localT = (targetStep - p0.step) / (p1.step - p0.step);
 
-    // Simple cubic interpolation to maintain smoothness while passing through points
+    // Simple cubic interpolation
     const t2 = localT * localT;
     const t3 = t2 * localT;
     const h00 = 2*t3 - 3*t2 + 1;
-    const h10 = t3 - 2*t2 + localT;
     const h01 = -2*t3 + 3*t2;
-    const h11 = t3 - t2;
 
-    // Calculate tangents
-    const m0 = segment > 0 ? (sortedPoints[segment + 1].value - sortedPoints[segment - 1].value) / 2 : 0;
-    const m1 = segment < sortedPoints.length - 2 ? (sortedPoints[segment + 2].value - sortedPoints[segment].value) / 2 : 0;
-
-    // Interpolate
-    const value = h00 * p0.value + h10 * m0 + h01 * p1.value + h11 * m1;
+    // Direct interpolation between points
+    const value = h00 * p0.value + h01 * p1.value;
 
     result.push({ step: i, value });
   }
