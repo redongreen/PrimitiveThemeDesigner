@@ -5,19 +5,42 @@ interface Point {
   value: number;
 }
 
-// Simple interpolation to ensure curve passes through control points
+// Basic Catmull-Rom spline interpolation
 export function interpolatePointsSpline(points: Point[], numPoints: number): Point[] {
   if (points.length < 2) return points;
 
   const result: Point[] = [];
   const sortedPoints = [...points].sort((a, b) => a.step - b.step);
 
-  // For each output point
+  // Helper to get point, handling boundaries
+  const getPoint = (points: Point[], index: number): Point => {
+    if (index < 0) {
+      // Extrapolate start
+      const p0 = points[0];
+      const p1 = points[1];
+      return {
+        step: p0.step - (p1.step - p0.step),
+        value: p0.value - (p1.value - p0.value)
+      };
+    }
+    if (index >= points.length) {
+      // Extrapolate end
+      const pn = points[points.length - 1];
+      const pn1 = points[points.length - 2];
+      return {
+        step: pn.step + (pn.step - pn1.step),
+        value: pn.value + (pn.value - pn1.value)
+      };
+    }
+    return points[index];
+  };
+
+  // Generate points along the curve
   for (let i = 0; i < numPoints; i++) {
     const t = i / (numPoints - 1);
     const targetStep = t * (sortedPoints[sortedPoints.length - 1].step - sortedPoints[0].step) + sortedPoints[0].step;
 
-    // Find the two control points we're between
+    // Find the segment containing the target step
     let segment = 0;
     while (segment < sortedPoints.length - 1 && sortedPoints[segment + 1].step <= targetStep) {
       segment++;
@@ -30,21 +53,32 @@ export function interpolatePointsSpline(points: Point[], numPoints: number): Poi
       continue;
     }
 
-    // Otherwise interpolate between the two nearest points
-    const p0 = sortedPoints[segment];
-    const p1 = sortedPoints[Math.min(segment + 1, sortedPoints.length - 1)];
+    // Get the four points needed for this segment
+    const p0 = getPoint(sortedPoints, segment - 1);
+    const p1 = getPoint(sortedPoints, segment);
+    const p2 = getPoint(sortedPoints, segment + 1);
+    const p3 = getPoint(sortedPoints, segment + 2);
 
-    // Calculate local parameter between these points
-    const localT = (targetStep - p0.step) / (p1.step - p0.step);
+    // Calculate local parameter
+    const localT = (targetStep - p1.step) / (p2.step - p1.step);
 
-    // Simple cubic interpolation
+    // Catmull-Rom basis functions
     const t2 = localT * localT;
     const t3 = t2 * localT;
-    const h00 = 2*t3 - 3*t2 + 1;
-    const h01 = -2*t3 + 3*t2;
 
-    // Direct interpolation between points
-    const value = h00 * p0.value + h01 * p1.value;
+    // Matrix coefficients for Catmull-Rom
+    const h00 = -t3 + 2*t2 - localT;
+    const h10 = 2*t3 - 3*t2 + 1;
+    const h20 = -2*t3 + 3*t2;
+    const h30 = t3 - t2;
+
+    // Interpolate
+    const value = 0.5 * (
+      (2 * p1.value) +
+      (-p0.value + p2.value) * localT +
+      (2*p0.value - 5*p1.value + 4*p2.value - p3.value) * t2 +
+      (-p0.value + 3*p1.value - 3*p2.value + p3.value) * t3
+    );
 
     result.push({ step: i, value });
   }
