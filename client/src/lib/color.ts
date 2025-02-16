@@ -98,7 +98,7 @@ export function oklchToHex({ l, c, h }: { l: number; c: number; h: number }) {
   }
 }
 
-// Modified to support vibrance and hue torsion adjustment
+// Modified to support non-linear lightness distribution
 export function generateRamp(baseColor: string, steps: number, vibrance: number = 0.5, hueTorsion: number = 0.5): ColorStop[] {
   const base = hexToOklch(baseColor);
   const ramp: ColorStop[] = [];
@@ -108,12 +108,20 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
   const maxChroma = base.c * vibranceMultiplier;
 
   // Calculate hue torsion effect
-  // Map hueTorsion [0,1] to [-1, 1] range for direction
   const torsionStrength = (hueTorsion - 0.5) * 2;
 
-  // Generate lightness values from 0.15 to 0.95 to avoid pure black/white
+  // Generate lightness values with non-linear distribution
   for (let i = 0; i < steps; i++) {
-    const l = 0.15 + (0.8 * i) / (steps - 1);
+    // Use exponential function for non-linear lightness distribution
+    const t = i / (steps - 1);
+
+    // Create a concave-down curve for lightness
+    // This will create more granular steps in the lighter end
+    const lightnessExponent = 0.7; // Adjust this value to control the curve shape
+    const normalizedL = Math.pow(t, lightnessExponent);
+
+    // Map to our desired lightness range (0.15 to 0.95)
+    const l = 0.15 + (0.8 * normalizedL);
 
     // Adjust chroma based on lightness and vibrance
     const chromaFactor = 1 - Math.abs(0.5 - l) * 1.5;
@@ -127,23 +135,20 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
 
     // Create localized wave effects for positions
     const waveEffect = (center: number, width: number) => {
-      // Convert position to step numbers for consistent scaling
       const currentStep = Math.floor(position * (steps - 1));
       const centerStep = Math.floor(center * (steps - 1));
-
       const distance = Math.abs(currentStep - centerStep);
       const maxDistance = steps / 2;
-      const sigma = maxDistance / 3; // Makes the falloff more gradual
-
+      const sigma = maxDistance / 3;
       return Math.exp(-(distance * distance) / (2 * sigma * sigma));
     };
 
     // Calculate effects centered at 20% and 80% through the ramp
-    const darkEffect = waveEffect(0.2, 0);  // Width not used anymore
-    const lightEffect = waveEffect(0.8, 0); // Width not used anymore
+    const darkEffect = waveEffect(0.2, 0);
+    const lightEffect = waveEffect(0.8, 0);
 
     // Calculate hue adjustment based on the combined effects
-    const hueAdjustment = (darkEffect - lightEffect) * torsionStrength * 12; // Reduced from 60 to 12 (80% reduction)
+    const hueAdjustment = (darkEffect - lightEffect) * torsionStrength * 12;
 
     // Apply the hue adjustment to the base hue
     const h = base.h + hueAdjustment;
