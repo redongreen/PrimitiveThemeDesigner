@@ -1,90 +1,5 @@
 import { oklch, parse, formatHex } from 'culori';
 
-interface Point {
-  step: number;
-  value: number;
-}
-
-// Catmull-Rom spline interpolation with tension control
-export function interpolatePointsSpline(points: Point[], numPoints: number, alpha: number = 0.5): Point[] {
-  if (points.length < 2) return points;
-
-  const result: Point[] = [];
-  const sortedPoints = [...points].sort((a, b) => a.step - b.step);
-
-  // Helper to get point with proper boundary handling
-  const getPoint = (points: Point[], index: number): Point => {
-    if (index < 0) {
-      // Mirror the first segment for start boundary
-      const p0 = points[0];
-      const p1 = points[1];
-      return {
-        step: p0.step - (p1.step - p0.step),
-        value: p0.value * 2 - p1.value // Mirror point
-      };
-    }
-    if (index >= points.length) {
-      // Mirror the last segment for end boundary
-      const pn = points[points.length - 1];
-      const pn1 = points[points.length - 2];
-      return {
-        step: pn.step + (pn.step - pn1.step),
-        value: pn.value * 2 - pn1.value // Mirror point
-      };
-    }
-    return points[index];
-  };
-
-  // For each segment between points
-  for (let i = 0; i < sortedPoints.length - 1; i++) {
-    const p0 = getPoint(sortedPoints, i - 1);
-    const p1 = getPoint(sortedPoints, i);
-    const p2 = getPoint(sortedPoints, i + 1);
-    const p3 = getPoint(sortedPoints, i + 2);
-
-    // Calculate number of points for this segment
-    const segmentPoints = i === sortedPoints.length - 2 ? numPoints - result.length : 
-      Math.floor((p2.step - p1.step) * numPoints / (sortedPoints[sortedPoints.length - 1].step - sortedPoints[0].step));
-
-    // Generate points for this segment
-    for (let j = 0; j < segmentPoints; j++) {
-      const t = j / segmentPoints;
-
-      // Catmull-Rom basis matrix calculations
-      const t2 = t * t;
-      const t3 = t2 * t;
-
-      // Calculate blending functions with tension
-      const b0 = (-alpha * t3 + 2 * alpha * t2 - alpha * t);
-      const b1 = ((2 - alpha) * t3 + (alpha - 3) * t2 + 1);
-      const b2 = ((alpha - 2) * t3 + (3 - 2 * alpha) * t2 + alpha * t);
-      const b3 = (alpha * t3 - alpha * t2);
-
-      // Interpolate value
-      const value = 
-        b0 * p0.value +
-        b1 * p1.value +
-        b2 * p2.value +
-        b3 * p3.value;
-
-      // Calculate actual step value
-      const step = result.length;
-
-      result.push({ step, value });
-    }
-  }
-
-  // Ensure we add the last point
-  if (result.length < numPoints) {
-    result.push({
-      step: numPoints - 1,
-      value: sortedPoints[sortedPoints.length - 1].value
-    });
-  }
-
-  return result;
-}
-
 // Calculate relative luminance for a color
 function getLuminance(hex: string): number {
   const rgb = parse(hex);
@@ -183,7 +98,7 @@ export function oklchToHex({ l, c, h }: { l: number; c: number; h: number }) {
   }
 }
 
-// Modified to support non-linear lightness distribution
+// Modified to support vibrance and hue torsion adjustment
 export function generateRamp(baseColor: string, steps: number, vibrance: number = 0.5, hueTorsion: number = 0.5): ColorStop[] {
   const base = hexToOklch(baseColor);
   const ramp: ColorStop[] = [];
@@ -193,20 +108,12 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
   const maxChroma = base.c * vibranceMultiplier;
 
   // Calculate hue torsion effect
+  // Map hueTorsion [0,1] to [-1, 1] range for direction
   const torsionStrength = (hueTorsion - 0.5) * 2;
 
-  // Generate lightness values with non-linear distribution
+  // Generate lightness values from 0.15 to 0.95 to avoid pure black/white
   for (let i = 0; i < steps; i++) {
-    // Use exponential function for non-linear lightness distribution
-    const t = i / (steps - 1);
-
-    // Create a concave-down curve for lightness
-    // This will create more granular steps in the lighter end
-    const lightnessExponent = 0.7; // Adjust this value to control the curve shape
-    const normalizedL = Math.pow(t, lightnessExponent);
-
-    // Map to our desired lightness range (0.15 to 0.95)
-    const l = 0.15 + (0.8 * normalizedL);
+    const l = 0.15 + (0.8 * i) / (steps - 1);
 
     // Adjust chroma based on lightness and vibrance
     const chromaFactor = 1 - Math.abs(0.5 - l) * 1.5;
@@ -220,20 +127,23 @@ export function generateRamp(baseColor: string, steps: number, vibrance: number 
 
     // Create localized wave effects for positions
     const waveEffect = (center: number, width: number) => {
+      // Convert position to step numbers for consistent scaling
       const currentStep = Math.floor(position * (steps - 1));
       const centerStep = Math.floor(center * (steps - 1));
+
       const distance = Math.abs(currentStep - centerStep);
       const maxDistance = steps / 2;
-      const sigma = maxDistance / 3;
+      const sigma = maxDistance / 3; // Makes the falloff more gradual
+
       return Math.exp(-(distance * distance) / (2 * sigma * sigma));
     };
 
     // Calculate effects centered at 20% and 80% through the ramp
-    const darkEffect = waveEffect(0.2, 0);
-    const lightEffect = waveEffect(0.8, 0);
+    const darkEffect = waveEffect(0.2, 0);  // Width not used anymore
+    const lightEffect = waveEffect(0.8, 0); // Width not used anymore
 
     // Calculate hue adjustment based on the combined effects
-    const hueAdjustment = (darkEffect - lightEffect) * torsionStrength * 12;
+    const hueAdjustment = (darkEffect - lightEffect) * torsionStrength * 12; // Reduced from 60 to 12 (80% reduction)
 
     // Apply the hue adjustment to the base hue
     const h = base.h + hueAdjustment;
@@ -258,10 +168,9 @@ export function adjustRampWithCurve(
   curve: { x: number; y: number }[],
   property: 'l' | 'c' | 'h'
 ): ColorStop[] {
-  //Using spline interpolation here instead of linear interpolation.  This assumes the curve array is already in the correct format.
-  const interpolatedCurvePoints = interpolatePointsSpline(curve.map((p,i) => ({step: i, value: p.y})), ramp.length);
   return ramp.map((stop, index) => {
-    const y = interpolatedCurvePoints[index].value;
+    const x = index / (ramp.length - 1);
+    const y = interpolateCurve(curve, x);
 
     const newOklch = { ...stop.oklch };
     if (property === 'l') {
@@ -280,4 +189,16 @@ export function adjustRampWithCurve(
       oklch: newOklch
     };
   });
+}
+
+function interpolateCurve(curve: { x: number; y: number }[], x: number): number {
+  const i1 = curve.findIndex(p => p.x > x);
+  if (i1 === -1) return curve[curve.length - 1].y;
+  if (i1 === 0) return curve[0].y;
+
+  const p0 = curve[i1 - 1];
+  const p1 = curve[i1];
+
+  const t = (x - p0.x) / (p1.x - p0.x);
+  return p0.y + t * (p1.y - p0.y);
 }
