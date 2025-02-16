@@ -1,5 +1,7 @@
 import { oklch, parse, formatHex } from 'culori';
 
+export type ColorBlindnessType = 'deuteranopia' | 'protanopia' | 'tritanopia' | null;
+
 // Calculate relative luminance for a color
 function getLuminance(hex: string): number {
   const rgb = parse(hex);
