@@ -5,82 +5,81 @@ interface Point {
   value: number;
 }
 
-// Basic Catmull-Rom spline interpolation
-export function interpolatePointsSpline(points: Point[], numPoints: number): Point[] {
+// Catmull-Rom spline interpolation with tension control
+export function interpolatePointsSpline(points: Point[], numPoints: number, alpha: number = 0.5): Point[] {
   if (points.length < 2) return points;
 
   const result: Point[] = [];
   const sortedPoints = [...points].sort((a, b) => a.step - b.step);
 
-  // Helper to get point, handling boundaries
+  // Helper to get point with proper boundary handling
   const getPoint = (points: Point[], index: number): Point => {
     if (index < 0) {
-      // Extrapolate start
+      // Mirror the first segment for start boundary
       const p0 = points[0];
       const p1 = points[1];
       return {
         step: p0.step - (p1.step - p0.step),
-        value: p0.value - (p1.value - p0.value)
+        value: p0.value * 2 - p1.value // Mirror point
       };
     }
     if (index >= points.length) {
-      // Extrapolate end
+      // Mirror the last segment for end boundary
       const pn = points[points.length - 1];
       const pn1 = points[points.length - 2];
       return {
         step: pn.step + (pn.step - pn1.step),
-        value: pn.value + (pn.value - pn1.value)
+        value: pn.value * 2 - pn1.value // Mirror point
       };
     }
     return points[index];
   };
 
-  // Generate points along the curve
-  for (let i = 0; i < numPoints; i++) {
-    const t = i / (numPoints - 1);
-    const targetStep = t * (sortedPoints[sortedPoints.length - 1].step - sortedPoints[0].step) + sortedPoints[0].step;
+  // For each segment between points
+  for (let i = 0; i < sortedPoints.length - 1; i++) {
+    const p0 = getPoint(sortedPoints, i - 1);
+    const p1 = getPoint(sortedPoints, i);
+    const p2 = getPoint(sortedPoints, i + 1);
+    const p3 = getPoint(sortedPoints, i + 2);
 
-    // Find the segment containing the target step
-    let segment = 0;
-    while (segment < sortedPoints.length - 1 && sortedPoints[segment + 1].step <= targetStep) {
-      segment++;
+    // Calculate number of points for this segment
+    const segmentPoints = i === sortedPoints.length - 2 ? numPoints - result.length : 
+      Math.floor((p2.step - p1.step) * numPoints / (sortedPoints[sortedPoints.length - 1].step - sortedPoints[0].step));
+
+    // Generate points for this segment
+    for (let j = 0; j < segmentPoints; j++) {
+      const t = j / segmentPoints;
+
+      // Catmull-Rom basis matrix calculations
+      const t2 = t * t;
+      const t3 = t2 * t;
+
+      // Calculate blending functions with tension
+      const b0 = (-alpha * t3 + 2 * alpha * t2 - alpha * t);
+      const b1 = ((2 - alpha) * t3 + (alpha - 3) * t2 + 1);
+      const b2 = ((alpha - 2) * t3 + (3 - 2 * alpha) * t2 + alpha * t);
+      const b3 = (alpha * t3 - alpha * t2);
+
+      // Interpolate value
+      const value = 
+        b0 * p0.value +
+        b1 * p1.value +
+        b2 * p2.value +
+        b3 * p3.value;
+
+      // Calculate actual step value
+      const step = result.length;
+
+      result.push({ step, value });
     }
+  }
 
-    // If we're exactly at a control point, use its value
-    const exactPoint = sortedPoints.find(p => Math.abs(p.step - targetStep) < 0.0001);
-    if (exactPoint) {
-      result.push({ step: i, value: exactPoint.value });
-      continue;
-    }
-
-    // Get the four points needed for this segment
-    const p0 = getPoint(sortedPoints, segment - 1);
-    const p1 = getPoint(sortedPoints, segment);
-    const p2 = getPoint(sortedPoints, segment + 1);
-    const p3 = getPoint(sortedPoints, segment + 2);
-
-    // Calculate local parameter
-    const localT = (targetStep - p1.step) / (p2.step - p1.step);
-
-    // Catmull-Rom basis functions
-    const t2 = localT * localT;
-    const t3 = t2 * localT;
-
-    // Matrix coefficients for Catmull-Rom
-    const h00 = -t3 + 2*t2 - localT;
-    const h10 = 2*t3 - 3*t2 + 1;
-    const h20 = -2*t3 + 3*t2;
-    const h30 = t3 - t2;
-
-    // Interpolate
-    const value = 0.5 * (
-      (2 * p1.value) +
-      (-p0.value + p2.value) * localT +
-      (2*p0.value - 5*p1.value + 4*p2.value - p3.value) * t2 +
-      (-p0.value + 3*p1.value - 3*p2.value + p3.value) * t3
-    );
-
-    result.push({ step: i, value });
+  // Ensure we add the last point
+  if (result.length < numPoints) {
+    result.push({
+      step: numPoints - 1,
+      value: sortedPoints[sortedPoints.length - 1].value
+    });
   }
 
   return result;
