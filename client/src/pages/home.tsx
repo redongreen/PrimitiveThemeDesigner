@@ -799,6 +799,18 @@ const Home = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      <div className="mt-16 pt-8 border-t text-xs text-muted-foreground text-center">
+        Last updated on February 16, 2025,{' '}
+        <a
+          href="https://github.com/PrimitiveThemeDesigner"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-foreground"
+        >
+          version 0.1.0
+        </a>
+      </div>
     </div>
   );
 };
