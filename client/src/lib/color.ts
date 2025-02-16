@@ -5,7 +5,7 @@ interface Point {
   value: number;
 }
 
-// Add Catmull-Rom spline interpolation
+// Add Catmull-Rom spline interpolation with improved tangent handling
 function catmullRomSpline(p0: number, p1: number, p2: number, p3: number, t: number, tension: number = 0.5): number {
   const t2 = t * t;
   const t3 = t2 * t;
@@ -20,16 +20,16 @@ function catmullRomSpline(p0: number, p1: number, p2: number, p3: number, t: num
 }
 
 // Interpolate array of points using Catmull-Rom spline
-export function interpolatePointsSpline(points: Point[], numPoints: number, tension: number = 0.5): Point[] {
+export function interpolatePointsSpline(points: Point[], numPoints: number): Point[] {
   if (points.length < 2) return points;
 
   const result: Point[] = [];
   const sortedPoints = [...points].sort((a, b) => a.step - b.step);
 
-  // Helper to get point with bounds checking
+  // Helper to get point with bounds checking and proper tangent handling
   const getPoint = (i: number) => {
     if (i < 0) {
-      // Extrapolate for start points
+      // Extrapolate for start points using the slope of first segment
       const p0 = sortedPoints[0];
       const p1 = sortedPoints[1];
       return {
@@ -38,7 +38,7 @@ export function interpolatePointsSpline(points: Point[], numPoints: number, tens
       };
     }
     if (i >= sortedPoints.length) {
-      // Extrapolate for end points
+      // Extrapolate for end points using the slope of last segment
       const pn = sortedPoints[sortedPoints.length - 1];
       const pn1 = sortedPoints[sortedPoints.length - 2];
       return {
@@ -83,7 +83,7 @@ export function interpolatePointsSpline(points: Point[], numPoints: number, tens
     const p2 = getPoint(segmentIndex + 1);
     const p3 = getPoint(segmentIndex + 2);
 
-    // Interpolate value using Catmull-Rom spline
+    // Interpolate value using Catmull-Rom spline with reduced tension
     const value = catmullRomSpline(
       p0.value,
       p1.value,

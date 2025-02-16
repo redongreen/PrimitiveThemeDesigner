@@ -20,7 +20,13 @@ function calculateInfluence(draggedStep: number, currentStep: number, totalSteps
   const distance = Math.abs(currentStep - draggedStep);
   const maxDistance = totalSteps / 2;
   const sigma = maxDistance / 3;
-  return Math.exp(-(distance * distance) / (2 * sigma * sigma));
+
+  // Smoother falloff for point influence
+  const influence = Math.exp(-(distance * distance) / (2 * sigma * sigma));
+
+  // Add distance-based scaling to prevent long-range influence
+  const distanceScale = Math.max(0, 1 - distance / maxDistance);
+  return influence * distanceScale;
 }
 
 export function CurveEditor({ label, points, steps, minValue, maxValue, onChange }: CurveEditorProps) {
@@ -235,12 +241,13 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     newPoints.forEach((point, i) => {
       if (i !== draggingIndex) {
         const influence = calculateInfluence(draggedStep, point.step, steps);
-        point.value = initialPoints[i].value + (valueDelta * influence);
-        point.value = Math.max(minValue, Math.min(maxValue, point.value));
+        const newValue = initialPoints[i].value + (valueDelta * influence);
+        point.value = Math.max(minValue, Math.min(maxValue, newValue));
       }
     });
 
-    newPoints[draggingIndex].value = pos.value;
+    // Update dragged point directly
+    newPoints[draggingIndex].value = Math.max(minValue, Math.min(maxValue, pos.value));
     onChange(newPoints);
   };
 
