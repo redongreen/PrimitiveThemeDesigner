@@ -5,15 +5,17 @@ interface Point {
   value: number;
 }
 
-// Add Catmull-Rom spline interpolation with improved tangent handling
+// Catmull-Rom spline interpolation with tension control
 function catmullRomSpline(p0: number, p1: number, p2: number, p3: number, t: number, tension: number = 0.5): number {
   const t2 = t * t;
   const t3 = t2 * t;
 
-  // Catmull-Rom matrix coefficients with tension parameter
-  const a = (-tension * p0 + (2 - tension) * p1 + (tension - 2) * p2 + tension * p3) * 0.5;
-  const b = (2 * tension * p0 + (tension - 3) * p1 + (3 - 2 * tension) * p2 - tension * p3) * 0.5;
-  const c = (-tension * p0 + tension * p2) * 0.5;
+  // Catmull-Rom basis matrix coefficients
+  const m0 = (-tension * p0 + tension * p2) / 2;
+  const m1 = (-tension * p1 + tension * p3) / 2;
+  const a = 2 * p1 - 2 * p2 + m0 + m1;
+  const b = -3 * p1 + 3 * p2 - 2 * m0 - m1;
+  const c = m0;
   const d = p1;
 
   return a * t3 + b * t2 + c * t + d;
@@ -26,77 +28,69 @@ export function interpolatePointsSpline(points: Point[], numPoints: number): Poi
   const result: Point[] = [];
   const sortedPoints = [...points].sort((a, b) => a.step - b.step);
 
-  // Helper to get point with bounds checking and proper tangent handling
-  const getPoint = (i: number) => {
-    if (i < 0) {
-      // Extrapolate for start points using the slope of first segment
+  // Helper to get virtual points for the ends
+  const getEndpoint = (isStart: boolean) => {
+    if (isStart) {
       const p0 = sortedPoints[0];
       const p1 = sortedPoints[1];
       return {
         step: p0.step - (p1.step - p0.step),
-        value: p0.value - (p1.value - p0.value)
+        value: p0.value - (p1.value - p0.value) * 0.5 // Reduced slope for better end behavior
       };
-    }
-    if (i >= sortedPoints.length) {
-      // Extrapolate for end points using the slope of last segment
+    } else {
       const pn = sortedPoints[sortedPoints.length - 1];
       const pn1 = sortedPoints[sortedPoints.length - 2];
       return {
         step: pn.step + (pn.step - pn1.step),
-        value: pn.value + (pn.value - pn1.value)
+        value: pn.value + (pn.value - pn1.value) * 0.5 // Reduced slope for better end behavior
       };
     }
-    return sortedPoints[i];
   };
 
-  // Generate smooth curve
+  // Add virtual points at the ends for better interpolation
+  const extendedPoints = [
+    getEndpoint(true),
+    ...sortedPoints,
+    getEndpoint(false)
+  ];
+
+  // Generate interpolated points
   for (let i = 0; i < numPoints; i++) {
     const t = i / (numPoints - 1);
     const targetStep = t * (sortedPoints[sortedPoints.length - 1].step - sortedPoints[0].step) + sortedPoints[0].step;
 
-    // Find the segment containing the target step
-    let segmentIndex = 0;
-    for (let j = 1; j < sortedPoints.length; j++) {
-      if (sortedPoints[j].step > targetStep) {
-        break;
-      }
-      segmentIndex = j;
+    // Find the containing segment
+    let segmentIndex = 1; // Start at 1 because we added a virtual point
+    while (segmentIndex < extendedPoints.length - 2 && extendedPoints[segmentIndex + 1].step <= targetStep) {
+      segmentIndex++;
     }
 
-    // For exact control points, use the point value directly
+    // Handle exact point matches
     const exactPoint = sortedPoints.find(p => Math.abs(p.step - targetStep) < 0.0001);
     if (exactPoint) {
       result.push({ step: i, value: exactPoint.value });
       continue;
     }
 
-    // Calculate local t value within the segment
-    const segmentStart = sortedPoints[segmentIndex].step;
-    const segmentEnd = segmentIndex < sortedPoints.length - 1 
-      ? sortedPoints[segmentIndex + 1].step 
-      : segmentStart + 1;
-    const localT = (targetStep - segmentStart) / (segmentEnd - segmentStart);
+    // Calculate local parameter
+    const p0 = extendedPoints[segmentIndex - 1];
+    const p1 = extendedPoints[segmentIndex];
+    const p2 = extendedPoints[segmentIndex + 1];
+    const p3 = extendedPoints[segmentIndex + 2];
 
-    // Get the four points needed for interpolation
-    const p0 = getPoint(segmentIndex - 1);
-    const p1 = getPoint(segmentIndex);
-    const p2 = getPoint(segmentIndex + 1);
-    const p3 = getPoint(segmentIndex + 2);
+    const localT = (targetStep - p1.step) / (p2.step - p1.step);
 
-    // Interpolate value using Catmull-Rom spline with reduced tension
+    // Interpolate with reduced tension for smoother curves
     const value = catmullRomSpline(
       p0.value,
       p1.value,
       p2.value,
       p3.value,
       localT,
-      0.3 // Reduced tension for better point adherence
+      0.3 // Lower tension for smoother curves
     );
 
-    result.push({
-      step: i,
-      value: value
-    });
+    result.push({ step: i, value });
   }
 
   return result;

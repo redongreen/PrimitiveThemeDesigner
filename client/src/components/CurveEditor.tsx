@@ -18,15 +18,11 @@ interface CurveEditorProps {
 
 function calculateInfluence(draggedStep: number, currentStep: number, totalSteps: number): number {
   const distance = Math.abs(currentStep - draggedStep);
-  const maxDistance = totalSteps / 2;
-  const sigma = maxDistance / 3;
+  const maxDistance = totalSteps / 3; // Reduced influence range for more local control
+  const sigma = maxDistance / 2;
 
-  // Smoother falloff for point influence
-  const influence = Math.exp(-(distance * distance) / (2 * sigma * sigma));
-
-  // Add distance-based scaling to prevent long-range influence
-  const distanceScale = Math.max(0, 1 - distance / maxDistance);
-  return influence * distanceScale;
+  // Gaussian falloff for smooth influence
+  return Math.exp(-(distance * distance) / (2 * sigma * sigma)) * Math.max(0, 1 - distance / maxDistance);
 }
 
 export function CurveEditor({ label, points, steps, minValue, maxValue, onChange }: CurveEditorProps) {
@@ -72,9 +68,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
 
   const fromCanvasCoords = (x: number, y: number): Point => ({
     step: Math.round(((x - PADDING) / (canvasSize.width - 2 * PADDING)) * (steps - 1)),
-    value: Math.max(minValue, Math.min(maxValue,
-      maxValue - (((y - PADDING) / (canvasSize.height - 2 * PADDING)) * (maxValue - minValue))
-    ))
+    value: maxValue - (((y - PADDING) / (canvasSize.height - 2 * PADDING)) * (maxValue - minValue))
   });
 
   useEffect(() => {
@@ -91,7 +85,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     ctx.strokeStyle = '#e5e7eb';
     ctx.lineWidth = 1;
 
-    // Vertical lines
+    // Vertical grid lines
     for (let i = 0; i < steps; i++) {
       const x = PADDING + ((canvasSize.width - 2 * PADDING) * i) / (steps - 1);
       ctx.beginPath();
@@ -100,7 +94,7 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       ctx.stroke();
     }
 
-    // Horizontal lines
+    // Horizontal grid lines
     const numLines = 5;
     for (let i = 0; i <= numLines; i++) {
       const y = PADDING + ((canvasSize.height - 2 * PADDING) * i) / numLines;
@@ -110,15 +104,15 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       ctx.stroke();
     }
 
-    // Use spline interpolation to generate smooth curve
-    const interpolatedPoints = interpolatePointsSpline(points, Math.max(200, steps * 10)); // Increased number of interpolation points
+    // Generate smooth curve with increased interpolation points
+    const interpolatedPoints = interpolatePointsSpline(points, steps * 20);
 
     // Draw curve
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
+    if (interpolatedPoints.length > 1) {
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
 
-    if (interpolatedPoints.length > 0) {
       const start = toCanvasCoords(interpolatedPoints[0]);
       ctx.moveTo(start.x, start.y);
 
@@ -133,15 +127,18 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     const sortedPoints = [...points].sort((a, b) => a.step - b.step);
     sortedPoints.forEach((point) => {
       const { x, y } = toCanvasCoords(point);
-      ctx.fillStyle = '#000';
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, 2 * Math.PI);
-      ctx.fill();
 
+      // Draw point highlight
       ctx.strokeStyle = 'rgba(0,0,0,0.1)';
       ctx.beginPath();
       ctx.arc(x, y, 10, 0, 2 * Math.PI);
       ctx.stroke();
+
+      // Draw point
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, 2 * Math.PI);
+      ctx.fill();
     });
 
     // Draw labels
