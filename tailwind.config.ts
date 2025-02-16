@@ -7,7 +7,7 @@ export default {
     extend: {
       fontFamily: {
         mono: ["JetBrains Mono", "Menlo", "Monaco", "Consolas", "monospace"],
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["ui-sans-serif", "-apple-system", "system-ui", "Segoe UI", "Helvetica", "Apple Color Emoji", "Arial", "sans-serif", "Segoe UI Emoji", "Segoe UI Symbol"],
       },
       borderRadius: {
         lg: "var(--radius)",
