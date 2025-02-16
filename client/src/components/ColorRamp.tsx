@@ -47,8 +47,8 @@ export function ColorRamp({ colors, brandPrimaryIndex }: ColorRampProps) {
         </Button>
       </div>
 
-      <div className="flex flex-col sm:flex-row">
-        {/* First row - visible on all screens */}
+      <div className="flex flex-col sm:flex-row gap-0">
+        {/* First row */}
         <div className="flex flex-1">
           {firstRow.map((color, i) => {
             const contrast = getBestContrastColor(color.hex);
@@ -58,7 +58,7 @@ export function ColorRamp({ colors, brandPrimaryIndex }: ColorRampProps) {
             return (
               <div
                 key={i}
-                className="flex-1 h-[40px] sm:h-20 relative group"
+                className="flex-1 h-20 relative group"
                 style={{ backgroundColor: color.hex }}
               >
                 {isPrimary && (
@@ -75,7 +75,7 @@ export function ColorRamp({ colors, brandPrimaryIndex }: ColorRampProps) {
                 >
                   <div>{brightnessValue}</div>
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                    <span className="hidden sm:inline">{color.hex}</span>
+                    <span>{color.hex}</span>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -86,14 +86,14 @@ export function ColorRamp({ colors, brandPrimaryIndex }: ColorRampProps) {
                       <span className="sr-only">Copy hex code</span>
                     </Button>
                   </div>
-                  <div className="hidden sm:block">{contrast.ratio.toFixed(2)}:1</div>
+                  <div>{contrast.ratio.toFixed(2)}:1</div>
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* Second row - visible on all screens */}
+        {/* Second row */}
         <div className="flex flex-1">
           {secondRow.map((color, i) => {
             const actualIndex = i + midPoint;
@@ -104,7 +104,7 @@ export function ColorRamp({ colors, brandPrimaryIndex }: ColorRampProps) {
             return (
               <div
                 key={actualIndex}
-                className="flex-1 h-[40px] sm:h-20 relative group"
+                className="flex-1 h-20 relative group"
                 style={{ backgroundColor: color.hex }}
               >
                 {isPrimary && (
@@ -121,7 +121,7 @@ export function ColorRamp({ colors, brandPrimaryIndex }: ColorRampProps) {
                 >
                   <div>{brightnessValue}</div>
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                    <span className="hidden sm:inline">{color.hex}</span>
+                    <span>{color.hex}</span>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -132,7 +132,7 @@ export function ColorRamp({ colors, brandPrimaryIndex }: ColorRampProps) {
                       <span className="sr-only">Copy hex code</span>
                     </Button>
                   </div>
-                  <div className="hidden sm:block">{contrast.ratio.toFixed(2)}:1</div>
+                  <div>{contrast.ratio.toFixed(2)}:1</div>
                 </div>
               </div>
             );
