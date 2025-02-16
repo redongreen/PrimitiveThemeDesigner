@@ -42,18 +42,13 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     if (containerRef.current && canvasRef.current) {
       const container = containerRef.current;
       const newWidth = container.clientWidth;
-      const newHeight = Math.min(container.clientWidth * 0.66, 300); // Maintain aspect ratio with max height
+      const newHeight = Math.min(container.clientWidth * 0.66, 300);
 
       setCanvasSize({ width: newWidth, height: newHeight });
 
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        // Set the canvas size
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-
-        // Update the scale factor for high DPI displays
         const dpr = window.devicePixelRatio || 1;
         canvas.width = newWidth * dpr;
         canvas.height = newHeight * dpr;
@@ -159,33 +154,8 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
     }
   }, [points, steps, minValue, maxValue, canvasSize]);
 
-  const getEventPosition = (e: React.MouseEvent | React.TouchEvent) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return null;
-
-    const rect = canvas.getBoundingClientRect();
-    let clientX, clientY;
-
-    if ('touches' in e) {
-      if (e.touches.length === 0) return null;
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
-
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
-    const clampedX = Math.max(PADDING, Math.min(canvasSize.width - PADDING, x));
-    const clampedY = Math.max(PADDING, Math.min(canvasSize.height - PADDING, y));
-
-    return fromCanvasCoords(clampedX, clampedY);
-  };
-
   const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault(); // Prevent scrolling on touch devices
+    e.preventDefault();
     const pos = getEventPosition(e);
     if (!pos) return;
 
@@ -225,6 +195,31 @@ export function CurveEditor({ label, points, steps, minValue, maxValue, onChange
       setDraggingIndex(closestIndex);
       setInitialPoints([...points]);
     }
+  };
+
+  const getEventPosition = (e: React.MouseEvent | React.TouchEvent) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+
+    const rect = canvas.getBoundingClientRect();
+    let clientX, clientY;
+
+    if ('touches' in e) {
+      if (e.touches.length === 0) return null;
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    const clampedX = Math.max(PADDING, Math.min(canvasSize.width - PADDING, x));
+    const clampedY = Math.max(PADDING, Math.min(canvasSize.height - PADDING, y));
+
+    return fromCanvasCoords(clampedX, clampedY);
   };
 
   const handleMove = (e: React.MouseEvent | React.TouchEvent) => {
