@@ -5,12 +5,12 @@ interface Point {
   value: number;
 }
 
-// Catmull-Rom spline interpolation with tension control
+// Modified Catmull-Rom spline interpolation with tension control
 function catmullRomSpline(p0: number, p1: number, p2: number, p3: number, t: number, tension: number = 0.5): number {
   const t2 = t * t;
   const t3 = t2 * t;
 
-  // Catmull-Rom basis matrix coefficients
+  // Modified Catmull-Rom basis matrix coefficients for better control point adherence
   const m0 = (-tension * p0 + tension * p2) / 2;
   const m1 = (-tension * p1 + tension * p3) / 2;
   const a = 2 * p1 - 2 * p2 + m0 + m1;
@@ -21,28 +21,28 @@ function catmullRomSpline(p0: number, p1: number, p2: number, p3: number, t: num
   return a * t3 + b * t2 + c * t + d;
 }
 
-// Interpolate array of points using Catmull-Rom spline
+// Modified interpolation function to ensure curve passes through control points
 export function interpolatePointsSpline(points: Point[], numPoints: number): Point[] {
   if (points.length < 2) return points;
 
   const result: Point[] = [];
   const sortedPoints = [...points].sort((a, b) => a.step - b.step);
 
-  // Helper to get virtual points for the ends
+  // Helper to get virtual points for the ends with reduced influence
   const getEndpoint = (isStart: boolean) => {
     if (isStart) {
       const p0 = sortedPoints[0];
       const p1 = sortedPoints[1];
       return {
         step: p0.step - (p1.step - p0.step),
-        value: p0.value - (p1.value - p0.value) * 0.5 // Reduced slope for better end behavior
+        value: p0.value // Match the endpoint value exactly
       };
     } else {
       const pn = sortedPoints[sortedPoints.length - 1];
       const pn1 = sortedPoints[sortedPoints.length - 2];
       return {
         step: pn.step + (pn.step - pn1.step),
-        value: pn.value + (pn.value - pn1.value) * 0.5 // Reduced slope for better end behavior
+        value: pn.value // Match the endpoint value exactly
       };
     }
   };
@@ -65,7 +65,7 @@ export function interpolatePointsSpline(points: Point[], numPoints: number): Poi
       segmentIndex++;
     }
 
-    // Handle exact point matches
+    // Check if we're exactly at a control point
     const exactPoint = sortedPoints.find(p => Math.abs(p.step - targetStep) < 0.0001);
     if (exactPoint) {
       result.push({ step: i, value: exactPoint.value });
@@ -80,14 +80,14 @@ export function interpolatePointsSpline(points: Point[], numPoints: number): Poi
 
     const localT = (targetStep - p1.step) / (p2.step - p1.step);
 
-    // Interpolate with reduced tension for smoother curves
+    // Use lower tension for smoother curves while maintaining control point accuracy
     const value = catmullRomSpline(
       p0.value,
       p1.value,
       p2.value,
       p3.value,
       localT,
-      0.3 // Lower tension for smoother curves
+      0.2 // Lower tension for smoother curves while maintaining control point accuracy
     );
 
     result.push({ step: i, value });
