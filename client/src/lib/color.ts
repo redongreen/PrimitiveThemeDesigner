@@ -92,7 +92,7 @@ export function oklchToHex({ l, c, h }: { l: number; c: number; h: number }) {
 // This yields an "S" shape from 0..1, with separate exponents for "ease in" and "ease out".
 // ----------------------------------------------------------------------
 function sCurve(
-  t: number, 
+  t: number,
   mid: number,         // e.g. 0.5 is the midpoint
   alphaIn: number,     // ease-in intensity
   alphaOut: number     // ease-out intensity
@@ -100,7 +100,7 @@ function sCurve(
   if (t <= mid) {
     // bottom segment => ease in
     const subT = t / mid;           // maps t=0..mid => subT=0..1
-    const eased = Math.pow(subT, alphaIn); 
+    const eased = Math.pow(subT, alphaIn);
     // map [0..1] -> [0..mid]
     return eased * mid;
   } else {
@@ -115,21 +115,23 @@ function sCurve(
 // ----------------------------------------------------------------------
 // generateRamp - uses the sCurve for the entire 0..1 domain of t
 // ----------------------------------------------------------------------
+export interface GenerateRampOptions {
+  mid?: number;
+  alphaIn?: number;
+  alphaOut?: number;
+}
+
 export function generateRamp(
   baseColor: string,
   steps: number,
   vibrance: number = 0.5,
   hueTorsion: number = 0.5,
-  options?: {
-    mid?: number;        // default = 0.5
-    alphaIn?: number;    // ease-in exponent
-    alphaOut?: number;   // ease-out exponent
-  }
+  options?: GenerateRampOptions
 ): ColorStop[] {
   const {
     mid = 0.5,
-    alphaIn = 1.1,   // typical "ease-in" exponent
-    alphaOut = 1.67,  // typical "ease-out" exponent
+    alphaIn = 1.1,
+    alphaOut = 1.67,
   } = options || {};
 
   const base = hexToOklch(baseColor);

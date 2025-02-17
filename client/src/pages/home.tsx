@@ -272,8 +272,23 @@ const Home = () => {
   const [steps, setSteps] = useState(12);
   const [vibrance, setVibrance] = useState(0.5);
   const [hueTorsion, setHueTorsion] = useState(0.5);
+  const [contrast, setContrast] = useState(0.5);
   const [activeTab, setActiveTab] = useState('primitive');
-  const [ramp, setRamp] = useState<ColorStop[]>(() => generateRamp(baseColor, steps, vibrance, hueTorsion));
+
+  // Calculate alphaIn and alphaOut based on contrast
+  const getContrastValues = (contrastValue: number) => {
+    // For low contrast (0), both values approach 0.8
+    // For middle contrast (0.5), use defaults (1.1, 1.67)
+    // For high contrast (1), use (2, 3)
+    const alphaIn = 0.8 + contrastValue * 1.2;
+    const alphaOut = 0.8 + contrastValue * 2.2;
+    return { alphaIn, alphaOut };
+  };
+
+  const [ramp, setRamp] = useState<ColorStop[]>(() => {
+    const { alphaIn, alphaOut } = getContrastValues(contrast);
+    return generateRamp(baseColor, steps, vibrance, hueTorsion, { alphaIn, alphaOut });
+  });
   const [lightnessPoints, setLightnessPoints] = useState<Point[]>(() =>
     Array.from({ length: steps }, (_, i) => ({
       step: i,
@@ -376,7 +391,8 @@ const Home = () => {
   };
 
   const updateRamp = useCallback(() => {
-    const baseRamp = generateRamp(baseColor, steps, vibrance, hueTorsion);
+    const { alphaIn, alphaOut } = getContrastValues(contrast);
+    const baseRamp = generateRamp(baseColor, steps, vibrance, hueTorsion, { alphaIn, alphaOut });
 
     const newRamp = baseRamp.map((color, i) => {
       const l = lightnessPoints.find(p => p.step === i)?.value! / 100;
@@ -390,18 +406,19 @@ const Home = () => {
     });
 
     setRamp(newRamp);
-  }, [baseColor, steps, vibrance, hueTorsion, lightnessPoints, chromaPoints, huePoints]);
+  }, [baseColor, steps, vibrance, hueTorsion, lightnessPoints, chromaPoints, huePoints, contrast, getContrastValues]);
 
   useEffect(() => {
     updateRamp();
-  }, [lightnessPoints, chromaPoints, huePoints, vibrance, hueTorsion, updateRamp]);
+  }, [lightnessPoints, chromaPoints, huePoints, vibrance, hueTorsion, updateRamp, contrast]);
 
   const handleColorChange = (newColor: string) => {
     setBaseColor(newColor);
   };
 
   const handleGenerateRamp = () => {
-    const newRamp = generateRamp(baseColor, steps, vibrance, hueTorsion);
+    const { alphaIn, alphaOut } = getContrastValues(contrast);
+    const newRamp = generateRamp(baseColor, steps, vibrance, hueTorsion, { alphaIn, alphaOut });
     setRamp(newRamp);
 
     setLightnessPoints(newRamp.map((color, i) => ({
@@ -432,7 +449,8 @@ const Home = () => {
       setChromaPoints(newChromaPoints);
       setHuePoints(newHuePoints);
 
-      const baseRamp = generateRamp(baseColor, newSteps, vibrance, hueTorsion);
+      const { alphaIn, alphaOut } = getContrastValues(contrast);
+      const baseRamp = generateRamp(baseColor, newSteps, vibrance, hueTorsion, { alphaIn, alphaOut });
       const newRamp = baseRamp.map((color, i) => {
         const l = newLightnessPoints[i].value / 100;
         const c = newChromaPoints[i].value / 100;
@@ -452,7 +470,8 @@ const Home = () => {
     const newVibrance = value[0];
     setVibrance(newVibrance);
 
-    const newRamp = generateRamp(baseColor, steps, newVibrance, hueTorsion);
+    const { alphaIn, alphaOut } = getContrastValues(contrast);
+    const newRamp = generateRamp(baseColor, steps, newVibrance, hueTorsion, { alphaIn, alphaOut });
 
     setLightnessPoints(newRamp.map((color, i) => ({
       step: i,
@@ -474,7 +493,31 @@ const Home = () => {
     const newValue = value[0];
     setHueTorsion(newValue);
 
-    const newRamp = generateRamp(baseColor, steps, vibrance, newValue);
+    const { alphaIn, alphaOut } = getContrastValues(contrast);
+    const newRamp = generateRamp(baseColor, steps, vibrance, newValue, { alphaIn, alphaOut });
+
+    setLightnessPoints(newRamp.map((color, i) => ({
+      step: i,
+      value: color.oklch.l * 100
+    })));
+
+    setChromaPoints(newRamp.map((color, i) => ({
+      step: i,
+      value: color.oklch.c * 100
+    })));
+
+    setHuePoints(newRamp.map((color, i) => ({
+      step: i,
+      value: color.oklch.h
+    })));
+  };
+
+  const handleContrastChange = (value: number[]) => {
+    const newContrast = value[0];
+    setContrast(newContrast);
+
+    const { alphaIn, alphaOut } = getContrastValues(newContrast);
+    const newRamp = generateRamp(baseColor, steps, vibrance, hueTorsion, { alphaIn, alphaOut });
 
     setLightnessPoints(newRamp.map((color, i) => ({
       step: i,
@@ -658,6 +701,35 @@ const Home = () => {
                 </div>
               </div>
             </div>
+
+            <div className="w-full">
+              <Label htmlFor="contrast" className="mb-8">Contrast</Label>
+              <div className="flex items-center gap-4 mt-8">
+                <div className="w-16 text-right">
+                  <span className="text-sm text-muted-foreground">Low</span>
+                </div>
+                <div className="relative flex-1">
+                  <div className="absolute -top-8 left-0 right-0 flex justify-between text-xs text-muted-foreground">
+                    <span>0%</span>
+                    <span>25%</span>
+                    <span>50%</span>
+                    <span>75%</span>
+                    <span>100%</span>
+                  </div>
+                  <Slider
+                    id="contrast"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    value={[contrast]}
+                    onValueChange={handleContrastChange}
+                  />
+                </div>
+                <div className="w-16">
+                  <span className="text-sm text-muted-foreground">High</span>
+                </div>
+              </div>
+            </div>
           </div>
         </TabsContent>
 
@@ -778,7 +850,7 @@ const Home = () => {
                     />
 
                     <h5 className="text-xs font-medium mb-2 mt-6">Primary on Neutral</h5>
-                    <div className="text-xs text-muted-foreground mb-2">Primary Content on Neutral Background</div>
+                    <div className="textxs text-muted-foreground mb-2">Primary Content on Neutral Background</div>
                     <ColorPairing
                       background="#FFFFFF"
                       foreground={ramp[semanticIndices.contentPrimary]?.hex}
