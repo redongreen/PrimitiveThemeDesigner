@@ -617,119 +617,104 @@ const Home = () => {
               <ColorRamp colors={ramp} />
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <CurveEditor
-                  points={lightnessPoints}
-                  steps={steps}
-                  minValue={15}
-                  maxValue={95}
-                  onChange={setLightnessPoints}
-                  label="Lightness Curve"
-                />
-                <CurveEditor
-                  points={chromaPoints}
-                  steps={steps}
-                  minValue={0}
-                  maxValue={100}
-                  onChange={setChromaPoints}
-                  label="Chroma Curve"
-                />
-                <CurveEditor
-                  points={huePoints}
-                  steps={steps}
-                  minValue={0}
-                  maxValue={360}
-                  onChange={setHuePoints}
-                  label="Hue Curve"
-                />
+                <Card className="p-4">
+                  <CurveEditor
+                    points={lightnessPoints}
+                    steps={steps}
+                    minValue={15}
+                    maxValue={95}
+                    onChange={setLightnessPoints}
+                    label="Lightness Curve"
+                  />
+                  <div className="mt-4">
+                    <Label htmlFor="contrast">Contrast</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <div className="w-12 text-right">
+                        <span className="text-sm text-muted-foreground">Low</span>
+                      </div>
+                      <div className="relative flex-1">
+                        <Slider
+                          id="contrast"
+                          min={0}
+                          max={1}
+                          step={0.01}
+                          value={[contrast]}
+                          onValueChange={handleContrastChange}
+                        />
+                      </div>
+                      <div className="w-12">
+                        <span className="text-sm text-muted-foreground">High</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4">
+                  <CurveEditor
+                    points={chromaPoints}
+                    steps={steps}
+                    minValue={0}
+                    maxValue={100}
+                    onChange={setChromaPoints}
+                    label="Chroma Curve"
+                  />
+                  <div className="mt-4">
+                    <Label htmlFor="vibrance">Vibrance</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <div className="w-12 text-right">
+                        <span className="text-sm text-muted-foreground">Pastel</span>
+                      </div>
+                      <div className="relative flex-1">
+                        <Slider
+                          id="vibrance"
+                          min={0}
+                          max={1}
+                          step={0.01}
+                          value={[vibrance]}
+                          onValueChange={handleVibranceChange}
+                        />
+                      </div>
+                      <div className="w-12">
+                        <span className="text-sm text-muted-foreground">Vibrant</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4">
+                  <CurveEditor
+                    points={huePoints}
+                    steps={steps}
+                    minValue={0}
+                    maxValue={360}
+                    onChange={setHuePoints}
+                    label="Hue Curve"
+                  />
+                  <div className="mt-4">
+                    <Label htmlFor="hueTorsion">Hue Torsion</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <div className="w-12 text-right">
+                        <span className="text-sm text-muted-foreground">Cool</span>
+                      </div>
+                      <div className="relative flex-1">
+                        <Slider
+                          id="hueTorsion"
+                          min={0}
+                          max={1}
+                          step={0.01}
+                          value={[hueTorsion]}
+                          onValueChange={handleHueTorsionChange}
+                        />
+                      </div>
+                      <div className="w-12">
+                        <span className="text-sm text-muted-foreground">Warm</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
               </div>
             </div>
 
-            <div className="w-full">
-              <Label htmlFor="vibrance" className="mb-8">Vibrance</Label>
-              <div className="flex items-center gap-4 mt-8">
-                <div className="w-16 text-right">
-                  <span className="text-sm text-muted-foreground">Pastel</span>
-                </div>
-                <div className="relative flex-1">
-                  <div className="absolute -top-8 left-0 right-0 flex justify-between text-xs text-muted-foreground">
-                    <span>0%</span>
-                    <span>25%</span>
-                    <span>50%</span>
-                    <span>75%</span>
-                    <span>100%</span>
-                  </div>
-                  <Slider
-                    id="vibrance"
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    value={[vibrance]}
-                    onValueChange={handleVibranceChange}
-                  />
-                </div>
-                <div className="w-16">
-                  <span className="text-sm text-muted-foreground">Vibrant</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full">
-              <Label htmlFor="hueTorsion" className="mb-8">Hue Torsion</Label>
-              <div className="flex items-center gap-4 mt-8">
-                <div className="w-16 text-right">
-                  <span className="text-sm text-muted-foreground">Cool</span>
-                </div>
-                <div className="relative flex-1">
-                  <div className="absolute -top-8 left-0 right-0 flex justify-between text-xs text-muted-foreground">
-                    <span>0%</span>
-                    <span>25%</span>
-                    <span>50%</span>
-                    <span>75%</span>
-                    <span>100%</span>
-                  </div>
-                  <Slider
-                    id="hueTorsion"
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    value={[hueTorsion]}
-                    onValueChange={handleHueTorsionChange}
-                  />
-                </div>
-                <div className="w-16">
-                  <span className="text-sm text-muted-foreground">Warm</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full">
-              <Label htmlFor="contrast" className="mb-8">Contrast</Label>
-              <div className="flex items-center gap-4 mt-8">
-                <div className="w-16 text-right">
-                  <span className="text-sm text-muted-foreground">Low</span>
-                </div>
-                <div className="relative flex-1">
-                  <div className="absolute -top-8 left-0 right-0 flex justify-between text-xs text-muted-foreground">
-                    <span>0%</span>
-                    <span>25%</span>
-                    <span>50%</span>
-                    <span>75%</span>
-                    <span>100%</span>
-                  </div>
-                  <Slider
-                    id="contrast"
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    value={[contrast]}
-                    onValueChange={handleContrastChange}
-                  />
-                </div>
-                <div className="w-16">
-                  <span className="text-sm text-muted-foreground">High</span>
-                </div>
-              </div>
-            </div>
           </div>
         </TabsContent>
 
@@ -869,7 +854,7 @@ const Home = () => {
                         className="h-full w-full animate-progress"
                         style={{
                           background: `linear-gradient(90deg, ${ramp[semanticIndices.backgroundPrimary]?.hex} 0%, ${ramp[semanticIndices.backgroundPrimary]?.hex} 100%)`,
-                          animation: 'progress 2s linear infinite'
+                          animation: 'progress `2s linear infinite'
                         }}
                       />
                     </div>
