@@ -277,11 +277,11 @@ const Home = () => {
 
   // Calculate alphaIn and alphaOut based on contrast
   const getContrastValues = (contrastValue: number) => {
-    // For low contrast (0), both values approach 0.8
+    // For low contrast (0), both values are 1 (linear)
     // For middle contrast (0.5), use defaults (1.1, 1.67)
     // For high contrast (1), use (2, 3)
-    const alphaIn = 0.8 + contrastValue * 1.2;
-    const alphaOut = 0.8 + contrastValue * 2.2;
+    const alphaIn = 1 + contrastValue * 1;  // Will go from 1 to 2
+    const alphaOut = 1 + contrastValue * 2;  // Will go from 1 to 3
     return { alphaIn, alphaOut };
   };
 
@@ -849,7 +849,7 @@ const Home = () => {
                       }}
                     />
 
-                    <h5 className="text-xs font-medium mb-2 mt-6">Primary on Neutral</h5>
+                    <h5 className="text-xs font-medium mb-2 mt6">Primary on Neutral</h5>
                     <div className="textxs text-muted-foreground mb-2">Primary Content on Neutral Background</div>
                     <ColorPairing
                       background="#FFFFFF"
