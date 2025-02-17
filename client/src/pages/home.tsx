@@ -61,7 +61,7 @@ const ColorToken: React.FC<ColorTokenProps> = ({ color, name, rampIndex, contras
 
   return (
     <div className="flex items-center gap-3 mb-2">
-      <div 
+      <div
         className="w-6 h-6 rounded border border-border"
         style={{ backgroundColor: color }}
       />
@@ -120,9 +120,9 @@ const ColorPairing: React.FC<ColorPairingProps> = ({
   const alternativeContrastRatio = alternativeBackground ? getContrastRatio(foreground, alternativeBackground) : null;
 
   return (
-    <div 
+    <div
       className="rounded-lg p-4 mb-4"
-      style={{ 
+      style={{
         backgroundColor: background,
         border: border ? `1px solid ${border}` : undefined
       }}
@@ -208,7 +208,7 @@ const findLightestWithContrast = (ramp: ColorStop[], against: string, minContras
   }
 
   // If no color in the preferred range meets contrast, find any color that meets contrast
-  const validColors = ramp.filter(color => 
+  const validColors = ramp.filter(color =>
     getContrastRatio(color.hex, against) >= minContrast
   );
 
@@ -310,7 +310,7 @@ const Home = () => {
     const backgroundSecondaryIndex = findLightestWithContrast(ramp, '#5E5E5E', 4.5);
 
     // Calculate backgroundDisabled index
-    const backgroundDisabledIndex = backgroundSecondaryIndex === ramp.length - 1 
+    const backgroundDisabledIndex = backgroundSecondaryIndex === ramp.length - 1
       ? backgroundSecondaryIndex  // If backgroundSecondary is at the last step, use same index
       : Math.min(backgroundSecondaryIndex + 1, ramp.length - 1);  // Otherwise, use one step lighter
 
@@ -318,7 +318,7 @@ const Home = () => {
     const backgroundPrimary = findBestMatchingPrimitive(ramp, baseColor);
     const contentPrimaryIndex = findDarkestWithContrast(ramp, '#F3F3F3', 4.5);
     const contentOnSecondaryIndex = findDarkestWithContrast(
-      ramp, 
+      ramp,
       ramp[backgroundSecondaryIndex]?.hex || '#FFFFFF',
       4.5
     );
@@ -422,7 +422,7 @@ const Home = () => {
 
   const handleStepsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSteps = parseInt(e.target.value) || 12;
-    if (newSteps >= 2 && newSteps <= 20) {
+    if (newSteps >= 4 && newSteps <= 20) {
       const newLightnessPoints = interpolatePoints(lightnessPoints, newSteps);
       const newChromaPoints = interpolatePoints(chromaPoints, newSteps);
       const newHuePoints = interpolatePoints(huePoints, newSteps);
@@ -507,7 +507,7 @@ const Home = () => {
         </h1>
         <p className="text-sm text-muted-foreground">
           Tool created by{' '}
-          <a 
+          <a
             href="https://www.linkedin.com/in/iguisard/"
             target="_blank"
             rel="noopener noreferrer"
@@ -528,27 +528,45 @@ const Home = () => {
           <div className="flex flex-col gap-6 mb-8">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
-                <ColorInput 
-                  value={baseColor} 
+                <ColorInput
+                  value={baseColor}
                   onChange={handleColorChange}
                   onGenerate={handleGenerateRamp}
                   label="Source color"
                 />
               </div>
 
-              <div className="w-full sm:w-24">
+              <div className="w-full sm:w-32">
                 <Label htmlFor="steps">Steps</Label>
-                <Input
-                  id="steps"
-                  type="number"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  min="2"
-                  max="20"
-                  value={steps}
-                  onChange={handleStepsChange}
-                  className="mt-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                />
+                <div className="mt-1 flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-3"
+                    onClick={() => {
+                      const newSteps = Math.max(steps - 1, 4);
+                      handleStepsChange({ target: { value: newSteps.toString() } } as React.ChangeEvent<HTMLInputElement>);
+                    }}
+                    disabled={steps <= 4}
+                  >
+                    -
+                  </Button>
+                  <div className="w-12 text-center font-mono">{steps}</div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-3"
+                    onClick={() => {
+                      const newSteps = Math.min(steps + 1, 20);
+                      handleStepsChange({ target: { value: newSteps.toString() } } as React.ChangeEvent<HTMLInputElement>);
+                    }}
+                    disabled={steps >= 20}
+                  >
+                    +
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -649,19 +667,19 @@ const Home = () => {
 
             <Card className="p-4 mb-6">
               <h3 className="text-sm font-medium mb-4">Background</h3>
-              <ColorToken 
+              <ColorToken
                 color={ramp[semanticIndices.backgroundPrimary]?.hex}
                 name="brandBackgroundPrimary"
                 rampIndex={semanticIndices.backgroundPrimary}
                 contrastWith="#000000"
               />
-              <ColorToken 
+              <ColorToken
                 color={ramp[semanticIndices.backgroundSecondary]?.hex}
                 name="brandBackgroundSecondary"
                 rampIndex={semanticIndices.backgroundSecondary}
                 contrastWith="#5E5E5E"
               />
-              <ColorToken 
+              <ColorToken
                 color={ramp[semanticIndices.backgroundDisabled]?.hex}
                 name="brandBackgroundDisabled"
                 rampIndex={semanticIndices.backgroundDisabled}
@@ -670,25 +688,25 @@ const Home = () => {
 
             <Card className="p-4 mb-6">
               <h3 className="text-sm font-medium mb-4">Foreground</h3>
-              <ColorToken 
+              <ColorToken
                 color={ramp[semanticIndices.contentPrimary]?.hex}
                 name="brandContentPrimary"
                 rampIndex={semanticIndices.contentPrimary}
                 contrastWith="#FFFFFF"
               />
-              <ColorToken 
+              <ColorToken
                 color={getBestContrastColor(ramp[semanticIndices.backgroundPrimary]?.hex)?.color}
                 name="brandContentOnPrimary"
                 rampIndex={-1}
                 contrastWith={ramp[semanticIndices.backgroundPrimary]?.hex}
               />
-              <ColorToken 
+              <ColorToken
                 color={ramp[semanticIndices.contentOnSecondary]?.hex}
                 name="brandContentOnSecondary"
                 rampIndex={semanticIndices.contentOnSecondary}
                 contrastWith={ramp[semanticIndices.backgroundSecondary]?.hex}
               />
-              <ColorToken 
+              <ColorToken
                 color={ramp[semanticIndices.contentDisabled]?.hex}
                 name="brandContentDisabled"
                 rampIndex={semanticIndices.contentDisabled}
@@ -697,13 +715,13 @@ const Home = () => {
 
             <Card className="p-4">
               <h3 className="text-sm font-medium mb-4">Border</h3>
-              <ColorToken 
+              <ColorToken
                 color={ramp[semanticIndices.borderAccessible]?.hex}
                 name="brandBorderAccessible"
                 rampIndex={semanticIndices.borderAccessible}
                 contrastWith="#FFFFFF"
               />
-              <ColorToken 
+              <ColorToken
                 color={ramp[semanticIndices.borderSubtle]?.hex}
                 name="brandBorderSubtle"
                 rampIndex={semanticIndices.borderSubtle}
@@ -713,9 +731,9 @@ const Home = () => {
 
           <div className="flex-1">
             <div className="flex flex-col mx-auto" style={{ width: '390px' }}>
-              <div 
+              <div
                 className="rounded-[48px] flex flex-col p-4"
-                style={{ 
+                style={{
                   border: '6px solid rgba(0, 0, 0, 0.4)',
                 }}
               >
@@ -775,9 +793,9 @@ const Home = () => {
 
                     {/* Progress bar */}
                     <div className="mt-4 w-full h-2 bg-white rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full w-full animate-progress"
-                        style={{ 
+                        style={{
                           background: `linear-gradient(90deg, ${ramp[semanticIndices.backgroundPrimary]?.hex} 0%, ${ramp[semanticIndices.backgroundPrimary]?.hex} 100%)`,
                           animation: 'progress 2s linear infinite'
                         }}
