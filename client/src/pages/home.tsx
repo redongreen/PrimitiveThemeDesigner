@@ -541,11 +541,13 @@ const Home = () => {
                 <Input
                   id="steps"
                   type="number"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   min="2"
                   max="20"
                   value={steps}
                   onChange={handleStepsChange}
-                  className="mt-1"
+                  className="mt-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
             </div>
