@@ -288,9 +288,9 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
                     className="h-full w-full animate-progress"
                     style={{
                       background: `linear-gradient(90deg, ${
-                        ramp[semanticIndices.brandBackgroundPrimary]?.hex || "#6366f1"
+                        ramp[semanticIndices.brandBorderAccessible]?.hex || "#6366f1"
                       } 0%, ${
-                        ramp[semanticIndices.brandBackgroundPrimary]?.hex || "#6366f1"
+                        ramp[semanticIndices.brandBorderAccessible]?.hex || "#6366f1"
                       } 100%)`,
                       animation: "progress 2s linear infinite",
                     }}
