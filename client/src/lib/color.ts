@@ -175,7 +175,7 @@ export function generateRamp(
     }
     const darkEffect = waveEffect(0.2);
     const lightEffect = waveEffect(0.8);
-    const hueAdjustment = (darkEffect - lightEffect) * torsionStrength * 12;
+    const hueAdjustment = (darkEffect - lightEffect) * torsionStrength * 24;  // strength of the hue torsion wave
     const hRaw = base.h + hueAdjustment;
     const normalizedHue = ((hRaw % 360) + 360) % 360;
 

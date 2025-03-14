@@ -3,9 +3,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
-import { ColorInput } from "./ColorInput";       // adjust if needed
-import { ColorRamp } from "./ColorRamp";         // adjust if needed
-import { CurveEditor } from "./CurveEditor";     // adjust if needed
+import { ColorInput } from "./ColorInput";
+import { ColorRamp } from "./ColorRamp";
+import { CurveEditor } from "./CurveEditor";
 
 interface Point {
   step: number;
@@ -117,7 +117,7 @@ export const PrimitiveEditor: React.FC<PrimitiveEditorProps> = ({
             steps={steps}
             minValue={15}
             maxValue={95}
-            onChange={handleLightnessCurveChange}  // <--- Ties drag events to state
+            onChange={handleLightnessCurveChange}
             label="Lightness Curve"
           />
           <div className="mt-4">
@@ -181,8 +181,9 @@ export const PrimitiveEditor: React.FC<PrimitiveEditorProps> = ({
           <CurveEditor
             points={huePoints}
             steps={steps}
-            minValue={0}
-            maxValue={360}
+            // CHANGED: Range is now [-180..180] so the base hue is at 0 (center).
+            minValue={-180}
+            maxValue={180}
             onChange={handleHueCurveChange}
             label="Hue Curve"
           />
