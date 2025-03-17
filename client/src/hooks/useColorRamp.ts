@@ -24,7 +24,7 @@ function fromHueOffset(baseHue: number, offset: number) {
 
 export function useColorRamp() {
   const [baseColor, setBaseColor] = useState("#6366f1");
-  const [steps, setSteps] = useState(12);
+  const [steps, setSteps] = useState(15);
   const [vibrance, setVibrance] = useState(0.5);
   const [hueTorsion, setHueTorsion] = useState(0.5);
   const [contrast, setContrast] = useState(0.5);
