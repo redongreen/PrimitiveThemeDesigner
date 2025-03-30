@@ -337,7 +337,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
             <div className="p-4 bg-black bg-opacity-5 flex justify-between items-center">
               <NavButton icon={<Home size={20} />} active color={brandContentOnPrimary} />
               <NavButton icon={<Search size={20} />} color={brandContentOnPrimary} />
-              <NavButton icon={<ShoppingBag size={20} />} badge="2" color={brandContentPrimary} />
+              <NavButton icon={<ShoppingBag size={20} />} badge="2" color={brandContentOnPrimary} />
               <NavButton icon={<User size={20} />} color={brandContentOnPrimary} />
             </div>
           </div>
@@ -450,15 +450,6 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                         objectPosition: "center"
                       }}
                     />
-                    <div 
-                      className="absolute bottom-1 left-1 text-xs px-1.5 py-0.5 rounded-lg font-medium"
-                      style={{ 
-                        backgroundColor: brandBackgroundSecondary,
-                        color: brandContentOnSecondary
-                      }}
-                    >
-                      BBQ Special
-                    </div>
                   </div>
                   <div className="text-xs font-semibold truncate">Grill House</div>
                   <div className="text-xs text-gray-500">30 min</div>
@@ -473,15 +464,6 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                         objectPosition: "center"
                       }}
                     />
-                    <div 
-                      className="absolute bottom-1 left-1 text-xs px-1.5 py-0.5 rounded-lg font-medium"
-                      style={{ 
-                        backgroundColor: brandBackgroundSecondary,
-                        color: brandContentOnSecondary
-                      }}
-                    >
-                      Fresh Daily
-                    </div>
                   </div>
                   <div className="text-xs font-semibold truncate">Deli Corner</div>
                   <div className="text-xs text-gray-500">25 min</div>
