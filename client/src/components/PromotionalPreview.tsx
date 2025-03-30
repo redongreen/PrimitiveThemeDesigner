@@ -78,20 +78,8 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
         >
           <div
             className="w-full h-full flex flex-col"
-            style={{ backgroundColor: "#000000" }}
+            style={{ backgroundColor: "transparent" }}
           >
-            {/* Status Bar */}
-            <div className="px-4 py-2 flex justify-between items-center">
-              <span style={{ color: "#FFFFFF", fontWeight: "500" }}>9:41</span>
-              <div className="flex gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#FFFFFF" }}>
-                  <rect x="2" y="6" width="20" height="12" rx="2" />
-                </svg>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "#FFFFFF" }}>
-                  <path d="M2 8L12 16L22 8" />
-                </svg>
-              </div>
-            </div>
 
             {/* Full-screen Content */}
             <div className="flex-1 relative">
@@ -112,17 +100,26 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 </div>
               </div>
               
-              {/* Brand Background Gradient Overlay - Full screen brand color tint */}
+              {/* Brand Background Gradient Overlay - Darker brand color */}
               <div 
                 className="absolute inset-0 w-full h-full"
                 style={{ 
-                  backgroundColor: `${brandBackgroundPrimary}70`,
+                  backgroundColor: `${brandBackgroundPrimary}40`,
                   backgroundImage: `linear-gradient(to top, 
                     ${brandBackgroundPrimary} 0%, 
                     ${brandBackgroundPrimary}dd 30%, 
-                    ${brandBackgroundPrimary}aa 60%, 
-                    ${brandBackgroundPrimary}77 100%)`,
-                  mixBlendMode: "overlay"
+                    ${brandBackgroundPrimary}99 60%, 
+                    ${brandBackgroundPrimary}55 100%)`,
+                  mixBlendMode: "multiply"
+                }}
+              ></div>
+              
+              {/* Additional darkening overlay */}
+              <div 
+                className="absolute inset-0 w-full h-full"
+                style={{ 
+                  background: "rgba(0,0,0,0.25)",
+                  mixBlendMode: "multiply"
                 }}
               ></div>
               
