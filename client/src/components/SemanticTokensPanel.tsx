@@ -193,17 +193,17 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
             <table className="w-full border-collapse mb-8">
               <thead>
                 <tr className="bg-muted border-b">
-                  <th className="text-left p-3 w-48">Token Name</th>
-                  <th className="text-left p-3 w-28">Color Value</th>
-                  <th className="text-left p-3 w-16">Index</th>
-                  <th className="text-left p-3">Sample</th>
-                  <th className="text-left p-3">Accessible Pairings</th>
+                  <th className="text-left p-3 w-48 font-mono text-sm">Token Name</th>
+                  <th className="text-left p-3 w-28 font-mono text-sm">Color Value</th>
+                  <th className="text-left p-3 w-16 font-mono text-sm">Index</th>
+                  <th className="text-left p-3 font-mono text-sm">Sample</th>
+                  <th className="text-left p-3 font-mono text-sm">Accessible Pairings</th>
                 </tr>
               </thead>
               <tbody>
                 {/* Background Tokens */}
                 <tr className="border-b">
-                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-medium">Background Tokens</td>
+                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-mono text-sm">Background Tokens</td>
                 </tr>
                 <TokenTableRow 
                   name="brandBackgroundPrimary" 
@@ -267,7 +267,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
                 {/* Content Tokens */}
                 <tr className="border-b">
-                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-medium">Content Tokens</td>
+                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-mono text-sm">Content Tokens</td>
                 </tr>
                 <TokenTableRow 
                   name="brandContentPrimary" 
@@ -353,7 +353,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
                 {/* Border Tokens */}
                 <tr className="border-b">
-                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-medium">Border Tokens</td>
+                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-mono text-sm">Border Tokens</td>
                 </tr>
                 <TokenTableRow 
                   name="brandBorderAccessible" 
@@ -413,11 +413,11 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
             </table>
 
             {/* Common UI Element Pairings */}
-            <h3 className="text-md font-semibold mt-8 mb-4">Common UI Element Examples</h3>
+            <h3 className="text-md font-mono font-semibold mt-8 mb-4">Common UI Element Examples</h3>
             <div className="grid grid-cols-2 gap-4 mb-8">
               {/* Button example */}
               <div className="p-4 border rounded-lg">
-                <h4 className="text-sm font-medium mb-2">Primary Button</h4>
+                <h4 className="text-sm font-mono mb-2">Primary Button</h4>
                 <div className="flex gap-2">
                   <button 
                     className="px-4 py-2 rounded-md font-medium"
@@ -451,7 +451,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
               {/* Card example */}
               <div className="p-4 border rounded-lg">
-                <h4 className="text-sm font-medium mb-2">Card Component</h4>
+                <h4 className="text-sm font-mono mb-2">Card Component</h4>
                 <div
                   className="p-4 rounded-lg"
                   style={{ 
@@ -479,7 +479,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
               {/* Progress bar example */}
               <div className="p-4 border rounded-lg">
-                <h4 className="text-sm font-medium mb-2">Progress Bar</h4>
+                <h4 className="text-sm font-mono mb-2">Progress Bar</h4>
                 <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full animate-progress"
@@ -502,7 +502,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
               {/* Form elements */}
               <div className="p-4 border rounded-lg">
-                <h4 className="text-sm font-medium mb-2">Form Elements</h4>
+                <h4 className="text-sm font-mono mb-2">Form Elements</h4>
                 <div>
                   <div className="mb-2">
                     <input 
@@ -606,12 +606,21 @@ const TokenTableRow = ({
       </td>
       <td className="p-3 text-sm">{rampIndex >= 0 ? rampIndex + 1 : rampIndex}</td>
       <td className="p-3">
-        <div className="inline-block" style={sampleStyle}>
+        <div className="inline-block font-mono text-xs" style={sampleStyle}>
           {sampleText}
         </div>
         {ratio && (
-          <div className="text-xs text-muted-foreground mt-1">
-            Contrast: {ratio.toFixed(2)}:1
+          <div 
+            className="text-xs font-mono mt-2 py-1 px-2 rounded-sm inline-block"
+            style={{
+              backgroundColor: "#000000", 
+              color: "#FFFFFF"
+            }}
+          >
+            {ratio.toFixed(2)}:1
+            {ratio >= 7 && " (AAA)"}
+            {ratio < 7 && ratio >= 4.5 && " (AA)"}
+            {ratio < 4.5 && ratio >= 3 && " (AA Large)"}
           </div>
         )}
       </td>
@@ -636,6 +645,11 @@ const PairingExample = ({
 }) => {
   const ratio = getContrastRatio(foreground, background);
   
+  // Determine if the contrast meets WCAG requirements
+  const isAALarge = ratio >= 3;
+  const isAA = ratio >= 4.5;
+  const isAAA = ratio >= 7;
+  
   return (
     <div 
       className="p-3 rounded-lg"
@@ -644,11 +658,20 @@ const PairingExample = ({
         border: border ? `1px solid ${border}` : undefined,
       }}
     >
-      <div className="text-xs mb-1" style={{ color: foreground }}>
+      <div className="text-xs font-mono mb-1" style={{ color: foreground }}>
         Sample text {label}
       </div>
-      <div className="text-xs text-muted-foreground">
+      <div 
+        className="text-xs font-mono py-1 px-2 rounded-sm mt-1 inline-block"
+        style={{
+          backgroundColor: "#000000", 
+          color: "#FFFFFF",
+        }}
+      >
         {ratio.toFixed(2)}:1 contrast
+        {isAAA && " (AAA)"}
+        {!isAAA && isAA && " (AA)"}
+        {!isAA && isAALarge && " (AA Large)"}
       </div>
     </div>
   );
