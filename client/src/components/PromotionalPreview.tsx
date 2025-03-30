@@ -95,31 +95,15 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
 
             {/* Full-screen Content */}
             <div className="flex-1 relative">
-              {/* Background Food Image */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black">
-                {/* This would be a placeholder for the actual food image you provided */}
-                <div 
-                  className="h-full w-full bg-gray-900 flex items-center justify-center relative"
-                  style={{ backgroundColor: "#1a1a1a" }}
-                >
-                  {/* We're using emoji to simulate elements in your image */}
-                  <div className="absolute left-1/4 top-1/4 transform -translate-x-1/4 -translate-y-1/4">
-                    <div className="text-6xl">🥃</div>
-                  </div>
-                  <div className="absolute left-1/3 bottom-1/3 transform -translate-x-1/3 translate-y-1/3">
-                    <div className="text-5xl">🥬</div>
-                  </div>
-                  
-                  <div className="relative">
-                    <div className="text-9xl">🍜</div>
-                    <div className="absolute top-0 right-0 transform translate-x-4 -translate-y-4 text-6xl rotate-45">🥢</div>
-                  </div>
-                  
-                  <div className="absolute bottom-1/4 right-1/4 transform translate-x-1/4 translate-y-1/4">
-                    <div className="text-5xl">🍚</div>
-                  </div>
-                </div>
-              </div>
+              {/* Background Medieval Tavern Image */}
+              <div 
+                className="absolute inset-0 w-full h-full"
+                style={{
+                  backgroundImage: "url('/attached_assets/med1.png')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center"
+                }}
+              ></div>
               
               {/* Bookmark Button in Top Right */}
               <div className="absolute top-4 right-4 z-10">
@@ -130,9 +114,16 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               
               {/* Brand Background Gradient Overlay */}
               <div 
-                className="absolute bottom-0 left-0 right-0 h-2/5"
+                className="absolute inset-0 w-full h-full"
                 style={{ 
-                  background: `linear-gradient(to top, ${brandBackgroundPrimary} 30%, ${brandBackgroundPrimary}ee 65%, ${brandBackgroundPrimary}88 85%, transparent)`,
+                  background: `linear-gradient(to top, 
+                    ${brandBackgroundPrimary} 15%, 
+                    ${brandBackgroundPrimary}ee 35%, 
+                    ${brandBackgroundPrimary}cc 55%, 
+                    ${brandBackgroundPrimary}99 70%, 
+                    ${brandBackgroundPrimary}55 85%, 
+                    ${brandBackgroundPrimary}22 95%,
+                    transparent)`,
                 }}
               ></div>
               
@@ -147,17 +138,17 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                         color: brandContentOnPrimary 
                       }}
                     >
-                      Bodega
+                      The Golden Dragon Tavern
                     </div>
                     <ArrowRight size={18} style={{ color: brandContentOnPrimary, opacity: 0.9 }} />
                   </div>
                   
                   <div className="flex items-center text-sm gap-1" style={{ color: brandContentOnPrimary }}>
                     <Star size={14} fill={brandContentOnPrimary} />
-                    <span className="font-semibold">4.7</span>
-                    <span style={{ opacity: 0.8 }}>(2,350+)</span>
+                    <span className="font-semibold">4.9</span>
+                    <span style={{ opacity: 0.8 }}>(1,240+)</span>
                     <span className="mx-1">•</span>
-                    <span>20 min</span>
+                    <span>Medieval Cuisine</span>
                   </div>
                 </div>
                 
@@ -170,15 +161,15 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                     }}
                   >
                     <div className="w-16 h-16 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
-                      <span className="text-2xl">🍜</span>
+                      <span className="text-2xl">🍖</span>
                     </div>
                     <div className="ml-3 flex-grow">
-                      <div className="font-semibold" style={{ color: brandContentOnPrimary }}>Bun Cha</div>
+                      <div className="font-semibold" style={{ color: brandContentOnPrimary }}>Roast Pheasant</div>
                       <div className="flex justify-between items-center">
-                        <div style={{ color: brandContentOnPrimary, opacity: 0.9 }}>$12.30</div>
+                        <div style={{ color: brandContentOnPrimary, opacity: 0.9 }}>5 Gold</div>
                         <div className="flex items-center text-xs" style={{ color: brandContentOnPrimary, opacity: 0.8 }}>
                           <ThumbsUp size={12} className="mr-1" />
-                          <span>90% (152)</span>
+                          <span>98% (237)</span>
                         </div>
                       </div>
                     </div>
@@ -199,13 +190,19 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 </div>
                 
                 {/* Bottom Navigation */}
-                <div className="p-3 flex justify-between items-center bg-black bg-opacity-90">
-                  <NavButton icon={<User size={24} />} color="#FFFFFF" />
-                  <div className="flex items-center bg-gray-800 rounded-full px-3 py-1.5">
-                    <Search size={20} className="text-gray-300 mr-2" />
-                    <span className="text-gray-300">Search anything</span>
+                <div className="p-3 flex justify-between items-center bg-black bg-opacity-40" style={{ 
+                  borderTop: `1px solid ${brandBorderAccessible}`,
+                  backgroundColor: "rgba(0,0,0,0.5)"
+                }}>
+                  <NavButton icon={<MapPin size={24} />} color={brandContentOnPrimary} />
+                  <div className="flex items-center rounded-full px-4 py-1.5" style={{
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    border: `1px solid ${brandBorderAccessible}`
+                  }}>
+                    <Search size={20} style={{ color: brandContentOnPrimary, marginRight: "8px" }} />
+                    <span style={{ color: brandContentOnPrimary }}>Search menu</span>
                   </div>
-                  <NavButton icon={<ShoppingBag size={24} />} badge="2" color="#FFFFFF" />
+                  <NavButton icon={<Coffee size={24} />} badge="3" color={brandContentOnPrimary} />
                 </div>
               </div>
             </div>
