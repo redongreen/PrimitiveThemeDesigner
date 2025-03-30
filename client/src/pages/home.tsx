@@ -12,7 +12,7 @@ export default function Home() {
   const rampState = useColorRamp();
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 px-4">
+    <div className="container max-w-9xl mx-auto py-8 px-4">
       <div className="flex items-baseline gap-4 mb-6">
         <h1 className="text-2xl font-bold">
           {activeTab === "primitive" ? "Primitive color creation" : "Accessible pairing"}
