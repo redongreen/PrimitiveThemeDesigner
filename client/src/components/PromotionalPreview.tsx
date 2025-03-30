@@ -187,19 +187,28 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 {/* Menu Item Card */}
                 <div className="px-4 py-2">
                   <div
-                    className="w-full rounded-xl p-3 bg-white bg-opacity-10"
+                    className="w-full rounded-xl p-3 flex items-center bg-white bg-opacity-10"
                     style={{ 
+                      backgroundColor: `${brandBackgroundPrimary}70`,
                       boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                     }}
                   >
                     <div 
-                      className="w-16 h-16 rounded-full bg-white bg-opacity-20 mb-3 flex items-center justify-center"
+                      className="w-16 h-16 rounded-full bg-white bg-opacity-20 flex-shrink-0 flex items-center justify-center"
                       style={{ color: brandContentOnPrimary }}
                     >
-                      <Utensils size={32} />
+                      <Utensils size={24} />
                     </div>
-                    <div className="font-semibold text-sm" style={{ color: brandContentOnPrimary }}>Roast Pheasant</div>
-                    <div className="text-xs opacity-90" style={{ color: brandContentOnPrimary }}>5 Gold • 98% (237)</div>
+                    <div className="ml-3 flex-grow">
+                      <div className="font-semibold text-sm" style={{ color: brandContentOnPrimary }}>Roast Pheasant</div>
+                      <div className="flex justify-between items-center">
+                        <div className="text-xs opacity-90" style={{ color: brandContentOnPrimary }}>5 Gold</div>
+                        <div className="flex items-center text-xs opacity-90" style={{ color: brandContentOnPrimary }}>
+                          <ThumbsUp size={12} className="mr-1" />
+                          <span>98% (237)</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
