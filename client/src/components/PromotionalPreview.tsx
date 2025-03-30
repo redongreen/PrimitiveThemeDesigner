@@ -128,35 +128,43 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 </div>
               </div>
               
+              {/* Brand Background Gradient Overlay */}
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-2/5"
+                style={{ 
+                  background: `linear-gradient(to top, ${brandBackgroundPrimary} 30%, ${brandBackgroundPrimary}ee 65%, ${brandBackgroundPrimary}88 85%, transparent)`,
+                }}
+              ></div>
+              
               {/* Bottom Info Overlay */}
               <div className="absolute bottom-0 left-0 right-0">
                 {/* Restaurant Info Bar */}
                 <div className="px-4 py-2">
                   <div className="flex items-center">
                     <div 
-                      className="font-bold text-xl text-white mr-1"
+                      className="font-bold text-xl mr-1"
                       style={{ 
                         color: brandContentOnPrimary 
                       }}
                     >
                       Bodega
                     </div>
-                    <ArrowRight size={18} className="text-white opacity-80" />
+                    <ArrowRight size={18} style={{ color: brandContentOnPrimary, opacity: 0.9 }} />
                   </div>
                   
-                  <div className="flex items-center text-white text-sm gap-1">
-                    <Star size={14} fill="white" className="text-white" />
+                  <div className="flex items-center text-sm gap-1" style={{ color: brandContentOnPrimary }}>
+                    <Star size={14} fill={brandContentOnPrimary} />
                     <span className="font-semibold">4.7</span>
-                    <span className="text-gray-300">(2,350+)</span>
+                    <span style={{ opacity: 0.8 }}>(2,350+)</span>
                     <span className="mx-1">•</span>
                     <span>20 min</span>
                   </div>
                 </div>
                 
                 {/* Menu Item Card */}
-                <div className="flex px-2 py-2 mb-2 gap-2 overflow-x-auto">
+                <div className="px-2 py-2 mb-2">
                   <div
-                    className="flex-shrink-0 w-5/6 bg-black bg-opacity-80 rounded-xl p-2 flex items-center"
+                    className="w-full bg-black bg-opacity-40 rounded-xl p-2 flex items-center"
                     style={{ 
                       border: `1px solid ${brandBorderAccessible}`,
                     }}
@@ -165,28 +173,23 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                       <span className="text-2xl">🍜</span>
                     </div>
                     <div className="ml-3 flex-grow">
-                      <div className="font-semibold text-white">Bun Cha</div>
+                      <div className="font-semibold" style={{ color: brandContentOnPrimary }}>Bun Cha</div>
                       <div className="flex justify-between items-center">
-                        <div className="text-gray-300">$12.30</div>
-                        <div className="flex items-center text-gray-300 text-xs">
+                        <div style={{ color: brandContentOnPrimary, opacity: 0.9 }}>$12.30</div>
+                        <div className="flex items-center text-xs" style={{ color: brandContentOnPrimary, opacity: 0.8 }}>
                           <ThumbsUp size={12} className="mr-1" />
                           <span>90% (152)</span>
                         </div>
                       </div>
                     </div>
                     <button 
-                      className="ml-2 w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center"
+                      className="ml-2 w-8 h-8 rounded-full flex items-center justify-center"
                       style={{ 
                         backgroundColor: brandBackgroundPrimary
                       }}
                     >
-                      <Plus size={14} className="text-white" />
+                      <Plus size={14} style={{ color: brandContentOnPrimary }} />
                     </button>
-                  </div>
-                  
-                  {/* Partial visible second item */}
-                  <div className="flex-shrink-0 w-20 h-20 bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
-                    <span className="text-2xl">🍲</span>
                   </div>
                 </div>
                 
