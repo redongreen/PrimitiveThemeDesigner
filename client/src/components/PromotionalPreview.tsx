@@ -479,17 +479,49 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 <div 
                   className="h-32 w-full relative overflow-hidden"
                   style={{
-                    backgroundColor: "#e8ddc2" // Fallback background color
+                    backgroundColor: "#e8ddc2", // Medieval parchment color
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
                   }}
                 >
-                  <img 
-                    src="/images/market_express.svg" 
-                    alt="Market Express medieval theme" 
-                    className="w-full h-full object-cover"
-                    style={{
-                      objectPosition: "center"
-                    }}
-                  />
+                  {/* Inline SVG for the Medieval Market Express image */}
+                  <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+                    {/* Background */}
+                    <rect width="400" height="200" fill="#e8ddc2" />
+                    
+                    {/* Knight with Shield */}
+                    <g transform="translate(50, 25) scale(0.7)">
+                      {/* Shield with "Market Express" */}
+                      <path d="M80,40 L140,40 L140,120 L110,140 L80,120 Z" fill="#1a5663" />
+                      <text x="90" y="70" fontSize="12" fill="white" fontWeight="bold">MARKET</text>
+                      <text x="90" y="90" fontSize="12" fill="white" fontWeight="bold">EXPRESS</text>
+                      
+                      {/* Knight Silhouette */}
+                      <path d="M50,40 C50,30 55,25 65,28 C75,30 70,40 70,50 L70,60 L50,60 Z" fill="#625c3e" />
+                      <path d="M50,60 L70,60 L75,100 L45,100 Z" fill="#4a4a4a" />
+                      <path d="M55,45 L65,45 L65,60 L55,60 Z" fill="#e8b89c" />
+                      <path d="M45,100 L75,100 L80,150 L40,150 Z" fill="#943123" />
+                    </g>
+                    
+                    {/* Decorative Elements */}
+                    <g transform="translate(250, 50)">
+                      {/* Castle */}
+                      <rect x="0" y="30" width="80" height="80" fill="#7c7168" />
+                      <rect x="30" y="80" width="20" height="30" fill="#3a2d1d" />
+                      <rect x="0" y="20" width="15" height="10" fill="#7c7168" />
+                      <rect x="25" y="20" width="15" height="10" fill="#7c7168" />
+                      <rect x="50" y="20" width="15" height="10" fill="#7c7168" />
+                      <rect x="75" y="20" width="15" height="10" fill="#7c7168" />
+                    </g>
+                    
+                    {/* Dragon/Griffin */}
+                    <g transform="translate(180, 120)">
+                      <path d="M40,20 C50,15 60,25 55,35 C70,40 65,60 55,65 C60,75 50,85 40,80 C30,85 20,75 25,65 C15,60 10,40 25,35 C20,25 30,15 40,20 Z" fill="#daa520" />
+                      <path d="M55,35 C65,25 75,30 70,45 L55,65 Z" fill="#7b3911" />
+                    </g>
+                  </svg>
+                  
                   <div 
                     className="absolute top-2 left-2 px-2 py-1 rounded-md text-xs font-medium"
                     style={{ 
