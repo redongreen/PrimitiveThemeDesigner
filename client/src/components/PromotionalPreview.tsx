@@ -77,10 +77,44 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
           }}
         >
           <div
-            className="w-full h-full flex flex-col"
+            className="w-full h-full flex flex-col relative"
             style={{ backgroundColor: "transparent" }}
           >
-            {/* Status Bar - No background */}
+            {/* Background Medieval Tavern Image that extends under everything */}
+            <div 
+              className="absolute inset-0 w-full h-full"
+              style={{
+                backgroundImage: "url('/images/med1.png')",
+                backgroundSize: "cover",
+                backgroundPosition: "center"
+              }}
+            ></div>
+            
+            {/* Black gradient overlay that fades into the image */}
+            <div 
+              className="absolute inset-0 w-full h-full"
+              style={{ 
+                backgroundImage: `linear-gradient(to top, 
+                  rgba(0,0,0,0.9) 0%, 
+                  rgba(0,0,0,0.7) 25%, 
+                  rgba(0,0,0,0.5) 50%, 
+                  rgba(0,0,0,0.3) 75%, 
+                  rgba(0,0,0,0.1) 90%,
+                  rgba(0,0,0,0) 100%)`,
+                mixBlendMode: "normal"
+              }}
+            ></div>
+            
+            {/* Very subtle brand color tint */}
+            <div 
+              className="absolute inset-0 w-full h-full"
+              style={{ 
+                backgroundColor: `${brandBackgroundPrimary}15`,
+                mixBlendMode: "color"
+              }}
+            ></div>
+            
+            {/* Status Bar - Transparent overlay */}
             <div className="px-4 py-2 flex justify-between items-center z-10 relative">
               <span style={{ color: "#FFFFFF", fontWeight: "500" }}>9:41</span>
               <div className="flex gap-2">
@@ -93,48 +127,14 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               </div>
             </div>
 
-            {/* Full-screen Content */}
+            {/* Main Content */}
             <div className="flex-1 relative">
-              {/* Background Medieval Tavern Image */}
-              <div 
-                className="absolute inset-0 w-full h-full"
-                style={{
-                  backgroundImage: "url('/images/med1.png')",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center"
-                }}
-              ></div>
-              
               {/* Bookmark Button in Top Right */}
               <div className="absolute top-4 right-4 z-10">
                 <div className="bg-black bg-opacity-60 p-2 rounded-full">
                   <Bookmark size={24} className="text-white" />
                 </div>
               </div>
-              
-              {/* Black gradient overlay that fades into the image */}
-              <div 
-                className="absolute inset-0 w-full h-full"
-                style={{ 
-                  backgroundImage: `linear-gradient(to top, 
-                    rgba(0,0,0,0.9) 0%, 
-                    rgba(0,0,0,0.7) 25%, 
-                    rgba(0,0,0,0.5) 50%, 
-                    rgba(0,0,0,0.3) 75%, 
-                    rgba(0,0,0,0.1) 90%,
-                    rgba(0,0,0,0) 100%)`,
-                  mixBlendMode: "normal"
-                }}
-              ></div>
-              
-              {/* Very subtle brand color tint */}
-              <div 
-                className="absolute inset-0 w-full h-full"
-                style={{ 
-                  backgroundColor: `${brandBackgroundPrimary}15`,
-                  mixBlendMode: "color"
-                }}
-              ></div>
               
               {/* Bottom Info Overlay - Black gradient only */}
               <div className="absolute bottom-0 left-0 right-0 pb-5" style={{
