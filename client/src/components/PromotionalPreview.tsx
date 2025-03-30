@@ -100,13 +100,11 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 </div>
               </div>
               
-              {/* Brand color overlay with transparency */}
+              {/* Brand color gradient overlay */}
               <div 
                 className="absolute inset-0" 
                 style={{ 
-                  backgroundColor: brandBackgroundPrimary, 
-                  opacity: 0.85,
-                  mixBlendMode: "overlay"
+                  background: `linear-gradient(135deg, ${brandBackgroundPrimary} 40%, ${brandBackgroundPrimary}99 65%, ${brandBackgroundPrimary}75 85%)`,
                 }}
               ></div>
               
@@ -114,70 +112,48 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               <div className="absolute inset-0 flex flex-col justify-between p-6">
                 <div className="text-center mt-12">
                   <div 
-                    className="text-2xl font-bold mb-3" 
+                    className="text-4xl font-extrabold mb-3 tracking-tight uppercase" 
                     style={{ color: brandContentOnPrimary }}
                   >
-                    Upgrade to Premium
+                    Limited Offer
                   </div>
                   <div 
-                    className="text-md mb-6" 
+                    className="text-lg font-bold mb-6 uppercase tracking-wide" 
                     style={{ color: brandContentOnPrimary }}
                   >
-                    Get unlimited music, no ads, and offline listening
+                    30% off all premium plans today
                   </div>
                   <button 
-                    className="py-3 px-8 rounded-full font-bold" 
+                    className="py-3 px-10 rounded-lg font-extrabold text-lg uppercase tracking-wider shadow-lg" 
                     style={{ 
                       backgroundColor: "#FFFFFF", 
                       color: "#000000" 
                     }}
                   >
-                    START FREE TRIAL
+                    Get Started
                   </button>
                 </div>
                 
                 <div 
-                  className="bg-black bg-opacity-30 p-4 rounded-lg" 
+                  className="bg-black bg-opacity-40 p-5 rounded-lg shadow-lg" 
                   style={{ backdropFilter: "blur(10px)" }}
                 >
-                  <div className="flex justify-between items-center mb-3">
-                    <div style={{ color: brandContentOnPrimary }}>
-                      <div className="font-bold">Endless Summer</div>
-                      <div className="text-sm opacity-90">The Midnight</div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button 
-                        className="hover:opacity-80" 
-                        style={{ color: brandContentOnPrimary }}
-                      >
-                        <SkipBack size={20} />
-                      </button>
-                      <button 
-                        className="bg-white rounded-full p-1 flex items-center justify-center hover:opacity-90" 
-                        style={{ color: "#000000" }}
-                      >
-                        <PlayCircle size={40} fill="currentColor" />
-                      </button>
-                      <button 
-                        className="hover:opacity-80" 
-                        style={{ color: brandContentOnPrimary }}
-                      >
-                        <SkipForward size={20} />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Progress bar */}
-                  <div className="mb-2 relative h-1 bg-white bg-opacity-30 rounded-full">
+                  <div className="flex items-center justify-between">
                     <div 
-                      className="absolute left-0 top-0 bottom-0 rounded-full" 
-                      style={{ width: "35%", backgroundColor: brandContentOnPrimary }}
-                    ></div>
-                  </div>
-                  
-                  <div className="flex justify-between text-xs" style={{ color: brandContentOnPrimary }}>
-                    <div>1:24</div>
-                    <div>3:45</div>
+                      className="px-6 py-2 rounded font-extrabold uppercase tracking-wide"
+                      style={{ 
+                        color: brandBackgroundPrimary,
+                        backgroundColor: brandContentOnPrimary,
+                      }}
+                    >
+                      Premium
+                    </div>
+                    <div 
+                      className="font-bold px-5 py-2 uppercase tracking-wide"
+                      style={{ color: brandContentOnPrimary }}
+                    >
+                      Offer ends: <span className="text-white">12:00:00</span>
+                    </div>
                   </div>
                 </div>
               </div>
