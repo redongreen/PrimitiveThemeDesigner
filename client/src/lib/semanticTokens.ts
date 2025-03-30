@@ -117,7 +117,7 @@ type Strategy =
     }
   | {
       /**
-       * brandContentOnPrimary tries for >=6:1 vs brandBackgroundPrimary, 
+       * brandContentOnPrimary tries for >=5:1 vs brandBackgroundPrimary, 
        * else black/white fallback if >=4.5:1, else fallback to background's index.
        */
       kind: "content-on-primary-6to1";
@@ -204,7 +204,7 @@ const SEMANTIC_CONFIG: SemanticTokenSpec[] = [
     },
   },
   {
-    // brandContentOnPrimary tries >=6:1 vs brandBackgroundPrimary, else fallback logic
+    // brandContentOnPrimary tries >=5:1 vs brandBackgroundPrimary, else fallback logic
     name: "brandContentOnPrimary",
     strategy: {
       kind: "content-on-primary-6to1",
@@ -297,7 +297,7 @@ function pickIndexForStrategy(
       const bgIndex = knownIndices[strategy.backgroundToken] ?? 0;
       const bgHex = ramp[bgIndex]?.hex || "#FFFFFF";
 
-      // Step 1) search ramp for >=6:1
+      // Step 1) search ramp for >=5:1
       let candidateIndices: number[] = [];
       function expandIndices() {
         candidateIndices.push(bgIndex);
@@ -320,7 +320,7 @@ function pickIndexForStrategy(
       for (const idx of candidateIndices) {
         const fHex = ramp[idx].hex;
         const c = getContrastOrFallback(fHex, bgHex);
-        if (c >= 6) {
+        if (c >= 5) {
           foundIndex = idx;
           break;
         }

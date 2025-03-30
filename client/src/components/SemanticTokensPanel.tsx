@@ -193,15 +193,15 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
             <table className="w-full border-collapse mb-8">
               <thead>
                 <tr className="bg-muted border-b">
-                  <th className="text-left p-3 w-48 font-mono text-sm">Token Name</th>
-                  <th className="text-left p-3 w-28 font-mono text-sm">Color Value</th>
-                  <th className="text-left p-3 font-mono text-sm">Accessible Pairing</th>
+                  <th className="text-left p-3 w-48 text-sm">Token Name</th>
+                  <th className="text-left p-3 w-28 text-sm">Color Value</th>
+                  <th className="text-left p-3 text-sm">Accessible Pairing</th>
                 </tr>
               </thead>
               <tbody>
                 {/* Background Tokens */}
                 <tr className="border-b">
-                  <td colSpan={3} className="px-3 py-2 bg-muted/40 font-mono text-sm">Background Tokens</td>
+                  <td colSpan={3} className="px-3 py-2 bg-muted/40 text-sm">Background Tokens</td>
                 </tr>
                 <TokenTableRow 
                   name="brandBackgroundPrimary" 
@@ -265,7 +265,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
                 {/* Content Tokens */}
                 <tr className="border-b">
-                  <td colSpan={3} className="px-3 py-2 bg-muted/40 font-mono text-sm">Content Tokens</td>
+                  <td colSpan={3} className="px-3 py-2 bg-muted/40 text-sm">Content Tokens</td>
                 </tr>
                 <TokenTableRow 
                   name="brandContentPrimary" 
@@ -351,7 +351,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
                 {/* Border Tokens */}
                 <tr className="border-b">
-                  <td colSpan={3} className="px-3 py-2 bg-muted/40 font-mono text-sm">Border Tokens</td>
+                  <td colSpan={3} className="px-3 py-2 bg-muted/40 text-sm">Border Tokens</td>
                 </tr>
                 <TokenTableRow 
                   name="brandBorderAccessible" 
@@ -363,8 +363,8 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
                     backgroundColor: "#FFFFFF",
                     color: tokenColors.brandContentPrimary,
                     padding: '8px 12px',
-                    borderRadius: '6px',
-                    border: `3px solid ${tokenColors.brandBorderAccessible}`
+                    borderRadius: '8px',
+                    border: `2px solid ${tokenColors.brandBorderAccessible}`
                   }}
                   accessiblePairing={
                     <div 
@@ -415,10 +415,10 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
             <div className="grid grid-cols-2 gap-4 mb-8">
               {/* Button example */}
               <div className="p-4 border rounded-lg">
-                <h4 className="text-sm font-mono mb-2">Primary Button</h4>
+                <h4 className="text-sm mb-2">Primary Button</h4>
                 <div className="flex gap-2">
                   <button 
-                    className="px-4 py-2 rounded-md font-medium"
+                    className="px-4 py-2 rounded-lg font-medium"
                     style={{ 
                       backgroundColor: tokenColors.brandBackgroundPrimary,
                       color: tokenColors.brandContentOnPrimary
@@ -427,7 +427,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
                     Primary
                   </button>
                   <button 
-                    className="px-4 py-2 rounded-md font-medium"
+                    className="px-4 py-2 rounded-lg font-medium"
                     style={{ 
                       backgroundColor: tokenColors.brandBackgroundSecondary,
                       color: tokenColors.brandContentOnSecondary
@@ -436,7 +436,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
                     Secondary
                   </button>
                   <button 
-                    className="px-4 py-2 rounded-md font-medium opacity-60 cursor-not-allowed"
+                    className="px-4 py-2 rounded-lg font-medium opacity-60 cursor-not-allowed"
                     style={{ 
                       backgroundColor: tokenColors.brandBackgroundDisabled,
                       color: tokenColors.brandContentDisabled
@@ -449,7 +449,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
               {/* Card example */}
               <div className="p-4 border rounded-lg">
-                <h4 className="text-sm font-mono mb-2">Card Component</h4>
+                <h4 className="text-sm mb-2">Card Component</h4>
                 <div
                   className="p-4 rounded-lg"
                   style={{ 
@@ -460,7 +460,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
                   <div className="font-medium mb-1" style={{ color: tokenColors.brandContentOnSecondary }}>
                     Card Title
                   </div>
-                  <div className="text-xs mb-3" style={{ color: tokenColors.brandContentOnSecondary }}>
+                  <div className="text-xs mb-3" style={{ color: 'rbga(0, 0, 0, .75)' }}>
                     Card description text with semantic tokens
                   </div>
                   <div 
@@ -477,21 +477,12 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
               {/* Progress bar example */}
               <div className="p-4 border rounded-lg">
-                <h4 className="text-sm font-mono mb-2">Progress Bar</h4>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full animate-progress"
-                    style={{
-                      width: "60%",
-                      background: tokenColors.brandBackgroundPrimary,
-                    }}
-                  />
-                </div>
+                <h4 className="text-sm mb-2">Progress Bar</h4>
                 <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full animate-progress"
                     style={{
-                      width: "40%",
+                      width: "100%",
                       background: tokenColors.brandBorderAccessible,
                     }}
                   />
@@ -500,7 +491,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
               {/* Form elements */}
               <div className="p-4 border rounded-lg">
-                <h4 className="text-sm font-mono mb-2">Form Elements</h4>
+                <h4 className="text-sm mb-2">Form Elements</h4>
                 <div>
                   <div className="mb-2">
                     <input 
@@ -508,8 +499,8 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
                       className="w-full px-3 py-1.5 text-sm rounded-md mb-2" 
                       placeholder="Input field"
                       style={{ 
-                        border: `1px solid ${tokenColors.brandBorderSubtle}`,
-                        color: tokenColors.brandContentPrimary
+                        border: `1px solid rgba(0,0,0,.35)`,
+                        color: `1px solid rgba(0,0,0,1)`
                       }}
                     />
                   </div>
