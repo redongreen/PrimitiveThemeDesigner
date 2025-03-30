@@ -1,5 +1,5 @@
 import React from "react";
-import { Car, Package, ArrowRight, Home, Clock, User, MapPin } from "lucide-react";
+import { Search, ShoppingBag, Home, User } from "lucide-react";
 import { type ColorStop } from "@/lib/color";
 import { SPECIAL_BLACK_INDEX, SPECIAL_WHITE_INDEX } from "@/lib/semanticTokens";
 
@@ -39,305 +39,252 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
   const brandContentOnPrimary = getColor("brandContentOnPrimary");
   const brandContentOnSecondary = getColor("brandContentOnSecondary");
   const brandBorderAccessible = getColor("brandBorderAccessible");
+  const neutralBackground = "#FFFFFF"; // Neutral surface
 
   return (
     <div className="flex flex-col gap-6">
       <h2 className="text-lg font-semibold mb-2">Full-Screen Promotional Preview</h2>
       <p className="text-sm text-muted-foreground mb-4">
-        Showcasing semantic color tokens in a ride-sharing and food delivery app interface
+        Showcasing semantic color tokens in food delivery app promotional screens
       </p>
 
-      {/* Mobile device frame */}
-      <div 
-        className="mx-auto rounded-[36px] overflow-hidden shadow-lg"
-        style={{ 
-          width: "340px", 
-          height: "680px", 
-          border: "12px solid #111", 
-          position: "relative"
-        }}
-      >
-        {/* Welcome Splash Screen */}
-        <div
-          className="w-full h-full flex flex-col"
-          style={{ backgroundColor: brandPrimary }}
+      <div className="flex flex-wrap justify-center gap-8">
+        {/* SCREEN 1: Yellow Primary Background */}
+        <div 
+          className="rounded-[36px] overflow-hidden shadow-lg"
+          style={{ 
+            width: "300px", 
+            height: "600px", 
+            border: "12px solid #111",
+          }}
         >
-          {/* Status Bar */}
-          <div className="px-4 py-2 flex justify-between items-center">
-            <span style={{ color: brandContentOnPrimary }}>9:41</span>
-            <div className="flex gap-1">
-              <div style={{ color: brandContentOnPrimary }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M18 10V14M6 10V14M14 7V17M10 7V17" stroke="currentColor" strokeWidth="2" />
+          <div
+            className="w-full h-full flex flex-col"
+            style={{ backgroundColor: brandPrimary }}
+          >
+            {/* Status Bar */}
+            <div className="px-4 py-2 flex justify-between items-center">
+              <span style={{ color: brandContentOnPrimary, fontWeight: "500" }}>9:41</span>
+              <div className="flex gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ color: brandContentOnPrimary }}>
+                  <rect x="2" y="6" width="20" height="12" rx="2" />
+                </svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: brandContentOnPrimary }}>
+                  <path d="M2 8L12 16L22 8" />
                 </svg>
               </div>
-              <div style={{ color: brandContentOnPrimary }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 10C6 7.79086 7.79086 6 10 6H14C16.2091 6 18 7.79086 18 10V14C18 16.2091 16.2091 18 14 18H10C7.79086 18 6 16.2091 6 14V10Z" stroke="currentColor" strokeWidth="2" />
-                </svg>
-              </div>
-              <div style={{ color: brandContentOnPrimary }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 6H20V18H4V6Z" stroke="currentColor" strokeWidth="2" />
-                  <path d="M20 10H24" stroke="currentColor" strokeWidth="2" />
-                  <path d="M20 14H24" stroke="currentColor" strokeWidth="2" />
-                </svg>
-              </div>
-            </div>
-          </div>
-          
-          {/* Main Content */}
-          <div className="flex-1 flex flex-col justify-center items-center px-6 gap-8">
-            <div 
-              className="w-24 h-24 rounded-full flex items-center justify-center animate-pulse"
-              style={{ backgroundColor: brandSecondary }}
-            >
-              <Car 
-                size={40} 
-                style={{ color: brandContentPrimary }}
-              />
             </div>
             
-            <div className="text-center">
-              <h1 
-                className="text-3xl font-bold mb-2 animate-fadeIn"
-                style={{ 
-                  color: brandContentOnPrimary,
-                  animationDelay: "0.2s" 
-                }}
-              >
-                Spring Rides
-              </h1>
-              <p 
-                className="text-lg mb-6 animate-fadeIn"
-                style={{ 
-                  color: brandContentOnPrimary,
-                  animationDelay: "0.4s"
-                }}
-              >
-                Get 30% off your next trip!
-              </p>
-              <div 
-                className="rounded-full py-3 px-6 font-medium flex items-center justify-center gap-2 mx-auto animate-fadeIn"
-                style={{ 
-                  backgroundColor: "#FFFFFF", 
-                  color: brandContentPrimary,
-                  maxWidth: "200px",
-                  animationDelay: "0.6s"
-                }}
-              >
-                <span>Claim Offer</span>
-                <ArrowRight size={16} />
+            {/* Header */}
+            <div className="px-4 pt-2 pb-4">
+              <div className="font-bold text-sm mb-4" style={{ color: brandContentOnPrimary }}>
+                Uber Eats BOGO Week <span>→</span>
+              </div>
+              
+              {/* Categories */}
+              <div className="flex gap-3 mb-6">
+                <CategoryPill icon="🍽️" label="Eats" color={brandContentOnPrimary} />
+                <CategoryPill icon="🛒" label="Grocery" color={brandContentOnPrimary} />
+                <CategoryPill icon="🎁" label="Offers" active color={brandContentOnPrimary} />
+                <CategoryPill icon="🛍️" label="Shop" color={brandContentOnPrimary} />
               </div>
             </div>
-          </div>
-          
-          {/* Bottom Navigation */}
-          <div 
-            className="p-4 grid grid-cols-4 gap-2"
-            style={{ 
-              borderTop: `1px solid ${brandBorderAccessible}` 
-            }}
-          >
-            <NavItem 
-              icon={<Home size={20} />} 
-              label="Home" 
-              active 
-              color={brandContentOnPrimary} 
-            />
-            <NavItem 
-              icon={<Package size={20} />} 
-              label="Orders" 
-              color={brandContentOnPrimary} 
-            />
-            <NavItem 
-              icon={<Clock size={20} />} 
-              label="History" 
-              color={brandContentOnPrimary} 
-            />
-            <NavItem 
-              icon={<User size={20} />} 
-              label="Profile" 
-              color={brandContentOnPrimary} 
-            />
+
+            {/* Main Content */}
+            <div className="flex-1 px-4">
+              <div className="text-xl font-bold mb-2" style={{ color: brandContentOnPrimary }}>
+                Uber Eats BOGO Week <span>→</span>
+              </div>
+              <div className="mb-6" style={{ color: brandContentOnPrimary }}>
+                Buy 1, get 1 free on your favorite dishes
+              </div>
+
+              {/* Food Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <FoodItem 
+                  brandPrimary={brandPrimary}
+                  brandContentOnPrimary={brandContentOnPrimary}
+                  title="Dunkin'"
+                  subtitle="Iced coffee"
+                  imgEmoji="☕"
+                />
+                <FoodItem 
+                  brandPrimary={brandPrimary}
+                  brandContentOnPrimary={brandContentOnPrimary}
+                  title="Sweetgreen"
+                  subtitle="Salads"
+                  imgEmoji="🥗"
+                />
+                <FoodItem 
+                  brandPrimary={brandPrimary}
+                  brandContentOnPrimary={brandContentOnPrimary}
+                  title="The Bird"
+                  subtitle="Fried Chicken Sandwich"
+                  imgEmoji="🍔"
+                />
+                <FoodItem 
+                  brandPrimary={brandPrimary}
+                  brandContentOnPrimary={brandContentOnPrimary}
+                  title="Wise Sons"
+                  subtitle="Bagel"
+                  imgEmoji="🥯"
+                />
+              </div>
+            </div>
+            
+            {/* Bottom Navigation */}
+            <div className="p-4 bg-black bg-opacity-5 flex justify-between items-center">
+              <NavButton icon={<Home size={20} />} active />
+              <NavButton icon={<Search size={20} />} />
+              <NavButton icon={<ShoppingBag size={20} />} badge="2" />
+            </div>
           </div>
         </div>
         
-        {/* Card overlay */}
+        {/* SCREEN 2: White Background with Brand Elements */}
         <div 
-          className="absolute bottom-0 left-0 right-0 rounded-t-3xl p-5 animate-slideUp"
+          className="rounded-[36px] overflow-hidden shadow-lg"
           style={{ 
-            backgroundColor: brandSecondary,
-            maxHeight: "45%",
-            animationDelay: "0.8s"
+            width: "300px", 
+            height: "600px", 
+            border: "12px solid #111",
           }}
         >
-          <h2 
-            className="font-bold text-lg mb-3 animate-fadeIn"
-            style={{ 
-              color: brandContentOnSecondary,
-              animationDelay: "1.2s"
-            }}
+          <div
+            className="w-full h-full flex flex-col"
+            style={{ backgroundColor: neutralBackground }}
           >
-            Recent Location
-          </h2>
-          
-          <div 
-            className="flex items-center p-3 rounded-xl mb-3 animate-fadeIn"
-            style={{ 
-              backgroundColor: "#FFFFFF",
-              border: `1px solid ${brandBorderAccessible}`,
-              animationDelay: "1.4s" 
-            }}
-          >
-            <div 
-              className="w-10 h-10 rounded-full flex items-center justify-center mr-3"
-              style={{ backgroundColor: brandPrimary }}
-            >
-              <MapPin size={16} style={{ color: brandContentOnPrimary }} />
-            </div>
-            <div>
-              <div className="font-medium" style={{ color: brandContentPrimary }}>
-                Downtown Office
-              </div>
-              <div className="text-xs" style={{ color: "#666" }}>
-                123 Business Ave, Floor 12
+            {/* Status Bar */}
+            <div className="px-4 py-2 flex justify-between items-center">
+              <span style={{ color: brandContentPrimary, fontWeight: "500" }}>9:41</span>
+              <div className="flex gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ color: brandContentPrimary }}>
+                  <rect x="2" y="6" width="20" height="12" rx="2" />
+                </svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: brandContentPrimary }}>
+                  <path d="M2 8L12 16L22 8" />
+                </svg>
               </div>
             </div>
-          </div>
-          
-          <button 
-            className="w-full rounded-xl py-3 font-medium animate-fadeIn"
-            style={{ 
-              backgroundColor: brandPrimary,
-              color: brandContentOnPrimary,
-              animationDelay: "1.6s"
-            }}
-          >
-            Book a Ride
-          </button>
-        </div>
-      </div>
-      
-      {/* Secondary promo screen */}
-      <div 
-        className="mx-auto rounded-[36px] overflow-hidden shadow-lg mt-10"
-        style={{ 
-          width: "340px", 
-          height: "680px", 
-          border: "12px solid #111", 
-          position: "relative"
-        }}
-      >
-        <div
-          className="w-full h-full flex flex-col relative"
-          style={{ backgroundColor: "#FFFFFF" }}
-        >
-          {/* Header */}
-          <div 
-            className="px-6 py-4 flex justify-between items-center"
-            style={{ 
-              backgroundColor: brandSecondary,
-              color: brandContentOnSecondary
-            }}
-          >
-            <button className="font-medium">Back</button>
-            <h2 className="font-bold">Seasonal Offers</h2>
-            <div></div>
-          </div>
-          
-          {/* Main Content */}
-          <div className="p-6">
-            <div 
-              className="rounded-2xl overflow-hidden mb-6 animate-fadeIn"
-              style={{ 
-                border: `1px solid ${brandBorderAccessible}`,
-                animationDelay: "0.2s"
-              }}
-            >
+            
+            {/* Header */}
+            <div className="p-4 mb-2 flex justify-between items-center">
+              <div className="font-bold" style={{ color: brandContentPrimary }}>
+                Explore
+              </div>
+              <User size={18} style={{ color: brandContentPrimary }} />
+            </div>
+            
+            {/* Category Row */}
+            <div className="px-4 mb-4">
+              <div className="flex gap-3">
+                <CategoryPill icon="🍽️" label="Eats" color={brandContentPrimary} />
+                <CategoryPill icon="🛒" label="Grocery" color={brandContentPrimary} />
+                <CategoryPill icon="🎁" label="Offers" color={brandContentPrimary} />
+                <CategoryPill icon="🛍️" label="Shop" color={brandContentPrimary} />
+              </div>
+            </div>
+
+            {/* Top Picks Section */}
+            <div className="px-4 mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <div className="font-medium" style={{ color: brandContentPrimary }}>
+                  Top picks for Lauren <span>→</span>
+                </div>
+              </div>
+              
+              {/* Restaurants Row */}
+              <div className="flex gap-3 overflow-x-auto">
+                <RestaurantItem 
+                  name="Farmhouse Thai"
+                  time="25 min"
+                  promo="Save $3"
+                  brandPrimary={brandPrimary}
+                  brandContentOnPrimary={brandContentOnPrimary}
+                />
+                <RestaurantItem 
+                  name="The Bird"
+                  time="30 min"
+                  brandPrimary={brandSecondary}
+                  brandContentOnPrimary={brandContentOnSecondary}
+                />
+                <RestaurantItem 
+                  name="Wise Sons"
+                  time="25 min"
+                  brandPrimary={brandSecondary}
+                  brandContentOnPrimary={brandContentOnSecondary}
+                />
+              </div>
+            </div>
+            
+            {/* BOGO Banner */}
+            <div className="px-4 mb-4">
               <div 
-                className="p-4 font-bold"
+                className="py-2 px-4 flex justify-between items-center rounded-xl"
+                style={{ backgroundColor: brandPrimary }}
+              >
+                <div>
+                  <div className="font-bold" style={{ color: brandContentOnPrimary }}>BOGO Week</div>
+                  <div className="text-xs" style={{ color: brandContentOnPrimary }}>Save on your favorite dishes</div>
+                </div>
+                <div 
+                  className="text-xs px-2 py-1 rounded-full"
+                  style={{ 
+                    backgroundColor: neutralBackground, 
+                    color: brandContentPrimary 
+                  }}
+                >
+                  Shop now
+                </div>
+              </div>
+            </div>
+            
+            {/* Neighborhood Favorites */}
+            <div className="px-4 mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <div className="font-medium" style={{ color: brandContentPrimary }}>
+                  Neighborhood favorites <span>→</span>
+                </div>
+              </div>
+              
+              {/* Restaurant Card */}
+              <div 
+                className="rounded-xl overflow-hidden mb-3"
                 style={{ 
-                  backgroundColor: brandPrimary,
-                  color: brandContentOnPrimary 
+                  border: `1px solid ${brandBorderAccessible}`,
                 }}
               >
-                LIMITED TIME
-              </div>
-              <div className="p-4">
-                <h3 
-                  className="font-bold text-xl mb-2"
-                  style={{ color: brandContentPrimary }}
+                <div 
+                  className="h-32 w-full bg-gray-200 relative"
                 >
-                  Spring Food Festival
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Order from participating restaurants and save up to 40% on your order.
-                </p>
-                <div className="flex justify-between items-center">
-                  <span 
-                    className="text-sm font-medium"
-                    style={{ color: brandContentPrimary }}
-                  >
-                    Ends in 3 days
-                  </span>
-                  <button 
-                    className="px-4 py-2 rounded-full text-sm font-medium animate-pulse"
+                  <div 
+                    className="absolute top-2 left-2 px-2 py-1 rounded text-xs font-medium"
                     style={{ 
                       backgroundColor: brandPrimary,
                       color: brandContentOnPrimary
                     }}
                   >
-                    View Offers
-                  </button>
+                    Save $5
+                  </div>
+                </div>
+                <div className="p-2">
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium" style={{ color: brandContentPrimary }}>
+                      G Bodega
+                    </div>
+                    <div className="text-xs">
+                      <span>★ 4.7</span> (2,350+) · 20 min
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
             
-            <div 
-              className="rounded-2xl overflow-hidden animate-fadeIn"
-              style={{ 
-                border: `1px solid ${brandBorderAccessible}`,
-                animationDelay: "0.4s"
-              }}
-            >
-              <div 
-                className="p-4 font-bold"
-                style={{ 
-                  backgroundColor: brandSecondary,
-                  color: brandContentOnSecondary
-                }}
-              >
-                RECOMMENDED
-              </div>
-              <div className="p-4">
-                <h3 
-                  className="font-bold text-xl mb-2"
-                  style={{ color: brandContentPrimary }}
-                >
-                  Weekend Getaway
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Use code WEEKEND25 for 25% off rides to popular destinations.
-                </p>
-                <div className="flex justify-between items-center">
-                  <span 
-                    className="text-sm font-medium"
-                    style={{ color: brandContentPrimary }}
-                  >
-                    Valid on weekends
-                  </span>
-                  <button 
-                    className="px-4 py-2 rounded-full text-sm font-medium"
-                    style={{ 
-                      backgroundColor: brandSecondary,
-                      color: brandContentOnSecondary
-                    }}
-                  >
-                    Details
-                  </button>
-                </div>
-              </div>
+            {/* Bottom Navigation */}
+            <div className="mt-auto p-4 border-t flex justify-between items-center">
+              <NavButton icon={<Home size={20} />} active />
+              <NavButton icon={<Search size={20} />} />
+              <NavButton icon={<ShoppingBag size={20} />} badge="2" />
             </div>
           </div>
         </div>
@@ -346,35 +293,108 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
   );
 };
 
-// Helper component for navigation items
-const NavItem = ({ 
+// Helper components
+const CategoryPill = ({ 
   icon, 
   label, 
   active = false,
   color
 }: { 
-  icon: React.ReactNode; 
+  icon: string; 
   label: string; 
   active?: boolean;
   color: string;
 }) => {
   return (
-    <div className="flex flex-col items-center" style={{ opacity: active ? 1 : 0.7 }}>
-      <div style={{ color }}>
-        {icon}
-      </div>
-      <span 
-        className="text-xs mt-1"
-        style={{ color }}
-      >
-        {label}
-      </span>
-      {active && (
-        <div 
-          className="h-1 w-6 rounded-full mt-1"
-          style={{ backgroundColor: color }}
-        />
+    <div 
+      className="flex items-center gap-1 px-3 py-1.5 rounded-full"
+      style={{ 
+        backgroundColor: active ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.2)",
+        color: color
+      }}
+    >
+      <span>{icon}</span>
+      <span className="text-xs font-medium">{label}</span>
+    </div>
+  );
+};
+
+const NavButton = ({ 
+  icon, 
+  badge 
+}: { 
+  icon: React.ReactNode; 
+  badge?: string;
+  active?: boolean;
+}) => {
+  return (
+    <div className="relative p-2">
+      {icon}
+      {badge && (
+        <div className="absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center">
+          <span className="text-[10px]">{badge}</span>
+        </div>
       )}
+    </div>
+  );
+};
+
+const FoodItem = ({ 
+  brandPrimary,
+  brandContentOnPrimary,
+  title,
+  subtitle,
+  imgEmoji
+}: { 
+  brandPrimary: string;
+  brandContentOnPrimary: string;
+  title: string;
+  subtitle: string;
+  imgEmoji: string;
+}) => {
+  return (
+    <div className="bg-white bg-opacity-10 rounded-xl p-3">
+      <div 
+        className="w-16 h-16 rounded-full bg-white bg-opacity-20 mb-3 flex items-center justify-center text-2xl"
+      >
+        {imgEmoji}
+      </div>
+      <div className="font-medium" style={{ color: brandContentOnPrimary }}>{title}</div>
+      <div className="text-xs opacity-90" style={{ color: brandContentOnPrimary }}>{subtitle}</div>
+    </div>
+  );
+};
+
+const RestaurantItem = ({ 
+  name,
+  time,
+  promo,
+  brandPrimary,
+  brandContentOnPrimary
+}: { 
+  name: string;
+  time: string;
+  promo?: string;
+  brandPrimary: string;
+  brandContentOnPrimary: string;
+}) => {
+  return (
+    <div className="w-24 flex-shrink-0">
+      <div className="h-20 bg-gray-200 rounded-xl mb-1 relative">
+        {promo && (
+          <div 
+            className="absolute bottom-1 left-1 text-xs px-1.5 py-0.5 rounded font-medium"
+            style={{ 
+              backgroundColor: brandPrimary,
+              color: brandContentOnPrimary
+            }}
+          >
+            {promo}
+          </div>
+        )}
+      </div>
+      <div className="text-xs font-medium">{name}</div>
+      <div className="text-xs text-gray-500">{time}</div>
     </div>
   );
 };
