@@ -417,13 +417,29 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
 
               {/* Restaurants Row - Fixed Width Items (No Scroll) */}
               <div className="grid grid-cols-3 gap-2">
-                <RestaurantItem 
-                  name="Asian Bistro"
-                  time="25 min"
-                  promo="Save $3"
-                  brandBackgroundPrimary={brandBackgroundPrimary}
-                  brandContentOnPrimary={brandContentOnPrimary}
-                />
+                <div className="mb-2">
+                  <div className="h-20 relative rounded-lg overflow-hidden mb-1">
+                    <img 
+                      src="/images/asian_bistro.png" 
+                      alt="Asian Bistro food" 
+                      className="w-full h-full object-cover"
+                      style={{
+                        objectPosition: "center"
+                      }}
+                    />
+                    <div 
+                      className="absolute bottom-1 left-1 text-xs px-1.5 py-0.5 rounded-lg font-medium"
+                      style={{ 
+                        backgroundColor: brandBackgroundPrimary,
+                        color: brandContentOnPrimary
+                      }}
+                    >
+                      Save $3
+                    </div>
+                  </div>
+                  <div className="text-xs font-semibold truncate">Asian Bistro</div>
+                  <div className="text-xs text-gray-500">25 min</div>
+                </div>
                 <RestaurantItem 
                   name="Grill House"
                   time="30 min"
