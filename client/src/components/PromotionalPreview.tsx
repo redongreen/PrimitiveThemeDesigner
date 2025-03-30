@@ -117,13 +117,13 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               }}
             ></div>
             
-            {/* Large text overlay with brand content color */}
+            {/* Large text overlay with lightened text */}
             <div className="absolute top-1/4 left-0 right-0 text-center">
               <h1 
                 className="text-4xl font-extrabold px-6 leading-tight tracking-tight"
                 style={{ 
-                  color: brandContentOnPrimary,
-                  textShadow: '0 2px 4px rgba(0,0,0,0.4)'
+                  color: "#FFFFFF", // Pure white for better visibility
+                  textShadow: '0 2px 8px rgba(0,0,0,0.6)' // Stronger shadow for contrast
                 }}
               >
                 Medieval Feast Awaits
@@ -166,18 +166,19 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                     <div 
                       className="font-bold text-xl mr-1"
                       style={{ 
-                        color: brandContentOnPrimary 
+                        color: "#FFFFFF", // Pure white for better visibility
+                        textShadow: '0 1px 3px rgba(0,0,0,0.5)' // Add shadow for contrast
                       }}
                     >
                       The Golden Dragon Tavern
                     </div>
-                    <ArrowRight size={18} style={{ color: brandContentOnPrimary, opacity: 0.9 }} />
+                    <ArrowRight size={18} style={{ color: "#FFFFFF", opacity: 0.9 }} />
                   </div>
                   
-                  <div className="flex items-center text-sm gap-1" style={{ color: brandContentOnPrimary }}>
-                    <Star size={14} fill={brandContentOnPrimary} />
+                  <div className="flex items-center text-sm gap-1" style={{ color: "#FFFFFF" }}>
+                    <Star size={14} fill="#FFFFFF" />
                     <span className="font-semibold">4.9</span>
-                    <span style={{ opacity: 0.8 }}>(1,240+)</span>
+                    <span style={{ opacity: 0.9 }}>(1,240+)</span>
                     <span className="mx-1">•</span>
                     <span>Medieval Cuisine</span>
                   </div>
@@ -196,10 +197,10 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                       <span className="text-2xl">🍖</span>
                     </div>
                     <div className="ml-3 flex-grow">
-                      <div className="font-semibold" style={{ color: brandContentOnPrimary }}>Roast Pheasant</div>
+                      <div className="font-semibold" style={{ color: "#FFFFFF" }}>Roast Pheasant</div>
                       <div className="flex justify-between items-center">
-                        <div style={{ color: brandContentOnPrimary, opacity: 0.9 }}>5 Gold</div>
-                        <div className="flex items-center text-xs" style={{ color: brandContentOnPrimary, opacity: 0.8 }}>
+                        <div style={{ color: "#FFFFFF", opacity: 0.95 }}>5 Gold</div>
+                        <div className="flex items-center text-xs" style={{ color: "#FFFFFF", opacity: 0.9 }}>
                           <ThumbsUp size={12} className="mr-1" />
                           <span>98% (237)</span>
                         </div>
@@ -211,7 +212,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                         backgroundColor: 'rgba(0,0,0,0.8)'
                       }}
                     >
-                      <Plus size={14} style={{ color: brandContentOnPrimary }} />
+                      <Plus size={14} style={{ color: "#FFFFFF" }} />
                     </button>
                   </div>
                 </div>
