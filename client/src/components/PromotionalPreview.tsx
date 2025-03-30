@@ -90,6 +90,18 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               }}
             ></div>
             
+            {/* Brand color gradient layer */}
+            <div 
+              className="absolute inset-0 w-full h-full"
+              style={{ 
+                backgroundImage: `linear-gradient(135deg, 
+                  ${brandBackgroundPrimary}70 0%, 
+                  ${brandBackgroundPrimary}40 35%, 
+                  transparent 75%)`,
+                mixBlendMode: "multiply"
+              }}
+            ></div>
+            
             {/* Black gradient overlay that fades into the image */}
             <div 
               className="absolute inset-0 w-full h-full"
@@ -105,14 +117,18 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               }}
             ></div>
             
-            {/* Very subtle brand color tint */}
-            <div 
-              className="absolute inset-0 w-full h-full"
-              style={{ 
-                backgroundColor: `${brandBackgroundPrimary}15`,
-                mixBlendMode: "color"
-              }}
-            ></div>
+            {/* Large text overlay with brand content color */}
+            <div className="absolute top-1/4 left-0 right-0 text-center">
+              <h1 
+                className="text-4xl font-extrabold px-6 leading-tight tracking-tight"
+                style={{ 
+                  color: brandContentOnPrimary,
+                  textShadow: '0 2px 4px rgba(0,0,0,0.4)'
+                }}
+              >
+                Medieval Feast Awaits
+              </h1>
+            </div>
             
             {/* Status Bar - Transparent overlay */}
             <div className="px-4 py-2 flex justify-between items-center z-10 relative">
@@ -172,7 +188,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                   <div
                     className="w-full rounded-xl p-3 flex items-center"
                     style={{ 
-                      backgroundColor: 'rgba(0,0,0,0.7)',
+                      backgroundColor: `${brandBackgroundPrimary}aa`,
                       boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                     }}
                   >
