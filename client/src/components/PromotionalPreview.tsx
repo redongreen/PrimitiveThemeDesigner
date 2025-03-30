@@ -187,14 +187,14 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 {/* Menu Item Card */}
                 <div className="px-4 py-2">
                   <div
-                    className="w-full rounded-xl p-3 flex items-center bg-white bg-opacity-10"
+                    className="w-full rounded-xl p-3 flex items-center"
                     style={{ 
-                      backgroundColor: `${brandBackgroundPrimary}70`,
+                      backgroundColor: `${brandBackgroundPrimary}`,
                       boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                     }}
                   >
                     <div 
-                      className="w-16 h-16 rounded-full bg-white bg-opacity-20 flex-shrink-0 flex items-center justify-center"
+                      className="w-16 h-16 rounded-lg bg-black bg-opacity-20 flex-shrink-0 flex items-center justify-center"
                       style={{ color: brandContentOnPrimary }}
                     >
                       <Utensils size={24} />
@@ -209,6 +209,15 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                         </div>
                       </div>
                     </div>
+                    <button
+                      className="ml-2 px-3 py-1.5 rounded-lg text-xs font-medium"
+                      style={{
+                        backgroundColor: 'rgba(0,0,0,0.3)',
+                        color: brandContentOnPrimary
+                      }}
+                    >
+                      Order now
+                    </button>
                   </div>
                 </div>
               </div>
