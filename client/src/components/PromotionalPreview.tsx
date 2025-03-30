@@ -126,10 +126,15 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 }}
               ></div>
               
-              {/* Bottom Info Overlay */}
-              <div className="absolute bottom-0 left-0 right-0">
+              {/* Bottom Info Overlay - Less visible with darker gradient */}
+              <div className="absolute bottom-0 left-0 right-0 pb-5" style={{
+                background: `linear-gradient(to top, 
+                  ${brandBackgroundPrimary} 0%, 
+                  ${brandBackgroundPrimary}ee 75%, 
+                  transparent 100%)`
+              }}>
                 {/* Restaurant Info Bar */}
-                <div className="px-4 py-2">
+                <div className="px-4 pt-8 pb-3">
                   <div className="flex items-center">
                     <div 
                       className="font-bold text-xl mr-1"
@@ -152,14 +157,15 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 </div>
                 
                 {/* Menu Item Card */}
-                <div className="px-2 py-2 mb-2">
+                <div className="px-4 py-2">
                   <div
-                    className="w-full bg-black bg-opacity-40 rounded-xl p-2 flex items-center"
+                    className="w-full bg-black bg-opacity-40 rounded-xl p-3 flex items-center"
                     style={{ 
-                      border: `1px solid ${brandBorderAccessible}`,
+                      backgroundColor: `${brandBackgroundPrimary}aa`,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                     }}
                   >
-                    <div className="w-16 h-16 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-black bg-opacity-30 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
                       <span className="text-2xl">🍖</span>
                     </div>
                     <div className="ml-3 flex-grow">
@@ -175,33 +181,12 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                     <button 
                       className="ml-2 w-8 h-8 rounded-full flex items-center justify-center"
                       style={{ 
-                        backgroundColor: brandBackgroundPrimary
+                        backgroundColor: `${brandBackgroundPrimary}ee`
                       }}
                     >
                       <Plus size={14} style={{ color: brandContentOnPrimary }} />
                     </button>
                   </div>
-                </div>
-                
-                {/* Home Indicator Line */}
-                <div className="flex justify-center py-2 pb-4">
-                  <div className="w-32 h-1 bg-white rounded-full"></div>
-                </div>
-                
-                {/* Bottom Navigation */}
-                <div className="p-3 flex justify-between items-center bg-black bg-opacity-40" style={{ 
-                  borderTop: `1px solid ${brandBorderAccessible}`,
-                  backgroundColor: "rgba(0,0,0,0.5)"
-                }}>
-                  <NavButton icon={<MapPin size={24} />} color={brandContentOnPrimary} />
-                  <div className="flex items-center rounded-full px-4 py-1.5" style={{
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    border: `1px solid ${brandBorderAccessible}`
-                  }}>
-                    <Search size={20} style={{ color: brandContentOnPrimary, marginRight: "8px" }} />
-                    <span style={{ color: brandContentOnPrimary }}>Search menu</span>
-                  </div>
-                  <NavButton icon={<Coffee size={24} />} badge="3" color={brandContentOnPrimary} />
                 </div>
               </div>
             </div>
