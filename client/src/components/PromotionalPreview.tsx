@@ -421,7 +421,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                   <div className="h-20 relative rounded-lg overflow-hidden mb-1">
                     <img 
                       src="/images/asian_bistro_new.png" 
-                      alt="Asian Bistro storefront with paper lanterns" 
+                      alt="Person eating noodles with chopsticks at Asian restaurant" 
                       className="w-full h-full object-cover"
                       style={{
                         objectPosition: "center"
