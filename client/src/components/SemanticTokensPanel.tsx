@@ -585,9 +585,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
         </div>
       </div>
 
-      {/* Promotional Preview Section - Rendered Below */}
-      <h2 className="text-xl font-semibold mt-12 mb-6">Example</h2>
-      <PromotionalPreview ramp={ramp} semanticIndices={semanticIndices} />
+      {/* Promotional Preview Section moved to the home page */}
     </div>
   );
 };
