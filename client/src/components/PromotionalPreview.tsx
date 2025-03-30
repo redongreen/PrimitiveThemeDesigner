@@ -477,7 +477,13 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 }}
               >
                 <div 
-                  className="h-32 w-full bg-gray-200 relative"
+                  className="h-32 w-full relative"
+                  style={{
+                    backgroundImage: "url('/images/market_express.svg')",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundColor: "#e8ddc2" // Fallback background color
+                  }}
                 >
                   <div 
                     className="absolute top-2 left-2 px-2 py-1 rounded-md text-xs font-medium"

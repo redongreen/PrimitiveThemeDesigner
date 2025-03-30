@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="800" viewBox="0 0 800 800" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <rect width="800" height="800" fill="#e8ddc2" />
+    
+    <!-- Knight with Market Express Shield -->
+    <g transform="translate(120, 100)">
+        <!-- Helmet -->
+        <path d="M130,50 C130,30 140,20 165,25 C190,30 180,50 180,70 L180,90 L130,90 Z" fill="#625c3e" />
+        <!-- Chainmail -->
+        <path d="M130,90 L180,90 L190,180 L120,180 Z" fill="#4a4a4a" stroke="#3a3a3a" stroke-width="2" />
+        <path d="M130,90 L180,90 L190,180 L120,180 Z" fill="url(#chainmailPattern)" />
+        <!-- Face -->
+        <path d="M145,60 L165,60 L165,90 L145,90 Z" fill="#e8b89c" />
+        <rect x="150" y="75" width="10" height="5" fill="#433229" />
+        
+        <!-- Body/Tunic -->
+        <path d="M120,180 L190,180 L200,300 L110,300 Z" fill="#943123" />
+        
+        <!-- Belt -->
+        <path d="M120,230 L190,230 L190,245 L120,245 Z" fill="#625c3e" />
+        <rect x="145" y="230" width="20" height="25" fill="#625c3e" />
+        
+        <!-- Legs -->
+        <path d="M120,300 L145,300 L145,380 L120,380 Z" fill="#666" />
+        <path d="M165,300 L190,300 L190,380 L165,380 Z" fill="#666" />
+        
+        <!-- Boots -->
+        <path d="M110,380 L145,380 L145,420 L110,420 Z" fill="#3a2d1d" />
+        <path d="M165,380 L200,380 L200,420 L165,420 Z" fill="#3a2d1d" />
+        
+        <!-- Sword -->
+        <rect x="90" y="170" width="8" height="100" fill="#999" />
+        <path d="M94,170 L104,150 L84,150 Z" fill="#999" />
+        <rect x="84" y="95" width="20" height="55" fill="#bbb" />
+        <path d="M94,95 L104,75 L84,75 Z" fill="#bbb" />
+        
+        <!-- "Market Express" Shield -->
+        <path d="M130,150 L100,170 L100,270 L155,270 L155,170 Z" fill="#1a5663" />
+        <text x="110" y="200" font-family="Arial" font-size="14" font-weight="bold" fill="white">MARKET</text>
+        <text x="110" y="220" font-family="Arial" font-size="14" font-weight="bold" fill="white">EXPRESS</text>
+    </g>
+    
+    <!-- Decorative Shield with Chevron -->
+    <g transform="translate(350, 100)">
+        <path d="M50,50 L150,50 L150,200 L100,250 L50,200 Z" fill="#1a5663" /> <!-- Teal -->
+        <path d="M50,50 L100,50 L100,250 L50,200 Z" fill="#943123" /> <!-- Rust Red -->
+        <path d="M100,50 L150,50 L150,200 L100,250 Z" fill="#943123" /> <!-- Rust Red -->
+        <path d="M50,100 L150,100 L100,170 Z" fill="#daa520" /> <!-- Gold Chevron -->
+    </g>
+    
+    <!-- Flower 1 -->
+    <g transform="translate(250, 120)">
+        <circle cx="30" cy="30" r="12" fill="#daa520" /> <!-- Center -->
+        <path d="M30,15 Q40,20 30,30 Q20,20 30,15 Z" fill="#9c451b" /> <!-- Petal 1 -->
+        <path d="M45,20 Q45,30 30,30 Q35,15 45,20 Z" fill="#9c451b" /> <!-- Petal 2 -->
+        <path d="M45,40 Q35,45 30,30 Q45,30 45,40 Z" fill="#9c451b" /> <!-- Petal 3 -->
+        <path d="M30,45 Q20,45 30,30 Q40,40 30,45 Z" fill="#9c451b" /> <!-- Petal 4 -->
+        <path d="M15,40 Q15,30 30,30 Q25,45 15,40 Z" fill="#9c451b" /> <!-- Petal 5 -->
+        <path d="M15,20 Q25,15 30,30 Q15,30 15,20 Z" fill="#9c451b" /> <!-- Petal 6 -->
+        <!-- Stem and Leaves -->
+        <path d="M30,42 L30,80" stroke="#617e4a" stroke-width="3" fill="none" />
+        <path d="M30,60 Q45,65 40,50" stroke="#617e4a" stroke-width="3" fill="none" />
+    </g>
+    
+    <!-- Castle -->
+    <g transform="translate(450, 120)">
+        <!-- Main Castle -->
+        <path d="M50,60 L170,60 L170,180 L50,180 Z" fill="#7c7168" />
+        <!-- Gate -->
+        <path d="M95,130 L125,130 L125,180 L95,180 Z" fill="#3a2d1d" />
+        <!-- Towers -->
+        <path d="M50,60 L70,60 L70,40 L50,40 Z" fill="#7c7168" />
+        <path d="M85,60 L105,60 L105,40 L85,40 Z" fill="#7c7168" />
+        <path d="M115,60 L135,60 L135,40 L115,40 Z" fill="#7c7168" />
+        <path d="M150,60 L170,60 L170,40 L150,40 Z" fill="#7c7168" />
+        <!-- Stone Pattern -->
+        <path d="M60,80 L80,80 M90,80 L110,80 M120,80 L160,80
+                 M60,100 L80,100 M90,100 L110,100 M120,100 L160,100
+                 M60,120 L90,120 M130,120 L160,120
+                 M60,140 L90,140 M130,140 L160,140
+                 M60,160 L90,160 M130,160 L160,160" 
+              stroke="#666" stroke-width="2" />
+        <!-- Flag -->
+        <rect x="125" y="20" width="3" height="20" fill="#7c7168" />
+        <path d="M128,20 L145,25 L128,30 Z" fill="#943123" />
+    </g>
+    
+    <!-- Griffin/Dragon 1 -->
+    <g transform="translate(600, 100)">
+        <!-- Body -->
+        <path d="M100,80 C120,70 140,90 130,110 C160,120 150,150 130,160 C140,180 120,200 100,190 C80,200 60,180 70,160 C50,150 40,120 70,110 C60,90 80,70 100,80 Z" fill="#daa520" />
+        <!-- Head -->
+        <path d="M70,110 C60,100 65,90 80,95 C85,85 95,85 100,95 C105,90 110,100 100,105 Z" fill="#daa520" />
+        <!-- Beak -->
+        <path d="M70,95 L60,105 L70,105 Z" fill="#7b3911" />
+        <!-- Eye -->
+        <circle cx="80" cy="97" r="2" fill="#333" />
+        <!-- Wings -->
+        <path d="M130,110 C150,90 160,100 150,120 C160,110 170,120 160,130 C170,125 180,140 160,145 Z" fill="#7b3911" />
+        <!-- Tail -->
+        <path d="M70,160 C60,170 50,160 60,150 C50,155 40,145 55,140 Z" fill="#daa520" />
+    </g>
+    
+    <!-- Plant/Leaf -->
+    <g transform="translate(500, 250)">
+        <path d="M20,10 C30,20 40,10 20,40 C40,70 30,60 20,70 C10,60 0,70 20,40 C0,10 10,20 20,10 Z" fill="#617e4a" />
+        <path d="M20,70 L20,90" stroke="#617e4a" stroke-width="2" fill="none" />
+    </g>
+    
+    <!-- Flower 2 -->
+    <g transform="translate(680, 250)">
+        <circle cx="20" cy="20" r="10" fill="#9c451b" />
+        <circle cx="20" cy="20" r="5" fill="#daa520" />
+        <path d="M20,30 L20,50" stroke="#617e4a" stroke-width="2" fill="none" />
+        <path d="M20,40 Q30,35 25,30" stroke="#617e4a" stroke-width="2" fill="none" />
+    </g>
+    
+    <!-- Knight on Horse -->
+    <g transform="translate(290, 350)">
+        <!-- Horse Body -->
+        <path d="M100,150 C150,130 200,170 230,200 C200,230 150,260 100,230 Z" fill="#8b5a2b" />
+        <!-- Horse Neck -->
+        <path d="M100,150 C80,120 100,80 120,70" fill="#8b5a2b" />
+        <!-- Horse Head -->
+        <path d="M120,70 C140,60 160,70 150,90 C160,100 130,110 120,90 Z" fill="#8b5a2b" />
+        <!-- Eye -->
+        <circle cx="135" cy="80" r="3" fill="#333" />
+        <!-- Mane -->
+        <path d="M100,150 C110,130 115,110 120,90" fill="#4a2800" stroke="#4a2800" stroke-width="5" />
+        <!-- Tail -->
+        <path d="M230,200 C260,180 265,210 240,220" fill="#4a2800" stroke="#4a2800" stroke-width="5" />
+        <!-- Legs -->
+        <path d="M120,230 L120,270 M140,230 L140,270 M190,230 L190,270 M210,230 L210,270" stroke="#8b5a2b" stroke-width="15" />
+        
+        <!-- Knight -->
+        <!-- Helmet -->
+        <path d="M140,100 C140,90 150,80 160,80 C170,80 180,90 180,100 L180,110 L140,110 Z" fill="#4a4a4a" />
+        <!-- Chainmail -->
+        <path d="M140,110 L180,110 L185,150 L135,150 Z" fill="#4a4a4a" stroke="#3a3a3a" stroke-width="1" />
+        <!-- Face -->
+        <path d="M155,90 L165,90 L165,110 L155,110 Z" fill="#e8b89c" />
+        
+        <!-- Body/Tunic -->
+        <path d="M135,150 L185,150 L190,210 L130,210 Z" fill="#943123" />
+        
+        <!-- Shield -->
+        <path d="M120,130 L160,130 L160,190 L140,210 L120,190 Z" fill="#1a5663" /> <!-- Teal -->
+        <path d="M120,130 L140,130 L140,210 L120,190 Z" fill="#943123" /> <!-- Rust Red -->
+        <path d="M140,130 L160,130 L160,190 L140,210 Z" fill="#943123" /> <!-- Rust Red -->
+        <path d="M120,150 L160,150 L140,180 Z" fill="#daa520" /> <!-- Gold Chevron -->
+    </g>
+    
+    <!-- More Decorative Shields with Chevron -->
+    <g transform="translate(120, 400)">
+        <path d="M30,30 L80,30 L80,100 L55,125 L30,100 Z" fill="#1a5663" /> <!-- Teal -->
+        <path d="M30,30 L55,30 L55,125 L30,100 Z" fill="#943123" /> <!-- Rust Red -->
+        <path d="M55,30 L80,30 L80,100 L55,125 Z" fill="#943123" /> <!-- Rust Red -->
+        <path d="M30,55 L80,55 L55,85 Z" fill="#daa520" /> <!-- Gold Chevron -->
+    </g>
+    
+    <!-- Another Castle -->
+    <g transform="translate(150, 500)">
+        <!-- Main Castle -->
+        <path d="M30,30 L170,30 L170,150 L30,150 Z" fill="#7c7168" />
+        <!-- Gate -->
+        <path d="M85,100 L115,100 L115,150 L85,150 Z" fill="#3a2d1d" />
+        <!-- Towers -->
+        <path d="M30,30 L60,30 L60,10 L30,10 Z" fill="#7c7168" />
+        <path d="M80,30 L120,30 L120,10 L80,10 Z" fill="#7c7168" />
+        <path d="M140,30 L170,30 L170,10 L140,10 Z" fill="#7c7168" />
+        <!-- Stone Pattern -->
+        <path d="M50,50 L80,50 M100,50 L150,50
+                 M50,70 L80,70 M100,70 L150,70
+                 M50,90 L80,90 M120,90 L150,90
+                 M50,110 L80,110 M120,110 L150,110
+                 M50,130 L80,130 M120,130 L150,130" 
+              stroke="#666" stroke-width="2" />
+        <!-- Flag -->
+        <rect x="100" y="0" width="3" height="10" fill="#7c7168" />
+        <path d="M103,0 L113,3 L103,6 Z" fill="#943123" />
+    </g>
+    
+    <!-- Bottom Decoration -->
+    <g transform="translate(350, 650)">
+        <path d="M0,0 C30,-10 60,10 90,0 M110,0 C140,-10 170,10 200,0" stroke="#daa520" stroke-width="3" fill="none" />
+        <circle cx="50" cy="-30" r="15" fill="#daa520" />
+        <circle cx="50" cy="-30" r="8" fill="#9c451b" />
+        <circle cx="150" cy="-30" r="15" fill="#daa520" />
+        <circle cx="150" cy="-30" r="8" fill="#9c451b" />
+    </g>
+    
+    <!-- Additional Griffins/Dragons -->
+    <g transform="translate(500, 450)">
+        <!-- Body -->
+        <path d="M70,50 C85,40 100,55 95,70 C115,75 110,95 95,100 C100,115 85,130 70,120 C55,130 40,115 45,100 C30,95 25,75 45,70 C40,55 55,40 70,50 Z" fill="#daa520" />
+        <!-- Head -->
+        <path d="M45,70 C40,60 42,55 50,57 C55,52 60,52 65,57 C70,55 72,60 65,65 Z" fill="#daa520" />
+        <!-- Beak -->
+        <path d="M45,57 L40,65 L45,65 Z" fill="#7b3911" />
+        <!-- Eye -->
+        <circle cx="50" cy="57" r="1" fill="#333" />
+        <!-- Wings -->
+        <path d="M95,70 C105,55 115,60 110,75 C115,70 120,75 115,80 C120,77 125,85 115,90 Z" fill="#7b3911" />
+        <!-- Tail -->
+        <path d="M45,100 C40,105 35,100 40,95 C35,98 30,92 38,90 Z" fill="#daa520" />
+    </g>
+    
+    <!-- Pattern Definitions -->
+    <defs>
+        <pattern id="chainmailPattern" patternUnits="userSpaceOnUse" width="5" height="5">
+            <rect width="5" height="5" fill="#4a4a4a" />
+            <rect width="1" height="1" fill="#3a3a3a" />
+            <rect x="2" y="2" width="1" height="1" fill="#3a3a3a" />
+        </pattern>
+    </defs>
+</svg>
