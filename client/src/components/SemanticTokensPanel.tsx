@@ -163,186 +163,371 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
   const [activeTab, setActiveTab] = useState<string>("tokens");
 
+  // Get all semantic colors for use in the table
+  const tokenColors = {
+    brandBackgroundPrimary: getColor("brandBackgroundPrimary"),
+    brandBackgroundSecondary: getColor("brandBackgroundSecondary"),
+    brandBackgroundDisabled: getColor("brandBackgroundDisabled"),
+    brandContentPrimary: getColor("brandContentPrimary"),
+    brandContentOnPrimary: getColor("brandContentOnPrimary"),
+    brandContentOnSecondary: getColor("brandContentOnSecondary"),
+    brandContentDisabled: getColor("brandContentDisabled"),
+    brandBorderAccessible: getColor("brandBorderAccessible"),
+    brandBorderSubtle: getColor("brandBorderSubtle"),
+  };
+
   return (
     <div>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="tokens">Semantic Tokens</TabsTrigger>
-          <TabsTrigger value="pairings">Accessible Pairings</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="tokens">Semantic Tokens & Pairings</TabsTrigger>
           <TabsTrigger value="promotional">Promotional Preview</TabsTrigger>
         </TabsList>
 
         {/* TOKENS TAB */}
         <TabsContent value="tokens" className="mt-6">
-          <div className="flex gap-8">
-            <div className="w-96">
-              <h2 className="text-lg font-semibold mb-6">Semantic Tokens</h2>
-
-              <Card className="p-4 mb-6">
-                <h3 className="text-sm font-medium mb-4">Background</h3>
-                <ColorToken
-                  color={getColor("brandBackgroundPrimary")}
-                  name="brandBackgroundPrimary"
+          <div className="overflow-x-auto">
+            <h2 className="text-lg font-semibold mb-4">Semantic Color System</h2>
+            
+            {/* Combined Semantic Tokens and Accessibility Table */}
+            <table className="w-full border-collapse mb-8">
+              <thead>
+                <tr className="bg-muted border-b">
+                  <th className="text-left p-3 w-48">Token Name</th>
+                  <th className="text-left p-3 w-28">Color Value</th>
+                  <th className="text-left p-3 w-16">Index</th>
+                  <th className="text-left p-3">Sample</th>
+                  <th className="text-left p-3">Accessible Pairings</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Background Tokens */}
+                <tr className="border-b">
+                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-medium">Background Tokens</td>
+                </tr>
+                <TokenTableRow 
+                  name="brandBackgroundPrimary" 
+                  color={tokenColors.brandBackgroundPrimary}
                   rampIndex={semanticIndices.brandBackgroundPrimary ?? -1}
                   contrastWith="#000000"
+                  sampleText="Primary Background"
+                  sampleStyle={{ 
+                    backgroundColor: tokenColors.brandBackgroundPrimary,
+                    color: tokenColors.brandContentOnPrimary,
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                  }}
+                  accessiblePairing={
+                    <PairingExample 
+                      background={tokenColors.brandBackgroundPrimary}
+                      foreground={tokenColors.brandContentOnPrimary}
+                      label="with brandContentOnPrimary"
+                    />
+                  }
                 />
-                <ColorToken
-                  color={getColor("brandBackgroundSecondary")}
-                  name="brandBackgroundSecondary"
+                <TokenTableRow 
+                  name="brandBackgroundSecondary" 
+                  color={tokenColors.brandBackgroundSecondary}
                   rampIndex={semanticIndices.brandBackgroundSecondary ?? -1}
                   contrastWith="#5E5E5E"
+                  sampleText="Secondary Background" 
+                  sampleStyle={{ 
+                    backgroundColor: tokenColors.brandBackgroundSecondary,
+                    color: tokenColors.brandContentOnSecondary,
+                    padding: '8px 12px',
+                    borderRadius: '6px'
+                  }}
+                  accessiblePairing={
+                    <PairingExample 
+                      background={tokenColors.brandBackgroundSecondary}
+                      foreground={tokenColors.brandContentOnSecondary}
+                      label="with brandContentOnSecondary"
+                    />
+                  }
                 />
-                <ColorToken
-                  color={getColor("brandBackgroundDisabled")}
-                  name="brandBackgroundDisabled"
+                <TokenTableRow 
+                  name="brandBackgroundDisabled" 
+                  color={tokenColors.brandBackgroundDisabled}
                   rampIndex={semanticIndices.brandBackgroundDisabled ?? -1}
+                  sampleText="Disabled Background" 
+                  sampleStyle={{ 
+                    backgroundColor: tokenColors.brandBackgroundDisabled,
+                    color: tokenColors.brandContentDisabled,
+                    padding: '8px 12px',
+                    borderRadius: '6px'
+                  }}
+                  accessiblePairing={
+                    <PairingExample 
+                      background={tokenColors.brandBackgroundDisabled}
+                      foreground={tokenColors.brandContentDisabled}
+                      label="with brandContentDisabled"
+                    />
+                  }
                 />
-              </Card>
 
-              <Card className="p-4 mb-6">
-                <h3 className="text-sm font-medium mb-4">Foreground</h3>
-                <ColorToken
-                  color={getColor("brandContentPrimary")}
-                  name="brandContentPrimary"
+                {/* Content Tokens */}
+                <tr className="border-b">
+                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-medium">Content Tokens</td>
+                </tr>
+                <TokenTableRow 
+                  name="brandContentPrimary" 
+                  color={tokenColors.brandContentPrimary}
                   rampIndex={semanticIndices.brandContentPrimary ?? -1}
                   contrastWith="#FFFFFF"
+                  sampleText="Primary Content" 
+                  sampleStyle={{ 
+                    backgroundColor: "#FFFFFF",
+                    color: tokenColors.brandContentPrimary,
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: `1px solid ${tokenColors.brandBorderAccessible}`
+                  }}
+                  accessiblePairing={
+                    <PairingExample 
+                      background="#FFFFFF"
+                      foreground={tokenColors.brandContentPrimary}
+                      border={tokenColors.brandBorderAccessible}
+                      label="on White Background"
+                    />
+                  }
                 />
-                <ColorToken
-                  color={getColor("brandContentOnPrimary")}
-                  name="brandContentOnPrimary"
+                <TokenTableRow 
+                  name="brandContentOnPrimary" 
+                  color={tokenColors.brandContentOnPrimary}
                   rampIndex={semanticIndices.brandContentOnPrimary ?? -1}
-                  contrastWith={getColor("brandBackgroundPrimary")}
+                  contrastWith={tokenColors.brandBackgroundPrimary}
+                  sampleText="Content On Primary" 
+                  sampleStyle={{ 
+                    backgroundColor: tokenColors.brandBackgroundPrimary,
+                    color: tokenColors.brandContentOnPrimary,
+                    padding: '8px 12px',
+                    borderRadius: '6px'
+                  }}
+                  accessiblePairing={
+                    <PairingExample 
+                      background={tokenColors.brandBackgroundPrimary}
+                      foreground={tokenColors.brandContentOnPrimary}
+                      label="on Primary Background"
+                    />
+                  }
                 />
-                <ColorToken
-                  color={getColor("brandContentOnSecondary")}
-                  name="brandContentOnSecondary"
+                <TokenTableRow 
+                  name="brandContentOnSecondary" 
+                  color={tokenColors.brandContentOnSecondary}
                   rampIndex={semanticIndices.brandContentOnSecondary ?? -1}
-                  contrastWith={getColor("brandBackgroundSecondary")}
+                  contrastWith={tokenColors.brandBackgroundSecondary}
+                  sampleText="Content On Secondary" 
+                  sampleStyle={{ 
+                    backgroundColor: tokenColors.brandBackgroundSecondary,
+                    color: tokenColors.brandContentOnSecondary,
+                    padding: '8px 12px',
+                    borderRadius: '6px'
+                  }}
+                  accessiblePairing={
+                    <PairingExample 
+                      background={tokenColors.brandBackgroundSecondary}
+                      foreground={tokenColors.brandContentOnSecondary}
+                      label="on Secondary Background"
+                    />
+                  }
                 />
-                <ColorToken
-                  color={getColor("brandContentDisabled")}
-                  name="brandContentDisabled"
+                <TokenTableRow 
+                  name="brandContentDisabled" 
+                  color={tokenColors.brandContentDisabled}
                   rampIndex={semanticIndices.brandContentDisabled ?? -1}
+                  sampleText="Disabled Content" 
+                  sampleStyle={{ 
+                    backgroundColor: tokenColors.brandBackgroundDisabled,
+                    color: tokenColors.brandContentDisabled,
+                    padding: '8px 12px',
+                    borderRadius: '6px'
+                  }}
+                  accessiblePairing={
+                    <PairingExample 
+                      background={tokenColors.brandBackgroundDisabled}
+                      foreground={tokenColors.brandContentDisabled}
+                      label="on Disabled Background"
+                    />
+                  }
                 />
-              </Card>
 
-              <Card className="p-4">
-                <h3 className="text-sm font-medium mb-4">Border</h3>
-                <ColorToken
-                  color={getColor("brandBorderAccessible")}
-                  name="brandBorderAccessible"
+                {/* Border Tokens */}
+                <tr className="border-b">
+                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-medium">Border Tokens</td>
+                </tr>
+                <TokenTableRow 
+                  name="brandBorderAccessible" 
+                  color={tokenColors.brandBorderAccessible}
                   rampIndex={semanticIndices.brandBorderAccessible ?? -1}
                   contrastWith="#E8E8E8"
+                  sampleText="Accessible Border" 
+                  sampleStyle={{ 
+                    backgroundColor: "#FFFFFF",
+                    color: tokenColors.brandContentPrimary,
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: `3px solid ${tokenColors.brandBorderAccessible}`
+                  }}
+                  accessiblePairing={
+                    <div 
+                      className="p-3 rounded-lg"
+                      style={{ 
+                        backgroundColor: "#FFFFFF",
+                        border: `2px solid ${tokenColors.brandBorderAccessible}`
+                      }}
+                    >
+                      <div className="text-xs" style={{ color: tokenColors.brandContentPrimary }}>
+                        Border example
+                      </div>
+                    </div>
+                  }
                 />
-                <ColorToken
-                  color={getColor("brandBorderSubtle")}
-                  name="brandBorderSubtle"
+                <TokenTableRow 
+                  name="brandBorderSubtle" 
+                  color={tokenColors.brandBorderSubtle}
                   rampIndex={semanticIndices.brandBorderSubtle ?? -1}
+                  sampleText="Subtle Border" 
+                  sampleStyle={{ 
+                    backgroundColor: "#FFFFFF",
+                    color: tokenColors.brandContentPrimary,
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: `3px solid ${tokenColors.brandBorderSubtle}`
+                  }}
+                  accessiblePairing={
+                    <div 
+                      className="p-3 rounded-lg"
+                      style={{ 
+                        backgroundColor: tokenColors.brandBackgroundSecondary,
+                        border: `2px solid ${tokenColors.brandBorderSubtle}`,
+                        color: "#000000"
+                      }}
+                    >
+                      <div className="text-xs">
+                        Subtle border example
+                      </div>
+                    </div>
+                  }
                 />
-              </Card>
-            </div>
-          </div>
-        </TabsContent>
+              </tbody>
+            </table>
 
-        {/* ACCESSIBLE PAIRINGS TAB */}
-        <TabsContent value="pairings" className="mt-6">
-          <div className="flex-1">
-            <div className="flex flex-col mx-auto" style={{ width: "390px" }}>
-              <div
-                className="rounded-[48px] flex flex-col p-4"
-                style={{
-                  border: "6px solid rgba(0, 0, 0, 0.4)",
-                }}
-              >
-                <div className="w-full rounded-[42px] bg-background p-4">
-                  <h4 className="text-sm font-medium mb-4">Accessible Pairings</h4>
+            {/* Common UI Element Pairings */}
+            <h3 className="text-md font-semibold mt-8 mb-4">Common UI Element Examples</h3>
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              {/* Button example */}
+              <div className="p-4 border rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Primary Button</h4>
+                <div className="flex gap-2">
+                  <button 
+                    className="px-4 py-2 rounded-md font-medium"
+                    style={{ 
+                      backgroundColor: tokenColors.brandBackgroundPrimary,
+                      color: tokenColors.brandContentOnPrimary
+                    }}
+                  >
+                    Primary
+                  </button>
+                  <button 
+                    className="px-4 py-2 rounded-md font-medium"
+                    style={{ 
+                      backgroundColor: tokenColors.brandBackgroundSecondary,
+                      color: tokenColors.brandContentOnSecondary
+                    }}
+                  >
+                    Secondary
+                  </button>
+                  <button 
+                    className="px-4 py-2 rounded-md font-medium opacity-60 cursor-not-allowed"
+                    style={{ 
+                      backgroundColor: tokenColors.brandBackgroundDisabled,
+                      color: tokenColors.brandContentDisabled
+                    }}
+                  >
+                    Disabled
+                  </button>
+                </div>
+              </div>
 
-                  <div className="mt-6">
-                    <h5 className="text-xs font-medium mb-2">Primary</h5>
-                    <div className="text-xs text-muted-foreground mb-2">
-                      Primary Background with On Primary Content
-                    </div>
-                    <ColorPairing
-                      background={getColor("brandBackgroundPrimary")}
-                      foreground={getColor("brandContentOnPrimary")}
-                      semanticMapping={{
-                        background: "brandBackgroundPrimary",
-                        foreground: "brandContentOnPrimary",
+              {/* Card example */}
+              <div className="p-4 border rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Card Component</h4>
+                <div
+                  className="p-4 rounded-lg"
+                  style={{ 
+                    backgroundColor: tokenColors.brandBackgroundSecondary,
+                    border: `1px solid ${tokenColors.brandBorderSubtle}`
+                  }}
+                >
+                  <div className="font-medium mb-1" style={{ color: tokenColors.brandContentOnSecondary }}>
+                    Card Title
+                  </div>
+                  <div className="text-xs mb-3" style={{ color: tokenColors.brandContentOnSecondary }}>
+                    Card description text with semantic tokens
+                  </div>
+                  <div 
+                    className="text-xs px-2 py-1 rounded-md inline-block"
+                    style={{ 
+                      backgroundColor: tokenColors.brandBackgroundPrimary,
+                      color: tokenColors.brandContentOnPrimary
+                    }}
+                  >
+                    Tag Example
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress bar example */}
+              <div className="p-4 border rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Progress Bar</h4>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full animate-progress"
+                    style={{
+                      width: "60%",
+                      background: tokenColors.brandBackgroundPrimary,
+                    }}
+                  />
+                </div>
+                <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full animate-progress"
+                    style={{
+                      width: "40%",
+                      background: tokenColors.brandBorderAccessible,
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Form elements */}
+              <div className="p-4 border rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Form Elements</h4>
+                <div>
+                  <div className="mb-2">
+                    <input 
+                      type="text" 
+                      className="w-full px-3 py-1.5 text-sm rounded-md mb-2" 
+                      placeholder="Input field"
+                      style={{ 
+                        border: `1px solid ${tokenColors.brandBorderSubtle}`,
+                        color: tokenColors.brandContentPrimary
                       }}
                     />
-
-                    <h5 className="text-xs font-medium mb-2 mt-6">Secondary</h5>
-                    <div className="text-xs text-muted-foreground mb-2">
-                      Secondary Background with On Secondary Content
-                    </div>
-                    <ColorPairing
-                      background={getColor("brandBackgroundSecondary")}
-                      foreground={getColor("brandContentOnSecondary")}
-                      semanticMapping={{
-                        background: "brandBackgroundSecondary",
-                        foreground: "brandContentOnSecondary",
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div 
+                      className="w-4 h-4 flex items-center justify-center rounded-sm"
+                      style={{ 
+                        backgroundColor: tokenColors.brandBackgroundPrimary,
+                        border: `1px solid ${tokenColors.brandBorderAccessible}`
                       }}
-                    />
-
-                    <div className="text-xs text-muted-foreground mb-2 mt-4">
-                      Secondary Background with Neutral Foregrounds
+                    >
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M1 5L4 8L9 2" stroke={tokenColors.brandContentOnPrimary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                     </div>
-                    <ColorPairing
-                      background={getColor("brandBackgroundSecondary")}
-                      foreground="#000000"
-                      secondaryForeground="#4B4B4B"
-                      tertiaryForeground="#5E5E5E"
-                      border={getColor("brandBorderSubtle")}
-                      semanticMapping={{
-                        background: "brandBackgroundSecondary",
-                        foreground: "#000000",
-                        border: "brandBorderSubtle",
-                      }}
-                    />
-
-                    <h5 className="text-xs font-medium mb-2 mt-6">Primary on Neutral</h5>
-                    <div className="text-xs text-muted-foreground mb-2">
-                      Primary Content on Neutral Background
-                    </div>
-                    <ColorPairing
-                      background="#FFFFFF"
-                      foreground={getColor("brandContentPrimary")}
-                      border={getColor("brandBorderAccessible")}
-                      alternativeBackground="#F3F3F3"
-                      semanticMapping={{
-                        background: "#FFFFFF",
-                        foreground: "brandContentPrimary",
-                        border: "brandBorderAccessible",
-                      }}
-                    />
-
-                    {/* Example progress bar */}
-                    <div className="mt-4 w-full h-2 bg-white rounded-full overflow-hidden">
-                      <div
-                        className="h-full w-full animate-progress"
-                        style={{
-                          background: `linear-gradient(90deg, ${getColor(
-                            "brandBorderAccessible"
-                          )} 0%, ${getColor(
-                            "brandBorderAccessible"
-                          )} 100%)`,
-                          animation: "progress 2s linear infinite",
-                        }}
-                      />
-                    </div>
-
-                    <h5 className="text-xs font-medium mb-2 mt-6">Disabled</h5>
-                    <div className="text-xs text-muted-foreground mb-2">
-                      Disabled State Example
-                    </div>
-                    <ColorPairing
-                      background={getColor("brandBackgroundDisabled")}
-                      foreground={getColor("brandContentDisabled")}
-                      semanticMapping={{
-                        background: "brandBackgroundDisabled",
-                        foreground: "brandContentDisabled",
-                      }}
-                    />
+                    <span className="text-xs">Checkbox example</span>
                   </div>
                 </div>
               </div>
@@ -358,6 +543,113 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
           />
         </TabsContent>
       </Tabs>
+    </div>
+  );
+};
+
+// Helper component for token rows in the table
+const TokenTableRow = ({ 
+  name, 
+  color, 
+  rampIndex, 
+  contrastWith,
+  sampleText,
+  sampleStyle,
+  accessiblePairing
+}: { 
+  name: string;
+  color: string;
+  rampIndex: number;
+  contrastWith?: string;
+  sampleText: string;
+  sampleStyle: React.CSSProperties;
+  accessiblePairing: React.ReactNode;
+}) => {
+  const { toast } = useToast();
+  const ratio = contrastWith ? getContrastRatio(color, contrastWith) : null;
+
+  let displayValue = "auto";
+  if (rampIndex >= 0) {
+    displayValue = `${(rampIndex + 1) * 100}`;
+  } else if (rampIndex === SPECIAL_BLACK_INDEX) {
+    displayValue = "Black";
+  } else if (rampIndex === SPECIAL_WHITE_INDEX) {
+    displayValue = "White";
+  }
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(color).then(() => {
+      toast({
+        title: "Copied!",
+        description: `${color} has been copied to your clipboard`,
+      });
+    });
+  };
+
+  return (
+    <tr className="border-b hover:bg-muted/20">
+      <td className="p-3 font-mono text-xs">{name}</td>
+      <td className="p-3">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded border" style={{ backgroundColor: color }} />
+          <div>
+            <div className="text-xs font-mono">{color}</div>
+            <div className="text-xs text-muted-foreground">{displayValue}</div>
+          </div>
+          <button
+            className="p-1 opacity-50 hover:opacity-100"
+            onClick={copyToClipboard}
+          >
+            <Copy className="h-3 w-3" />
+          </button>
+        </div>
+      </td>
+      <td className="p-3 text-sm">{rampIndex >= 0 ? rampIndex + 1 : rampIndex}</td>
+      <td className="p-3">
+        <div className="inline-block" style={sampleStyle}>
+          {sampleText}
+        </div>
+        {ratio && (
+          <div className="text-xs text-muted-foreground mt-1">
+            Contrast: {ratio.toFixed(2)}:1
+          </div>
+        )}
+      </td>
+      <td className="p-3">
+        {accessiblePairing}
+      </td>
+    </tr>
+  );
+};
+
+// Helper component for showing pairings
+const PairingExample = ({
+  background,
+  foreground,
+  border,
+  label,
+}: {
+  background: string;
+  foreground: string;
+  border?: string;
+  label: string;
+}) => {
+  const ratio = getContrastRatio(foreground, background);
+  
+  return (
+    <div 
+      className="p-3 rounded-lg"
+      style={{
+        backgroundColor: background,
+        border: border ? `1px solid ${border}` : undefined,
+      }}
+    >
+      <div className="text-xs mb-1" style={{ color: foreground }}>
+        Sample text {label}
+      </div>
+      <div className="text-xs text-muted-foreground">
+        {ratio.toFixed(2)}:1 contrast
+      </div>
     </div>
   );
 };

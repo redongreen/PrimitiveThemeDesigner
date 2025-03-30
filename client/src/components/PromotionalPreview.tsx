@@ -51,11 +51,11 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
       <div className="flex flex-wrap justify-center gap-8">
         {/* SCREEN 1: Primary Background */}
         <div 
-          className="rounded-[36px] overflow-hidden shadow-lg"
+          className="rounded-[24px] overflow-hidden shadow-lg"
           style={{ 
-            width: "300px", 
-            height: "600px", 
-            border: "12px solid #111",
+            width: "375px", 
+            height: "700px", 
+            border: "6px solid rgba(0,0,0,.3)",
           }}
         >
           <div
@@ -134,21 +134,21 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
             
             {/* Bottom Navigation */}
             <div className="p-4 bg-black bg-opacity-5 flex justify-between items-center">
-              <NavButton icon={<Home size={22} />} active color={brandContentOnPrimary} />
-              <NavButton icon={<Search size={22} />} color={brandContentOnPrimary} />
-              <NavButton icon={<ShoppingBag size={22} />} badge="2" color={brandContentOnPrimary} />
-              <NavButton icon={<User size={22} />} color={brandContentOnPrimary} />
+              <NavButton icon={<Home size={20} />} active color={brandContentOnPrimary} />
+              <NavButton icon={<Search size={20} />} color={brandContentOnPrimary} />
+              <NavButton icon={<ShoppingBag size={20} />} badge="2" color={brandContentOnPrimary} />
+              <NavButton icon={<User size={20} />} color={brandContentOnPrimary} />
             </div>
           </div>
         </div>
         
         {/* SCREEN 2: White Background with Brand Elements */}
         <div 
-          className="rounded-[36px] overflow-hidden shadow-lg"
+          className="rounded-[24px] overflow-hidden shadow-lg"
           style={{ 
-            width: "300px", 
-            height: "600px", 
-            border: "12px solid #111",
+            width: "375px", 
+            height: "700px", 
+            border: "6px solid rgba(0,0,0,.3)",
           }}
         >
           <div
@@ -173,7 +173,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               <div className="font-semibold" style={{ color: brandContentPrimary }}>
                 Discover
               </div>
-              <User size={20} style={{ color: brandContentPrimary }} />
+              <User size={16} style={{ color: brandContentPrimary }} />
             </div>
             
             {/* Category Row */}
@@ -221,12 +221,12 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
             {/* BOGO Banner */}
             <div className="px-4 mb-4">
               <div 
-                className="py-3 px-4 flex justify-between items-center rounded-xl"
-                style={{ backgroundColor: brandPrimary }}
+                className="py-2 px-4 flex justify-between items-center rounded-xl"
+                style={{ backgroundColor: brandSecondary }}
               >
                 <div>
-                  <div className="font-semibold text-sm" style={{ color: brandContentOnPrimary }}>BOGO Week</div>
-                  <div className="text-xs" style={{ color: brandContentOnPrimary }}>Save on your favorite items</div>
+                  <div className="font-semibold text-sm" style={{ color: brandContentOnSecondary }}>BOGO Week</div>
+                  <div className="text-xs" style={{ color: brandContentOnSecondary }}>Save on your favorite items</div>
                 </div>
                 <div 
                   className="text-xs px-3 py-1.5 rounded-full font-medium"
@@ -250,7 +250,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               
               {/* Restaurant Card */}
               <div 
-                className="rounded-xl overflow-hidden mb-3"
+                className="rounded-lg overflow-hidden mb-3"
                 style={{ 
                   border: `1px solid ${brandBorderAccessible}`,
                 }}
@@ -283,10 +283,10 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
             
             {/* Bottom Navigation */}
             <div className="mt-auto p-4 border-t flex justify-between items-center">
-              <NavButton icon={<Home size={22} />} active color={brandContentPrimary} />
-              <NavButton icon={<Search size={22} />} color={brandContentPrimary} />
-              <NavButton icon={<ShoppingBag size={22} />} badge="2" color={brandContentPrimary} />
-              <NavButton icon={<User size={22} />} color={brandContentPrimary} />
+              <NavButton icon={<Home size={20} />} active color={brandContentPrimary} />
+              <NavButton icon={<Search size={20} />} color={brandContentPrimary} />
+              <NavButton icon={<ShoppingBag size={20} />} badge="2" color={brandContentPrimary} />
+              <NavButton icon={<User size={20} />} color={brandContentPrimary} />
             </div>
           </div>
         </div>
@@ -393,10 +393,10 @@ const RestaurantItem = ({
 }) => {
   return (
     <div>
-      <div className="h-20 bg-gray-200 rounded-xl mb-1 relative">
+      <div className="h-20 bg-gray-200 rounded-lg mb-1 relative">
         {promo && (
           <div 
-            className="absolute bottom-1 left-1 text-xs px-1.5 py-0.5 rounded-md font-medium"
+            className="absolute bottom-1 left-1 text-xs px-1.5 py-0.5 rounded-lg font-medium"
             style={{ 
               backgroundColor: brandPrimary,
               color: brandContentOnPrimary
