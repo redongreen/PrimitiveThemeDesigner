@@ -52,26 +52,8 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
     return getColorFromIndex(ramp, idx);
   };
 
-  // Helper function to darken a hex color
-  const darkenColor = (color: string): string => {
-    // Convert hex to RGB
-    const r = parseInt(color.slice(1, 3), 16);
-    const g = parseInt(color.slice(3, 5), 16);
-    const b = parseInt(color.slice(5, 7), 16);
-    
-    // Darken by multiplying by 0.65 (35% darker)
-    const darkerR = Math.floor(r * 0.65);
-    const darkerG = Math.floor(g * 0.65);
-    const darkerB = Math.floor(b * 0.65);
-    
-    // Convert back to hex
-    return `#${darkerR.toString(16).padStart(2, '0')}${darkerG.toString(16).padStart(2, '0')}${darkerB.toString(16).padStart(2, '0')}`;
-  };
-
   // Main colors for our design
-  const originalBrandPrimary = getColor("brandBackgroundPrimary");
-  // Use darker brand color specifically for the medieval tavern ad
-  const brandBackgroundPrimary = darkenColor(originalBrandPrimary);
+  const brandBackgroundPrimary = getColor("brandBackgroundPrimary");
   const brandBackgroundSecondary = getColor("brandBackgroundSecondary");
   const brandContentPrimary = getColor("brandContentPrimary");
   const brandContentOnPrimary = getColor("brandContentOnPrimary");
@@ -130,35 +112,37 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 </div>
               </div>
               
-              {/* Brand Background Gradient Overlay - Darker brand color */}
+              {/* Black gradient overlay that fades into the image */}
               <div 
                 className="absolute inset-0 w-full h-full"
                 style={{ 
-                  backgroundColor: `${brandBackgroundPrimary}40`,
                   backgroundImage: `linear-gradient(to top, 
-                    ${brandBackgroundPrimary} 0%, 
-                    ${brandBackgroundPrimary}dd 30%, 
-                    ${brandBackgroundPrimary}99 60%, 
-                    ${brandBackgroundPrimary}55 100%)`,
-                  mixBlendMode: "multiply"
+                    rgba(0,0,0,0.9) 0%, 
+                    rgba(0,0,0,0.7) 25%, 
+                    rgba(0,0,0,0.5) 50%, 
+                    rgba(0,0,0,0.3) 75%, 
+                    rgba(0,0,0,0.1) 90%,
+                    rgba(0,0,0,0) 100%)`,
+                  mixBlendMode: "normal"
                 }}
               ></div>
               
-              {/* Additional darkening overlay */}
+              {/* Very subtle brand color tint */}
               <div 
                 className="absolute inset-0 w-full h-full"
                 style={{ 
-                  background: "rgba(0,0,0,0.25)",
-                  mixBlendMode: "multiply"
+                  backgroundColor: `${brandBackgroundPrimary}15`,
+                  mixBlendMode: "color"
                 }}
               ></div>
               
-              {/* Bottom Info Overlay - Less visible with darker gradient */}
+              {/* Bottom Info Overlay - Black gradient only */}
               <div className="absolute bottom-0 left-0 right-0 pb-5" style={{
                 background: `linear-gradient(to top, 
-                  ${brandBackgroundPrimary} 0%, 
-                  ${brandBackgroundPrimary}ee 75%, 
-                  transparent 100%)`
+                  rgba(0,0,0,0.95) 0%, 
+                  rgba(0,0,0,0.8) 50%, 
+                  rgba(0,0,0,0.6) 75%, 
+                  rgba(0,0,0,0) 100%)`
               }}>
                 {/* Restaurant Info Bar */}
                 <div className="px-4 pt-8 pb-3">
@@ -186,9 +170,9 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 {/* Menu Item Card */}
                 <div className="px-4 py-2">
                   <div
-                    className="w-full bg-black bg-opacity-40 rounded-xl p-3 flex items-center"
+                    className="w-full rounded-xl p-3 flex items-center"
                     style={{ 
-                      backgroundColor: `${brandBackgroundPrimary}aa`,
+                      backgroundColor: 'rgba(0,0,0,0.7)',
                       boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                     }}
                   >
@@ -208,7 +192,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                     <button 
                       className="ml-2 w-8 h-8 rounded-full flex items-center justify-center"
                       style={{ 
-                        backgroundColor: `${brandBackgroundPrimary}ee`
+                        backgroundColor: 'rgba(0,0,0,0.8)'
                       }}
                     >
                       <Plus size={14} style={{ color: brandContentOnPrimary }} />
