@@ -99,7 +99,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               <div 
                 className="absolute inset-0 w-full h-full"
                 style={{
-                  backgroundImage: "url('/attached_assets/med1.png')",
+                  backgroundImage: "url('/images/med1.png')",
                   backgroundSize: "cover",
                   backgroundPosition: "center"
                 }}
@@ -112,18 +112,17 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 </div>
               </div>
               
-              {/* Brand Background Gradient Overlay */}
+              {/* Brand Background Gradient Overlay - Full screen brand color tint */}
               <div 
                 className="absolute inset-0 w-full h-full"
                 style={{ 
-                  background: `linear-gradient(to top, 
-                    ${brandBackgroundPrimary} 15%, 
-                    ${brandBackgroundPrimary}ee 35%, 
-                    ${brandBackgroundPrimary}cc 55%, 
-                    ${brandBackgroundPrimary}99 70%, 
-                    ${brandBackgroundPrimary}55 85%, 
-                    ${brandBackgroundPrimary}22 95%,
-                    transparent)`,
+                  backgroundColor: `${brandBackgroundPrimary}70`,
+                  backgroundImage: `linear-gradient(to top, 
+                    ${brandBackgroundPrimary} 0%, 
+                    ${brandBackgroundPrimary}dd 30%, 
+                    ${brandBackgroundPrimary}aa 60%, 
+                    ${brandBackgroundPrimary}77 100%)`,
+                  mixBlendMode: "overlay"
                 }}
               ></div>
               
