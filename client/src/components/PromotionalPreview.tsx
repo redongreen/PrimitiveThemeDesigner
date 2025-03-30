@@ -99,28 +99,28 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                   label="Food"
                   active
                   bgColor={brandContentOnPrimary}
-                  textColor={brandContentPrimary}
+                  textColor={brandBackgroundPrimary}
                 />
                 <CategoryPill
                   icon={<ShoppingCart size={16} />}
                   label="Market"
                   active
                   bgColor={brandContentOnPrimary}
-                  textColor={brandContentPrimary}
+                  textColor={brandBackgroundPrimary}
                 />
                 <CategoryPill
                   icon={<Gift size={16} />}
                   label="Deals"
                   active
                   bgColor={brandContentOnPrimary}
-                  textColor={brandContentPrimary}
+                  textColor={brandBackgroundPrimary}
                 />
                 <CategoryPill
                   icon={<Store size={16} />}
                   label="Shop"
                   active
                   bgColor={brandContentOnPrimary}
-                  textColor={brandContentPrimary}
+                  textColor={brandBackgroundPrimary}
                 />
               </div>
             </div>
