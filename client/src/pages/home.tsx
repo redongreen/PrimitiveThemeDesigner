@@ -15,7 +15,7 @@ export default function Home() {
     <div className="container max-w-6xl mx-auto py-8 px-4">
       <div className="flex items-baseline gap-4 mb-6">
         <h1 className="text-2xl font-bold">
-          {activeTab === "primitive" ? "Primitive color creation" : "Semantic token accessible pairing"}
+          {activeTab === "primitive" ? "Primitive color creation" : "Theme preview and semantic tokens"}
         </h1>
         <p className="text-sm text-muted-foreground">
           Tool created by{" "}
@@ -33,7 +33,7 @@ export default function Home() {
       <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as "primitive" | "theme")}>
         <TabsList className="grid w-full grid-cols-2 mb-8">
           <TabsTrigger value="primitive">Primitive</TabsTrigger>
-          <TabsTrigger value="theme">Theme</TabsTrigger>
+          <TabsTrigger value="theme">Preview</TabsTrigger>
         </TabsList>
 
         {/* PRIMITIVE TAB */}
