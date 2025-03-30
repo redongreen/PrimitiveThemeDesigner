@@ -12,10 +12,13 @@ import {
   Gift, 
   Store,
   LucideIcon,
-  PlayCircle,
+  Star,
   Clock,
-  SkipForward,
-  SkipBack
+  ThumbsUp,
+  Plus,
+  Bookmark,
+  ArrowRight,
+  MapPin
 } from "lucide-react";
 import { type ColorStop } from "@/lib/color";
 import { SPECIAL_BLACK_INDEX, SPECIAL_WHITE_INDEX } from "@/lib/semanticTokens";
@@ -64,7 +67,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
     <div className="flex flex-col gap-6">
 
       <div className="flex flex-wrap justify-center gap-8">
-        {/* SCREEN 1: Full-Screen Ad with Brand Primary Color Overlay */}
+        {/* SCREEN 1: Restaurant Food View with Brand Overlay */}
         <div 
           className="rounded-[24px] overflow-hidden shadow-lg"
           style={{ 
@@ -75,7 +78,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
         >
           <div
             className="w-full h-full flex flex-col"
-            style={{ backgroundColor: "#000000" }} // Black background for music player
+            style={{ backgroundColor: "#000000" }}
           >
             {/* Status Bar */}
             <div className="px-4 py-2 flex justify-between items-center">
@@ -90,71 +93,116 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               </div>
             </div>
 
-            {/* Full-screen Ad Overlay */}
+            {/* Full-screen Content */}
             <div className="flex-1 relative">
-              {/* Album art/image background placeholder */}
-              <div className="absolute inset-0 bg-gray-800">
-                {/* This is where you'd put an actual image */}
-                <div className="flex items-center justify-center h-full text-6xl opacity-40">
-                  🎵
+              {/* Background Food Image */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black">
+                {/* This would be a placeholder for the actual food image you provided */}
+                <div 
+                  className="h-full w-full bg-gray-900 flex items-center justify-center relative"
+                  style={{ backgroundColor: "#1a1a1a" }}
+                >
+                  {/* We're using emoji to simulate elements in your image */}
+                  <div className="absolute left-1/4 top-1/4 transform -translate-x-1/4 -translate-y-1/4">
+                    <div className="text-6xl">🥃</div>
+                  </div>
+                  <div className="absolute left-1/3 bottom-1/3 transform -translate-x-1/3 translate-y-1/3">
+                    <div className="text-5xl">🥬</div>
+                  </div>
+                  
+                  <div className="relative">
+                    <div className="text-9xl">🍜</div>
+                    <div className="absolute top-0 right-0 transform translate-x-4 -translate-y-4 text-6xl rotate-45">🥢</div>
+                  </div>
+                  
+                  <div className="absolute bottom-1/4 right-1/4 transform translate-x-1/4 translate-y-1/4">
+                    <div className="text-5xl">🍚</div>
+                  </div>
                 </div>
               </div>
               
-              {/* Brand color gradient overlay */}
-              <div 
-                className="absolute inset-0" 
-                style={{ 
-                  background: `linear-gradient(135deg, ${brandBackgroundPrimary} 40%, ${brandBackgroundPrimary}99 65%, ${brandBackgroundPrimary}75 85%)`,
-                }}
-              ></div>
-              
-              {/* Ad Content */}
-              <div className="absolute inset-0 flex flex-col justify-between p-6">
-                <div className="text-center mt-12">
-                  <div 
-                    className="text-4xl font-extrabold mb-3 tracking-tight uppercase" 
-                    style={{ color: brandContentOnPrimary }}
-                  >
-                    Limited Offer
-                  </div>
-                  <div 
-                    className="text-lg font-bold mb-6 uppercase tracking-wide" 
-                    style={{ color: brandContentOnPrimary }}
-                  >
-                    30% off all premium plans today
-                  </div>
-                  <button 
-                    className="py-3 px-10 rounded-lg font-extrabold text-lg uppercase tracking-wider shadow-lg" 
-                    style={{ 
-                      backgroundColor: "#FFFFFF", 
-                      color: "#000000" 
-                    }}
-                  >
-                    Get Started
-                  </button>
+              {/* Bookmark Button in Top Right */}
+              <div className="absolute top-4 right-4 z-10">
+                <div className="bg-black bg-opacity-60 p-2 rounded-full">
+                  <Bookmark size={24} className="text-white" />
                 </div>
-                
-                <div 
-                  className="bg-black bg-opacity-40 p-5 rounded-lg shadow-lg" 
-                  style={{ backdropFilter: "blur(10px)" }}
-                >
-                  <div className="flex items-center justify-between">
+              </div>
+              
+              {/* Bottom Info Overlay */}
+              <div className="absolute bottom-0 left-0 right-0">
+                {/* Restaurant Info Bar */}
+                <div className="px-4 py-2">
+                  <div className="flex items-center">
                     <div 
-                      className="px-6 py-2 rounded font-extrabold uppercase tracking-wide"
+                      className="font-bold text-xl text-white mr-1"
                       style={{ 
-                        color: brandBackgroundPrimary,
-                        backgroundColor: brandContentOnPrimary,
+                        color: brandContentOnPrimary 
                       }}
                     >
-                      Premium
+                      Bodega
                     </div>
-                    <div 
-                      className="font-bold px-5 py-2 uppercase tracking-wide"
-                      style={{ color: brandContentOnPrimary }}
-                    >
-                      Offer ends: <span className="text-white">12:00:00</span>
-                    </div>
+                    <ArrowRight size={18} className="text-white opacity-80" />
                   </div>
+                  
+                  <div className="flex items-center text-white text-sm gap-1">
+                    <Star size={14} fill="white" className="text-white" />
+                    <span className="font-semibold">4.7</span>
+                    <span className="text-gray-300">(2,350+)</span>
+                    <span className="mx-1">•</span>
+                    <span>20 min</span>
+                  </div>
+                </div>
+                
+                {/* Menu Item Card */}
+                <div className="flex px-2 py-2 mb-2 gap-2 overflow-x-auto">
+                  <div
+                    className="flex-shrink-0 w-5/6 bg-black bg-opacity-80 rounded-xl p-2 flex items-center"
+                    style={{ 
+                      border: `1px solid ${brandBorderAccessible}`,
+                    }}
+                  >
+                    <div className="w-16 h-16 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
+                      <span className="text-2xl">🍜</span>
+                    </div>
+                    <div className="ml-3 flex-grow">
+                      <div className="font-semibold text-white">Bun Cha</div>
+                      <div className="flex justify-between items-center">
+                        <div className="text-gray-300">$12.30</div>
+                        <div className="flex items-center text-gray-300 text-xs">
+                          <ThumbsUp size={12} className="mr-1" />
+                          <span>90% (152)</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button 
+                      className="ml-2 w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center"
+                      style={{ 
+                        backgroundColor: brandBackgroundPrimary
+                      }}
+                    >
+                      <Plus size={14} className="text-white" />
+                    </button>
+                  </div>
+                  
+                  {/* Partial visible second item */}
+                  <div className="flex-shrink-0 w-20 h-20 bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
+                    <span className="text-2xl">🍲</span>
+                  </div>
+                </div>
+                
+                {/* Home Indicator Line */}
+                <div className="flex justify-center py-2 pb-4">
+                  <div className="w-32 h-1 bg-white rounded-full"></div>
+                </div>
+                
+                {/* Bottom Navigation */}
+                <div className="p-3 flex justify-between items-center bg-black bg-opacity-90">
+                  <NavButton icon={<User size={24} />} color="#FFFFFF" />
+                  <div className="flex items-center bg-gray-800 rounded-full px-3 py-1.5">
+                    <Search size={20} className="text-gray-300 mr-2" />
+                    <span className="text-gray-300">Search anything</span>
+                  </div>
+                  <NavButton icon={<ShoppingBag size={24} />} badge="2" color="#FFFFFF" />
                 </div>
               </div>
             </div>
