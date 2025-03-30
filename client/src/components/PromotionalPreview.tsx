@@ -187,33 +187,19 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 {/* Menu Item Card */}
                 <div className="px-4 py-2">
                   <div
-                    className="w-full rounded-xl p-3 flex items-center"
+                    className="w-full rounded-xl p-3 bg-white bg-opacity-10"
                     style={{ 
-                      backgroundColor: `${brandBackgroundPrimary}aa`,
                       boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                     }}
                   >
-                    <div className="w-16 h-16 bg-black bg-opacity-30 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
-                      <span className="text-2xl">🍖</span>
-                    </div>
-                    <div className="ml-3 flex-grow">
-                      <div className="font-semibold" style={{ color: "#FFFFFF" }}>Roast Pheasant</div>
-                      <div className="flex justify-between items-center">
-                        <div style={{ color: "#FFFFFF", opacity: 0.95 }}>5 Gold</div>
-                        <div className="flex items-center text-xs" style={{ color: "#FFFFFF", opacity: 0.9 }}>
-                          <ThumbsUp size={12} className="mr-1" />
-                          <span>98% (237)</span>
-                        </div>
-                      </div>
-                    </div>
-                    <button 
-                      className="ml-2 w-8 h-8 rounded-full flex items-center justify-center"
-                      style={{ 
-                        backgroundColor: 'rgba(0,0,0,0.8)'
-                      }}
+                    <div 
+                      className="w-16 h-16 rounded-full bg-white bg-opacity-20 mb-3 flex items-center justify-center"
+                      style={{ color: brandContentOnPrimary }}
                     >
-                      <Plus size={14} style={{ color: "#FFFFFF" }} />
-                    </button>
+                      <Utensils size={32} />
+                    </div>
+                    <div className="font-semibold text-sm" style={{ color: brandContentOnPrimary }}>Roast Pheasant</div>
+                    <div className="text-xs opacity-90" style={{ color: brandContentOnPrimary }}>5 Gold • 98% (237)</div>
                   </div>
                 </div>
               </div>
