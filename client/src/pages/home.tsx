@@ -23,8 +23,8 @@ export default function Home() {
         <div className="inline-flex">
           <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as "primitive" | "theme")}>
             <TabsList className="flex">
-              <TabsTrigger value="primitive">Primitive</TabsTrigger>
-              <TabsTrigger value="theme">Preview</TabsTrigger>
+              <TabsTrigger value="primitive">Primitives</TabsTrigger>
+              <TabsTrigger value="theme">Semantic pairing</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -42,7 +42,6 @@ export default function Home() {
         <TabsContent value="primitive">
           {/* Examples Section - Moved to the top */}
           <div className="mb-10">
-            <h2 className="text-xl font-semibold mb-6">Examples</h2>
             <PromotionalPreview ramp={rampState.ramp} semanticIndices={rampState.semanticIndices} />
           </div>
           <PrimitiveEditor {...rampState} />
