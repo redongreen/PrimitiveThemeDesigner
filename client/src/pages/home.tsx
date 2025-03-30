@@ -13,14 +13,26 @@ export default function Home() {
 
   return (
     <div className="container max-w-9xl mx-auto py-8 px-4">
-      <div className="flex items-baseline gap-4 mb-6">
+      {/* Header with title and tab toggles inline */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <h1 className="text-2xl font-bold">
           {activeTab === "primitive" ? "Primitive color creation" : "Accessible pairing"}
         </h1>
+        
+        <div className="inline-flex">
+          <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as "primitive" | "theme")}>
+            <TabsList className="flex">
+              <TabsTrigger value="primitive">Primitive</TabsTrigger>
+              <TabsTrigger value="theme">Preview</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
-
+      
+      {/* Content tabs - these are controlled by activeTab state */}
       <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as "primitive" | "theme")}>
-        <TabsList className="grid w-full grid-cols-2 mb-8">
+        {/* TabsList is hidden as we're using the custom one above */}
+        <TabsList className="hidden">
           <TabsTrigger value="primitive">Primitive</TabsTrigger>
           <TabsTrigger value="theme">Preview</TabsTrigger>
         </TabsList>
