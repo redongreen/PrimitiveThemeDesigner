@@ -1,5 +1,18 @@
 import React from "react";
-import { Search, ShoppingBag, Home, User } from "lucide-react";
+import { 
+  Search, 
+  ShoppingBag, 
+  Home, 
+  User, 
+  Coffee, 
+  Utensils, 
+  Pizza, 
+  Cookie, 
+  ShoppingCart, 
+  Gift, 
+  Store,
+  LucideIcon 
+} from "lucide-react";
 import { type ColorStop } from "@/lib/color";
 import { SPECIAL_BLACK_INDEX, SPECIAL_WHITE_INDEX } from "@/lib/semanticTokens";
 
@@ -82,28 +95,28 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               {/* Categories */}
               <div className="flex gap-2 mb-4">
                 <CategoryPill
-                  icon="🍽️"
+                  icon={<Utensils size={16} />}
                   label="Food"
                   active
                   bgColor={brandContentOnPrimary}
                   textColor={brandContentPrimary}
                 />
                 <CategoryPill
-                  icon="🛒"
+                  icon={<ShoppingCart size={16} />}
                   label="Market"
                   active
                   bgColor={brandContentOnPrimary}
                   textColor={brandContentPrimary}
                 />
                 <CategoryPill
-                  icon="🎁"
+                  icon={<Gift size={16} />}
                   label="Deals"
                   active
                   bgColor={brandContentOnPrimary}
                   textColor={brandContentPrimary}
                 />
                 <CategoryPill
-                  icon="🛍️"
+                  icon={<Store size={16} />}
                   label="Shop"
                   active
                   bgColor={brandContentOnPrimary}
@@ -202,25 +215,25 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
             <div className="px-4 mb-4">
               <div className="flex gap-2">
                 <CategoryPill
-                  icon="🍽️"
+                  icon={<Utensils size={16} />}
                   label="Food"
                   bgColor={neutralBackground}
                   textColor={brandContentPrimary}
                 />
                 <CategoryPill
-                  icon="🛒"
+                  icon={<ShoppingCart size={16} />}
                   label="Market"
                   bgColor={neutralBackground}
                   textColor={fgPrimary}
                 />
                 <CategoryPill
-                  icon="🎁"
+                  icon={<Gift size={16} />}
                   label="Deals"
                   bgColor={neutralBackground}
                   textColor={fgPrimary}
                 />
                 <CategoryPill
-                  icon="🛍️"
+                  icon={<Store size={16} />}
                   label="Shop"
                   bgColor={neutralBackground}
                   textColor={fgPrimary}
@@ -341,9 +354,9 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
 //   ↓↓↓ HELPER COMPONENTS
 // ────────────────────────────────────────────────────────────────────────────────
 
-// 1) Updated CategoryPill to receive bgColor / textColor as props:
+// 1) Updated CategoryPill to receive bgColor / textColor as props and use actual icon components:
 interface CategoryPillProps {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   active?: boolean;
   bgColor: string;
@@ -356,7 +369,6 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
   active = false,
   bgColor,
   textColor,
-  brandBackgroundPrimary,
 }) => {
   return (
     <div
@@ -367,7 +379,7 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
         color: textColor,
       }}
     >
-      <span>{icon}</span>
+      <span className="flex items-center justify-center">{icon}</span>
       <span className="text-xs font-medium">{label}</span>
     </div>
   );
@@ -419,12 +431,24 @@ const FoodItem = ({
   subtitle: string;
   imgEmoji: string;
 }) => {
+  // Map food items to appropriate icons
+  const getIconForItem = (type: string) => {
+    switch (type) {
+      case "☕": return <Coffee size={32} />;
+      case "🥗": return <Utensils size={32} />;
+      case "🍔": return <Pizza size={32} />;
+      case "🥯": return <Cookie size={32} />;
+      default: return <Utensils size={32} />;
+    }
+  };
+
   return (
     <div className="bg-white bg-opacity-10 rounded-xl p-3">
       <div 
-        className="w-16 h-16 rounded-full bg-white bg-opacity-20 mb-3 flex items-center justify-center text-2xl"
+        className="w-16 h-16 rounded-full bg-white bg-opacity-20 mb-3 flex items-center justify-center"
+        style={{ color: brandContentOnPrimary }}
       >
-        {imgEmoji}
+        {getIconForItem(imgEmoji)}
       </div>
       <div className="font-semibold text-sm" style={{ color: brandContentOnPrimary }}>{title}</div>
       <div className="text-xs opacity-90" style={{ color: brandContentOnPrimary }}>{subtitle}</div>
