@@ -480,8 +480,9 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                   className="h-32 w-full relative"
                   style={{
                     backgroundImage: "url('/images/market_express.svg')",
-                    backgroundSize: "cover",
+                    backgroundSize: "contain", /* Changed to 'contain' to ensure proper sizing */
                     backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
                     backgroundColor: "#e8ddc2" // Fallback background color
                   }}
                 >
