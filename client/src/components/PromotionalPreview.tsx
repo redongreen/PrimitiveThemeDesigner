@@ -485,41 +485,50 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                     alignItems: "center"
                   }}
                 >
-                  {/* Inline SVG for the Medieval Market Express image */}
-                  <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+                  {/* Inline SVG for the Medieval Market Express image - adjusted to fit container width */}
+                  <svg width="100%" height="100%" viewBox="0 0 400 128" preserveAspectRatio="xMidYMid slice">
                     {/* Background */}
-                    <rect width="400" height="200" fill="#e8ddc2" />
+                    <rect width="400" height="128" fill="#e8ddc2" />
                     
-                    {/* Knight with Shield */}
-                    <g transform="translate(50, 25) scale(0.7)">
+                    {/* Horizontal decorative elements */}
+                    <rect x="0" y="5" width="400" height="5" fill="#83623b" opacity="0.3" />
+                    <rect x="0" y="118" width="400" height="5" fill="#83623b" opacity="0.3" />
+                    
+                    {/* Left side - Knight with Shield */}
+                    <g transform="translate(20, 12) scale(0.8)">
                       {/* Shield with "Market Express" */}
-                      <path d="M80,40 L140,40 L140,120 L110,140 L80,120 Z" fill="#1a5663" />
-                      <text x="90" y="70" fontSize="12" fill="white" fontWeight="bold">MARKET</text>
-                      <text x="90" y="90" fontSize="12" fill="white" fontWeight="bold">EXPRESS</text>
+                      <path d="M80,30 L130,30 L130,95 L105,110 L80,95 Z" fill="#1a5663" />
+                      <text x="87" y="60" fontSize="11" fill="white" fontWeight="bold">MARKET</text>
+                      <text x="87" y="78" fontSize="11" fill="white" fontWeight="bold">EXPRESS</text>
                       
                       {/* Knight Silhouette */}
-                      <path d="M50,40 C50,30 55,25 65,28 C75,30 70,40 70,50 L70,60 L50,60 Z" fill="#625c3e" />
-                      <path d="M50,60 L70,60 L75,100 L45,100 Z" fill="#4a4a4a" />
-                      <path d="M55,45 L65,45 L65,60 L55,60 Z" fill="#e8b89c" />
-                      <path d="M45,100 L75,100 L80,150 L40,150 Z" fill="#943123" />
+                      <path d="M50,30 C50,20 55,15 65,18 C75,20 70,30 70,40 L70,50 L50,50 Z" fill="#625c3e" />
+                      <path d="M50,50 L70,50 L75,80 L45,80 Z" fill="#4a4a4a" />
+                      <path d="M55,35 L65,35 L65,50 L55,50 Z" fill="#e8b89c" />
+                      <path d="M45,80 L75,80 L80,110 L40,110 Z" fill="#943123" />
                     </g>
                     
-                    {/* Decorative Elements */}
-                    <g transform="translate(250, 50)">
+                    {/* Center elements */}
+                    <g transform="translate(200, 64)">
+                      {/* Dragon/Griffin */}
+                      <path d="M0,0 C10,-5 20,5 15,15 C30,20 25,40 15,45 C20,55 10,65 0,60 C-10,65 -20,55 -15,45 C-25,40 -30,20 -15,15 C-20,5 -10,-5 0,0 Z" fill="#daa520" />
+                      <path d="M15,15 C25,5 35,10 30,25 L15,45 Z" fill="#7b3911" />
+                    </g>
+                    
+                    {/* Right side - Castle */}
+                    <g transform="translate(300, 30)">
                       {/* Castle */}
-                      <rect x="0" y="30" width="80" height="80" fill="#7c7168" />
-                      <rect x="30" y="80" width="20" height="30" fill="#3a2d1d" />
-                      <rect x="0" y="20" width="15" height="10" fill="#7c7168" />
-                      <rect x="25" y="20" width="15" height="10" fill="#7c7168" />
-                      <rect x="50" y="20" width="15" height="10" fill="#7c7168" />
-                      <rect x="75" y="20" width="15" height="10" fill="#7c7168" />
+                      <rect x="0" y="15" width="70" height="70" fill="#7c7168" />
+                      <rect x="25" y="55" width="20" height="30" fill="#3a2d1d" />
+                      <rect x="-5" y="5" width="15" height="10" fill="#7c7168" />
+                      <rect x="20" y="5" width="15" height="10" fill="#7c7168" />
+                      <rect x="45" y="5" width="15" height="10" fill="#7c7168" />
+                      <rect x="70" y="5" width="15" height="10" fill="#7c7168" />
                     </g>
                     
-                    {/* Dragon/Griffin */}
-                    <g transform="translate(180, 120)">
-                      <path d="M40,20 C50,15 60,25 55,35 C70,40 65,60 55,65 C60,75 50,85 40,80 C30,85 20,75 25,65 C15,60 10,40 25,35 C20,25 30,15 40,20 Z" fill="#daa520" />
-                      <path d="M55,35 C65,25 75,30 70,45 L55,65 Z" fill="#7b3911" />
-                    </g>
+                    {/* Medieval decorative flourishes */}
+                    <path d="M10,64 C50,50 90,80 130,64 C170,50 210,80 250,64 C290,50 330,80 390,64" 
+                          stroke="#83623b" strokeWidth="2" fill="none" opacity="0.3" />
                   </svg>
                   
                   <div 
