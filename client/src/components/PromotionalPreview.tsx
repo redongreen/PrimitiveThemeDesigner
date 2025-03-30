@@ -52,8 +52,26 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
     return getColorFromIndex(ramp, idx);
   };
 
+  // Helper function to darken a hex color
+  const darkenColor = (color: string): string => {
+    // Convert hex to RGB
+    const r = parseInt(color.slice(1, 3), 16);
+    const g = parseInt(color.slice(3, 5), 16);
+    const b = parseInt(color.slice(5, 7), 16);
+    
+    // Darken by multiplying by 0.65 (35% darker)
+    const darkerR = Math.floor(r * 0.65);
+    const darkerG = Math.floor(g * 0.65);
+    const darkerB = Math.floor(b * 0.65);
+    
+    // Convert back to hex
+    return `#${darkerR.toString(16).padStart(2, '0')}${darkerG.toString(16).padStart(2, '0')}${darkerB.toString(16).padStart(2, '0')}`;
+  };
+
   // Main colors for our design
-  const brandBackgroundPrimary = getColor("brandBackgroundPrimary");
+  const originalBrandPrimary = getColor("brandBackgroundPrimary");
+  // Use darker brand color specifically for the medieval tavern ad
+  const brandBackgroundPrimary = darkenColor(originalBrandPrimary);
   const brandBackgroundSecondary = getColor("brandBackgroundSecondary");
   const brandContentPrimary = getColor("brandContentPrimary");
   const brandContentOnPrimary = getColor("brandContentOnPrimary");
@@ -80,6 +98,18 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
             className="w-full h-full flex flex-col"
             style={{ backgroundColor: "transparent" }}
           >
+            {/* Status Bar - No background */}
+            <div className="px-4 py-2 flex justify-between items-center z-10 relative">
+              <span style={{ color: "#FFFFFF", fontWeight: "500" }}>9:41</span>
+              <div className="flex gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#FFFFFF" }}>
+                  <rect x="2" y="6" width="20" height="12" rx="2" />
+                </svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "#FFFFFF" }}>
+                  <path d="M2 8L12 16L22 8" />
+                </svg>
+              </div>
+            </div>
 
             {/* Full-screen Content */}
             <div className="flex-1 relative">
