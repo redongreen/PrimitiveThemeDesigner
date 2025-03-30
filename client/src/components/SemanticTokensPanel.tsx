@@ -195,15 +195,13 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
                 <tr className="bg-muted border-b">
                   <th className="text-left p-3 w-48 font-mono text-sm">Token Name</th>
                   <th className="text-left p-3 w-28 font-mono text-sm">Color Value</th>
-                  <th className="text-left p-3 w-16 font-mono text-sm">Index</th>
-                  <th className="text-left p-3 font-mono text-sm">Sample</th>
-                  <th className="text-left p-3 font-mono text-sm">Accessible Pairings</th>
+                  <th className="text-left p-3 font-mono text-sm">Accessible Pairing</th>
                 </tr>
               </thead>
               <tbody>
                 {/* Background Tokens */}
                 <tr className="border-b">
-                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-mono text-sm">Background Tokens</td>
+                  <td colSpan={3} className="px-3 py-2 bg-muted/40 font-mono text-sm">Background Tokens</td>
                 </tr>
                 <TokenTableRow 
                   name="brandBackgroundPrimary" 
@@ -267,7 +265,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
                 {/* Content Tokens */}
                 <tr className="border-b">
-                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-mono text-sm">Content Tokens</td>
+                  <td colSpan={3} className="px-3 py-2 bg-muted/40 font-mono text-sm">Content Tokens</td>
                 </tr>
                 <TokenTableRow 
                   name="brandContentPrimary" 
@@ -353,7 +351,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
 
                 {/* Border Tokens */}
                 <tr className="border-b">
-                  <td colSpan={5} className="px-3 py-2 bg-muted/40 font-mono text-sm">Border Tokens</td>
+                  <td colSpan={3} className="px-3 py-2 bg-muted/40 font-mono text-sm">Border Tokens</td>
                 </tr>
                 <TokenTableRow 
                   name="brandBorderAccessible" 
@@ -413,7 +411,7 @@ export const SemanticTokensPanel: React.FC<SemanticTokensPanelProps> = ({
             </table>
 
             {/* Common UI Element Pairings */}
-            <h3 className="text-md font-mono font-semibold mt-8 mb-4">Common UI Element Examples</h3>
+            <h3 className="text-md font-semibold mt-8 mb-4">Common UI Element Examples</h3>
             <div className="grid grid-cols-2 gap-4 mb-8">
               {/* Button example */}
               <div className="p-4 border rounded-lg">
@@ -603,26 +601,6 @@ const TokenTableRow = ({
             <Copy className="h-3 w-3" />
           </button>
         </div>
-      </td>
-      <td className="p-3 text-sm">{rampIndex >= 0 ? rampIndex + 1 : rampIndex}</td>
-      <td className="p-3">
-        <div className="inline-block font-mono text-xs" style={sampleStyle}>
-          {sampleText}
-        </div>
-        {ratio && (
-          <div 
-            className="text-xs font-mono mt-2 py-1 px-2 rounded-sm inline-block"
-            style={{
-              backgroundColor: "#000000", 
-              color: "#FFFFFF"
-            }}
-          >
-            {ratio.toFixed(2)}:1
-            {ratio >= 7 && " (AAA)"}
-            {ratio < 7 && ratio >= 4.5 && " (AA)"}
-            {ratio < 4.5 && ratio >= 3 && " (AA Large)"}
-          </div>
-        )}
       </td>
       <td className="p-3">
         {accessiblePairing}
