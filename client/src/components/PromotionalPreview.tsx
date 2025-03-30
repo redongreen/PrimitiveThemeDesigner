@@ -479,57 +479,21 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 <div 
                   className="h-32 w-full relative overflow-hidden"
                   style={{
-                    backgroundColor: "#e8ddc2", // Medieval parchment color
                     display: "flex",
                     justifyContent: "center",
-                    alignItems: "center"
+                    alignItems: "center",
+                    backgroundColor: "#234142" // Dark background to match the image
                   }}
                 >
-                  {/* Inline SVG for the Medieval Market Express image - adjusted to fit container width */}
-                  <svg width="100%" height="100%" viewBox="0 0 400 128" preserveAspectRatio="xMidYMid slice">
-                    {/* Background */}
-                    <rect width="400" height="128" fill="#e8ddc2" />
-                    
-                    {/* Horizontal decorative elements */}
-                    <rect x="0" y="5" width="400" height="5" fill="#83623b" opacity="0.3" />
-                    <rect x="0" y="118" width="400" height="5" fill="#83623b" opacity="0.3" />
-                    
-                    {/* Left side - Knight with Shield */}
-                    <g transform="translate(20, 12) scale(0.8)">
-                      {/* Shield with "Market Express" */}
-                      <path d="M80,30 L130,30 L130,95 L105,110 L80,95 Z" fill="#1a5663" />
-                      <text x="87" y="60" fontSize="11" fill="white" fontWeight="bold">MARKET</text>
-                      <text x="87" y="78" fontSize="11" fill="white" fontWeight="bold">EXPRESS</text>
-                      
-                      {/* Knight Silhouette */}
-                      <path d="M50,30 C50,20 55,15 65,18 C75,20 70,30 70,40 L70,50 L50,50 Z" fill="#625c3e" />
-                      <path d="M50,50 L70,50 L75,80 L45,80 Z" fill="#4a4a4a" />
-                      <path d="M55,35 L65,35 L65,50 L55,50 Z" fill="#e8b89c" />
-                      <path d="M45,80 L75,80 L80,110 L40,110 Z" fill="#943123" />
-                    </g>
-                    
-                    {/* Center elements */}
-                    <g transform="translate(200, 64)">
-                      {/* Dragon/Griffin */}
-                      <path d="M0,0 C10,-5 20,5 15,15 C30,20 25,40 15,45 C20,55 10,65 0,60 C-10,65 -20,55 -15,45 C-25,40 -30,20 -15,15 C-20,5 -10,-5 0,0 Z" fill="#daa520" />
-                      <path d="M15,15 C25,5 35,10 30,25 L15,45 Z" fill="#7b3911" />
-                    </g>
-                    
-                    {/* Right side - Castle */}
-                    <g transform="translate(300, 30)">
-                      {/* Castle */}
-                      <rect x="0" y="15" width="70" height="70" fill="#7c7168" />
-                      <rect x="25" y="55" width="20" height="30" fill="#3a2d1d" />
-                      <rect x="-5" y="5" width="15" height="10" fill="#7c7168" />
-                      <rect x="20" y="5" width="15" height="10" fill="#7c7168" />
-                      <rect x="45" y="5" width="15" height="10" fill="#7c7168" />
-                      <rect x="70" y="5" width="15" height="10" fill="#7c7168" />
-                    </g>
-                    
-                    {/* Medieval decorative flourishes */}
-                    <path d="M10,64 C50,50 90,80 130,64 C170,50 210,80 250,64 C290,50 330,80 390,64" 
-                          stroke="#83623b" strokeWidth="2" fill="none" opacity="0.3" />
-                  </svg>
+                  {/* Using the provided medieval-themed PNG image */}
+                  <img 
+                    src="/images/med1.png" 
+                    alt="Medieval market scene" 
+                    className="w-full h-full object-cover"
+                    style={{
+                      objectPosition: "center"
+                    }}
+                  />
                   
                   <div 
                     className="absolute top-2 left-2 px-2 py-1 rounded-md text-xs font-medium"
