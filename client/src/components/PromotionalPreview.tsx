@@ -477,15 +477,19 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 }}
               >
                 <div 
-                  className="h-32 w-full relative"
+                  className="h-32 w-full relative overflow-hidden"
                   style={{
-                    backgroundImage: "url('/images/market_express.svg')",
-                    backgroundSize: "contain", /* Changed to 'contain' to ensure proper sizing */
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
                     backgroundColor: "#e8ddc2" // Fallback background color
                   }}
                 >
+                  <img 
+                    src="/images/market_express.svg" 
+                    alt="Market Express medieval theme" 
+                    className="w-full h-full object-cover"
+                    style={{
+                      objectPosition: "center"
+                    }}
+                  />
                   <div 
                     className="absolute top-2 left-2 px-2 py-1 rounded-md text-xs font-medium"
                     style={{ 
