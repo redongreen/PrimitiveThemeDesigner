@@ -11,7 +11,11 @@ import {
   ShoppingCart, 
   Gift, 
   Store,
-  LucideIcon 
+  LucideIcon,
+  PlayCircle,
+  Clock,
+  SkipForward,
+  SkipBack
 } from "lucide-react";
 import { type ColorStop } from "@/lib/color";
 import { SPECIAL_BLACK_INDEX, SPECIAL_WHITE_INDEX } from "@/lib/semanticTokens";
@@ -60,7 +64,128 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
     <div className="flex flex-col gap-6">
 
       <div className="flex flex-wrap justify-center gap-8">
-        {/* SCREEN 1: Primary Background */}
+        {/* SCREEN 1: Full-Screen Ad with Brand Primary Color Overlay */}
+        <div 
+          className="rounded-[24px] overflow-hidden shadow-lg"
+          style={{ 
+            width: "375px", 
+            height: "700px", 
+            border: "6px solid rgba(0,0,0,.3)",
+          }}
+        >
+          <div
+            className="w-full h-full flex flex-col"
+            style={{ backgroundColor: "#000000" }} // Black background for music player
+          >
+            {/* Status Bar */}
+            <div className="px-4 py-2 flex justify-between items-center">
+              <span style={{ color: "#FFFFFF", fontWeight: "500" }}>9:41</span>
+              <div className="flex gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#FFFFFF" }}>
+                  <rect x="2" y="6" width="20" height="12" rx="2" />
+                </svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "#FFFFFF" }}>
+                  <path d="M2 8L12 16L22 8" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Full-screen Ad Overlay */}
+            <div className="flex-1 relative">
+              {/* Album art/image background placeholder */}
+              <div className="absolute inset-0 bg-gray-800">
+                {/* This is where you'd put an actual image */}
+                <div className="flex items-center justify-center h-full text-6xl opacity-40">
+                  🎵
+                </div>
+              </div>
+              
+              {/* Brand color overlay with transparency */}
+              <div 
+                className="absolute inset-0" 
+                style={{ 
+                  backgroundColor: brandBackgroundPrimary, 
+                  opacity: 0.85,
+                  mixBlendMode: "overlay"
+                }}
+              ></div>
+              
+              {/* Ad Content */}
+              <div className="absolute inset-0 flex flex-col justify-between p-6">
+                <div className="text-center mt-12">
+                  <div 
+                    className="text-2xl font-bold mb-3" 
+                    style={{ color: brandContentOnPrimary }}
+                  >
+                    Upgrade to Premium
+                  </div>
+                  <div 
+                    className="text-md mb-6" 
+                    style={{ color: brandContentOnPrimary }}
+                  >
+                    Get unlimited music, no ads, and offline listening
+                  </div>
+                  <button 
+                    className="py-3 px-8 rounded-full font-bold" 
+                    style={{ 
+                      backgroundColor: "#FFFFFF", 
+                      color: "#000000" 
+                    }}
+                  >
+                    START FREE TRIAL
+                  </button>
+                </div>
+                
+                <div 
+                  className="bg-black bg-opacity-30 p-4 rounded-lg" 
+                  style={{ backdropFilter: "blur(10px)" }}
+                >
+                  <div className="flex justify-between items-center mb-3">
+                    <div style={{ color: brandContentOnPrimary }}>
+                      <div className="font-bold">Endless Summer</div>
+                      <div className="text-sm opacity-90">The Midnight</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button 
+                        className="hover:opacity-80" 
+                        style={{ color: brandContentOnPrimary }}
+                      >
+                        <SkipBack size={20} />
+                      </button>
+                      <button 
+                        className="bg-white rounded-full p-1 flex items-center justify-center hover:opacity-90" 
+                        style={{ color: "#000000" }}
+                      >
+                        <PlayCircle size={40} fill="currentColor" />
+                      </button>
+                      <button 
+                        className="hover:opacity-80" 
+                        style={{ color: brandContentOnPrimary }}
+                      >
+                        <SkipForward size={20} />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Progress bar */}
+                  <div className="mb-2 relative h-1 bg-white bg-opacity-30 rounded-full">
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 rounded-full" 
+                      style={{ width: "35%", backgroundColor: brandContentOnPrimary }}
+                    ></div>
+                  </div>
+                  
+                  <div className="flex justify-between text-xs" style={{ color: brandContentOnPrimary }}>
+                    <div>1:24</div>
+                    <div>3:45</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* SCREEN 2: Primary Background */}
         <div 
           className="rounded-[24px] overflow-hidden shadow-lg"
           style={{ 
