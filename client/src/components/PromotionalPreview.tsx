@@ -18,7 +18,8 @@ import {
   Plus,
   Bookmark,
   ArrowRight,
-  MapPin
+  MapPin,
+  X
 } from "lucide-react";
 import { type ColorStop } from "@/lib/color";
 import { SPECIAL_BLACK_INDEX, SPECIAL_WHITE_INDEX } from "@/lib/semanticTokens";
@@ -145,10 +146,10 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
 
             {/* Main Content */}
             <div className="flex-1 relative">
-              {/* Bookmark Button in Top Right */}
+              {/* Dismiss X Button in Top Right */}
               <div className="absolute top-4 right-4 z-10">
                 <div className="bg-black bg-opacity-60 p-2 rounded-full">
-                  <Bookmark size={24} className="text-white" />
+                  <X size={20} className="text-white" />
                 </div>
               </div>
               
