@@ -440,18 +440,60 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                   <div className="text-xs font-semibold truncate">Asian Bistro</div>
                   <div className="text-xs text-gray-500">25 min</div>
                 </div>
-                <RestaurantItem 
-                  name="Grill House"
-                  time="30 min"
-                  brandBackgroundPrimary={brandBackgroundSecondary}
-                  brandContentOnPrimary={brandContentOnSecondary}
-                />
-                <RestaurantItem 
-                  name="Deli Corner"
-                  time="25 min"
-                  brandBackgroundPrimary={brandBackgroundSecondary}
-                  brandContentOnPrimary={brandContentOnSecondary}
-                />
+                <div className="mb-2">
+                  <div className="h-20 relative rounded-lg overflow-hidden mb-1" 
+                    style={{ 
+                      backgroundColor: "#3a2c1f",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                  >
+                    {/* Inline SVG for Grill House */}
+                    <svg width="100%" height="100%" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="40" y="30" width="120" height="60" fill="#5a3b1c" />
+                      <rect x="50" y="40" width="100" height="40" fill="#7a5a3a" />
+                      <rect x="70" y="50" width="60" height="20" fill="#8a6a4a" />
+                      <circle cx="80" cy="60" r="8" fill="#f05a28" />
+                      <circle cx="100" cy="60" r="8" fill="#f05a28" />
+                      <circle cx="120" cy="60" r="8" fill="#f05a28" />
+                    </svg>
+                    <div 
+                      className="absolute bottom-1 left-1 text-xs px-1.5 py-0.5 rounded-lg font-medium"
+                      style={{ 
+                        backgroundColor: brandBackgroundSecondary,
+                        color: brandContentOnSecondary
+                      }}
+                    >
+                      BBQ Special
+                    </div>
+                  </div>
+                  <div className="text-xs font-semibold truncate">Grill House</div>
+                  <div className="text-xs text-gray-500">30 min</div>
+                </div>
+                <div className="mb-2">
+                  <div className="h-20 relative rounded-lg overflow-hidden mb-1">
+                    <img 
+                      src="/images/deli_corner.png" 
+                      alt="Historic deli scene with butcher and customer" 
+                      className="w-full h-full object-cover"
+                      style={{
+                        objectPosition: "center"
+                      }}
+                    />
+                    <div 
+                      className="absolute bottom-1 left-1 text-xs px-1.5 py-0.5 rounded-lg font-medium"
+                      style={{ 
+                        backgroundColor: brandBackgroundSecondary,
+                        color: brandContentOnSecondary
+                      }}
+                    >
+                      Fresh Daily
+                    </div>
+                  </div>
+                  <div className="text-xs font-semibold truncate">Deli Corner</div>
+                  <div className="text-xs text-gray-500">25 min</div>
+                </div>
               </div>
             </div>
 
@@ -462,7 +504,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 style={{ backgroundColor: brandBackgroundSecondary }}
               >
                 <div>
-                  <div className="font-semibold text-sm" style={{ color: brandContentOnSecondary }}>BOGO Week</div>
+                  <div className="font-semibold text-sm" style={{ color: brandContentOnSecondary}}>BOGO Week</div>
                   <div className="text-xs" style={{ color: brandContentOnSecondary }}>Save on your favorite items</div>
                 </div>
                 <div 
