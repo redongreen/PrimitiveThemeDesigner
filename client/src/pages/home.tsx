@@ -15,19 +15,8 @@ export default function Home() {
     <div className="container max-w-6xl mx-auto py-8 px-4">
       <div className="flex items-baseline gap-4 mb-6">
         <h1 className="text-2xl font-bold">
-          {activeTab === "primitive" ? "Primitive color creation" : "Theme preview and semantic tokens"}
+          {activeTab === "primitive" ? "Primitive color creation" : "Accessible pairing"}
         </h1>
-        <p className="text-sm text-muted-foreground">
-          Tool created by{" "}
-          <a
-            href="https://www.linkedin.com/in/iguisard/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-foreground"
-          >
-            Ian Guisard
-          </a>
-        </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as "primitive" | "theme")}>
@@ -48,14 +37,14 @@ export default function Home() {
       </Tabs>
 
       <div className="mt-16 pt-8 border-t text-xs text-muted-foreground text-center">
-        Last updated on February 16, 2025,{" "}
+        Last updated on March 20, 2025, created by{" "}
         <a
-          href="https://github.com/redongreen/PrimitiveThemeDesigner"
+          href="https://www.linkedin.com/in/iguisard/"
           target="_blank"
           rel="noopener noreferrer"
           className="underline hover:text-foreground"
         >
-          8ea71d6
+          Ian Guisard
         </a>
       </div>
     </div>

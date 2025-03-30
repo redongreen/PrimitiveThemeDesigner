@@ -33,20 +33,18 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
   };
 
   // Main colors for our design
-  const brandPrimary = getColor("brandBackgroundPrimary");
-  const brandSecondary = getColor("brandBackgroundSecondary");
+  const brandBackgroundPrimary = getColor("brandBackgroundPrimary");
+  const brandBackgroundSecondary = getColor("brandBackgroundSecondary");
   const brandContentPrimary = getColor("brandContentPrimary");
   const brandContentOnPrimary = getColor("brandContentOnPrimary");
   const brandContentOnSecondary = getColor("brandContentOnSecondary");
   const brandBorderAccessible = getColor("brandBorderAccessible");
   const neutralBackground = "#FFFFFF"; // Neutral surface
+  const fgPrimary = "#000000"; // FG Primary
+  const fgSecondary = "#4B4B4B"; // FG Secondary
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="text-lg font-semibold mb-2">Full-Screen Promotional Preview</h2>
-      <p className="text-sm text-muted-foreground mb-4">
-        Showcasing semantic color tokens in food delivery app promotional screens
-      </p>
 
       <div className="flex flex-wrap justify-center gap-8">
         {/* SCREEN 1: Primary Background */}
@@ -60,7 +58,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
         >
           <div
             className="w-full h-full flex flex-col"
-            style={{ backgroundColor: brandPrimary }}
+            style={{ backgroundColor: brandBackgroundPrimary }}
           >
             {/* Status Bar */}
             <div className="px-4 py-2 flex justify-between items-center">
@@ -74,19 +72,43 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 </svg>
               </div>
             </div>
-            
+
             {/* Header */}
             <div className="px-4 pt-2 pb-3">
               <div className="font-semibold text-sm mb-3" style={{ color: brandContentOnPrimary }}>
-                Food App BOGO Week <span>→</span>
+                This week
               </div>
-              
+
               {/* Categories */}
               <div className="flex gap-2 mb-4">
-                <CategoryPill icon="🍽️" label="Food" color={brandContentOnPrimary} />
-                <CategoryPill icon="🛒" label="Market" color={brandContentOnPrimary} />
-                <CategoryPill icon="🎁" label="Deals" active color={brandContentOnPrimary} />
-                <CategoryPill icon="🛍️" label="Shop" color={brandContentOnPrimary} />
+                <CategoryPill
+                  icon="🍽️"
+                  label="Food"
+                  active
+                  bgColor={brandContentOnPrimary}
+                  textColor={brandContentPrimary}
+                />
+                <CategoryPill
+                  icon="🛒"
+                  label="Market"
+                  active
+                  bgColor={brandContentOnPrimary}
+                  textColor={brandContentPrimary}
+                />
+                <CategoryPill
+                  icon="🎁"
+                  label="Deals"
+                  active
+                  bgColor={brandContentOnPrimary}
+                  textColor={brandContentPrimary}
+                />
+                <CategoryPill
+                  icon="🛍️"
+                  label="Shop"
+                  active
+                  bgColor={brandContentOnPrimary}
+                  textColor={brandContentPrimary}
+                />
               </div>
             </div>
 
@@ -102,28 +124,28 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
               {/* Food Grid */}
               <div className="grid grid-cols-2 gap-4">
                 <FoodItem 
-                  brandPrimary={brandPrimary}
+                  brandBackgroundPrimary={brandBackgroundPrimary}
                   brandContentOnPrimary={brandContentOnPrimary}
                   title="Coffee Shop"
                   subtitle="Hot & Cold Drinks"
                   imgEmoji="☕"
                 />
                 <FoodItem 
-                  brandPrimary={brandPrimary}
+                  brandBackgroundPrimary={brandBackgroundPrimary}
                   brandContentOnPrimary={brandContentOnPrimary}
                   title="Fresh Greens"
                   subtitle="Salads & Bowls"
                   imgEmoji="🥗"
                 />
                 <FoodItem 
-                  brandPrimary={brandPrimary}
+                  brandBackgroundPrimary={brandBackgroundPrimary}
                   brandContentOnPrimary={brandContentOnPrimary}
                   title="Grill House"
                   subtitle="Burgers & Sandwiches"
                   imgEmoji="🍔"
                 />
                 <FoodItem 
-                  brandPrimary={brandPrimary}
+                  brandBackgroundPrimary={brandBackgroundPrimary}
                   brandContentOnPrimary={brandContentOnPrimary}
                   title="Breakfast Bar"
                   subtitle="Morning Essentials"
@@ -131,7 +153,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 />
               </div>
             </div>
-            
+
             {/* Bottom Navigation */}
             <div className="p-4 bg-black bg-opacity-5 flex justify-between items-center">
               <NavButton icon={<Home size={20} />} active color={brandContentOnPrimary} />
@@ -141,7 +163,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
             </div>
           </div>
         </div>
-        
+
         {/* SCREEN 2: White Background with Brand Elements */}
         <div 
           className="rounded-[24px] overflow-hidden shadow-lg"
@@ -167,62 +189,82 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 </svg>
               </div>
             </div>
-            
+
             {/* Header */}
             <div className="p-4 mb-2 flex justify-between items-center">
-              <div className="font-semibold" style={{ color: brandContentPrimary }}>
+              <div className="font-semibold" style={{ color: fgPrimary }}>
                 Discover
               </div>
               <User size={16} style={{ color: brandContentPrimary }} />
             </div>
-            
+
             {/* Category Row */}
             <div className="px-4 mb-4">
               <div className="flex gap-2">
-                <CategoryPill icon="🍽️" label="Food" color={brandContentPrimary} />
-                <CategoryPill icon="🛒" label="Market" color={brandContentPrimary} />
-                <CategoryPill icon="🎁" label="Deals" color={brandContentPrimary} />
-                <CategoryPill icon="🛍️" label="Shop" color={brandContentPrimary} />
+                <CategoryPill
+                  icon="🍽️"
+                  label="Food"
+                  bgColor={neutralBackground}
+                  textColor={brandContentPrimary}
+                />
+                <CategoryPill
+                  icon="🛒"
+                  label="Market"
+                  bgColor={neutralBackground}
+                  textColor={fgPrimary}
+                />
+                <CategoryPill
+                  icon="🎁"
+                  label="Deals"
+                  bgColor={neutralBackground}
+                  textColor={fgPrimary}
+                />
+                <CategoryPill
+                  icon="🛍️"
+                  label="Shop"
+                  bgColor={neutralBackground}
+                  textColor={fgPrimary}
+                />
               </div>
             </div>
 
             {/* Top Picks Section */}
             <div className="px-4 mb-4">
               <div className="flex justify-between items-center mb-2">
-                <div className="font-semibold text-sm" style={{ color: brandContentPrimary }}>
+                <div className="font-semibold text-sm" style={{ color: fgPrimary }}>
                   Featured Restaurants <span>→</span>
                 </div>
               </div>
-              
+
               {/* Restaurants Row - Fixed Width Items (No Scroll) */}
               <div className="grid grid-cols-3 gap-2">
                 <RestaurantItem 
                   name="Asian Bistro"
                   time="25 min"
                   promo="Save $3"
-                  brandPrimary={brandPrimary}
+                  brandBackgroundPrimary={brandBackgroundPrimary}
                   brandContentOnPrimary={brandContentOnPrimary}
                 />
                 <RestaurantItem 
                   name="Grill House"
                   time="30 min"
-                  brandPrimary={brandSecondary}
+                  brandBackgroundPrimary={brandBackgroundSecondary}
                   brandContentOnPrimary={brandContentOnSecondary}
                 />
                 <RestaurantItem 
                   name="Deli Corner"
                   time="25 min"
-                  brandPrimary={brandSecondary}
+                  brandBackgroundPrimary={brandBackgroundSecondary}
                   brandContentOnPrimary={brandContentOnSecondary}
                 />
               </div>
             </div>
-            
+
             {/* BOGO Banner */}
             <div className="px-4 mb-4">
               <div 
                 className="py-2 px-4 flex justify-between items-center rounded-xl"
-                style={{ backgroundColor: brandSecondary }}
+                style={{ backgroundColor: brandBackgroundSecondary }}
               >
                 <div>
                   <div className="font-semibold text-sm" style={{ color: brandContentOnSecondary }}>BOGO Week</div>
@@ -239,15 +281,15 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 </div>
               </div>
             </div>
-            
+
             {/* Featured Section */}
             <div className="px-4 mb-4">
               <div className="flex justify-between items-center mb-2">
-                <div className="font-semibold text-sm" style={{ color: brandContentPrimary }}>
+                <div className="font-semibold text-sm" style={{ color: fgPrimary }}>
                   Local Favorites <span>→</span>
                 </div>
               </div>
-              
+
               {/* Restaurant Card */}
               <div 
                 className="rounded-lg overflow-hidden mb-3"
@@ -261,7 +303,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                   <div 
                     className="absolute top-2 left-2 px-2 py-1 rounded-md text-xs font-medium"
                     style={{ 
-                      backgroundColor: brandPrimary,
+                      backgroundColor: brandBackgroundPrimary,
                       color: brandContentOnPrimary
                     }}
                   >
@@ -280,7 +322,7 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
                 </div>
               </div>
             </div>
-            
+
             {/* Bottom Navigation */}
             <div className="mt-auto p-4 border-t flex justify-between items-center">
               <NavButton icon={<Home size={20} />} active color={brandContentPrimary} />
@@ -295,24 +337,34 @@ export const PromotionalPreview: React.FC<PromotionalPreviewProps> = ({
   );
 };
 
-// Helper components
-const CategoryPill = ({ 
-  icon, 
-  label, 
-  active = false,
-  color
-}: { 
-  icon: string; 
-  label: string; 
+// ────────────────────────────────────────────────────────────────────────────────
+//   ↓↓↓ HELPER COMPONENTS
+// ────────────────────────────────────────────────────────────────────────────────
+
+// 1) Updated CategoryPill to receive bgColor / textColor as props:
+interface CategoryPillProps {
+  icon: string;
+  label: string;
   active?: boolean;
-  color: string;
+  bgColor: string;
+  textColor: string;
+}
+
+const CategoryPill: React.FC<CategoryPillProps> = ({
+  icon,
+  label,
+  active = false,
+  bgColor,
+  textColor,
+  brandBackgroundPrimary,
 }) => {
   return (
-    <div 
+    <div
       className="flex items-center gap-1 px-3 py-1.5 rounded-full"
-      style={{ 
-        backgroundColor: active ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.2)",
-        color: color
+      style={{
+        // If it's active, we use the bgColor prop, else fallback to a translucent gray
+        backgroundColor: bgColor,
+        color: textColor,
       }}
     >
       <span>{icon}</span>
@@ -321,6 +373,7 @@ const CategoryPill = ({
   );
 };
 
+// 2) Navigation Button
 const NavButton = ({ 
   icon, 
   badge,
@@ -352,14 +405,15 @@ const NavButton = ({
   );
 };
 
+// 3) Food Item
 const FoodItem = ({ 
-  brandPrimary,
+  brandBackgroundPrimary,
   brandContentOnPrimary,
   title,
   subtitle,
   imgEmoji
 }: { 
-  brandPrimary: string;
+  brandBackgroundPrimary: string;
   brandContentOnPrimary: string;
   title: string;
   subtitle: string;
@@ -378,17 +432,18 @@ const FoodItem = ({
   );
 };
 
+// 4) Restaurant Item
 const RestaurantItem = ({ 
   name,
   time,
   promo,
-  brandPrimary,
+  brandBackgroundPrimary,
   brandContentOnPrimary
 }: { 
   name: string;
   time: string;
   promo?: string;
-  brandPrimary: string;
+  brandBackgroundPrimary: string;
   brandContentOnPrimary: string;
 }) => {
   return (
@@ -398,7 +453,7 @@ const RestaurantItem = ({
           <div 
             className="absolute bottom-1 left-1 text-xs px-1.5 py-0.5 rounded-lg font-medium"
             style={{ 
-              backgroundColor: brandPrimary,
+              backgroundColor: brandBackgroundPrimary,
               color: brandContentOnPrimary
             }}
           >
