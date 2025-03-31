@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useColorRamp } from "@/hooks/useColorRamp";
 import { PrimitiveEditor } from "@/components/PrimitiveEditor";
 import { SemanticTokensPanel } from "@/components/SemanticTokensPanel";
-import { PromotionalPreview } from "@/components/PromotionalPreview";
+import { FoodAppScreensPreview } from "@/components/FoodAppScreensPreview";
 
 export default function Home() {
   // Switch between "primitive" tab and "theme" tab
@@ -42,7 +42,7 @@ export default function Home() {
         <TabsContent value="primitive">
           {/* Examples Section - Moved to the top */}
           <div className="mb-10">
-            <PromotionalPreview ramp={rampState.ramp} semanticIndices={rampState.semanticIndices} />
+            <FoodAppScreensPreview ramp={rampState.ramp} semanticIndices={rampState.semanticIndices} />
           </div>
           <PrimitiveEditor {...rampState} />
         </TabsContent>
