@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useColorRamp } from "@/hooks/useColorRamp";
 import { PrimitiveEditor } from "@/components/PrimitiveEditor";
 import { SemanticTokensPanel } from "@/components/SemanticTokensPanel";
-import { FoodAppScreensPreview } from "@/components/FoodAppScreensPreview";
+import { FoodAppScreensPreview } from "@/components/PromotionalPreview";
 
 export default function Home() {
   // Switch between "primitive" tab and "theme" tab

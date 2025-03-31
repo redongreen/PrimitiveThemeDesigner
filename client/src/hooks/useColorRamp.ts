@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ColorStop } from "@/lib/color";  // adjust import path if needed
-import { computeSemanticsIndices } from "@/lib/semanticTokens";
+import { computeSemanticIndices } from "@/lib/semanticTokens";
 
 interface Point {
   step: number;
@@ -82,7 +82,7 @@ export function useColorRamp(): RampState {
   }
 
   // Now, we compute the brand token indices from our ramp
-  const semanticIndices = computeSemanticsIndices(ramp, baseColor);
+  const semanticIndices = computeSemanticIndices(ramp, baseColor);
 
   // Handler implementations
   function handleColorChange(color: string) {

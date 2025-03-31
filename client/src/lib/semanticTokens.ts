@@ -230,7 +230,7 @@ function findDisabledContentColor(ramp: ColorStop[], bgHex: string, defaultIndex
  * Core function to compute ramp index for each brand token, used by your UI code. 
  * We'll export it so your existing code that imports it won't break.
  */
-export function computeSemanticsIndices(ramp: ColorStop[], baseColor: string) {
+export function computeSemanticIndices(ramp: ColorStop[], baseColor: string) {
   const result: Record<string, number> = {};
 
   for (const tokenSpec of SEMANTIC_CONFIG) {
@@ -334,10 +334,13 @@ function pickIndexForStrategy(
       }
       let foundIndex = -1;
       for (const idx of candidateIndices) {
-        const foreHex = ramp[idx].hex;
-        if (getContrastOrFallback(foreHex, bgHex) >= 5) {
-          foundIndex = idx;
-          break;
+        // Add safety check to prevent errors with undefined ramp elements
+        if (idx >= 0 && idx < ramp.length && ramp[idx]) {
+          const foreHex = ramp[idx].hex;
+          if (getContrastOrFallback(foreHex, bgHex) >= 5) {
+            foundIndex = idx;
+            break;
+          }
         }
       }
       if (foundIndex >= 0) {
@@ -368,7 +371,7 @@ function pickIndexForStrategy(
  */
 export function generateAllTokens(ramp: ColorStop[], baseColor: string): Record<string, string> {
   // 1) figure out brand token indices
-  const brandIndices = computeSemanticsIndices(ramp, baseColor);
+  const brandIndices = computeSemanticIndices(ramp, baseColor);
 
   // 2) map brandIndices -> final hex
   const brandHexes: Record<string, string> = {};
