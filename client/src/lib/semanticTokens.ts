@@ -6,170 +6,33 @@ import { getContrastRatio, hexToOklch, type ColorStop } from "@/lib/color";
 export const SPECIAL_BLACK_INDEX = -2;
 export const SPECIAL_WHITE_INDEX = -3;
 
-/** Check if an index is one of the special black/white constants. */
+/** 
+ * Check if an index refers to our special black/white constants.
+ */
 function isSpecialIndex(index: number) {
   return index === SPECIAL_BLACK_INDEX || index === SPECIAL_WHITE_INDEX;
 }
 
-/** Convert ramp index (or special black/white index) → actual hex color. */
-export function getColorFromIndex(ramp: ColorStop[], idx: number): string {
-  if (idx === SPECIAL_BLACK_INDEX) return "#000000";
-  if (idx === SPECIAL_WHITE_INDEX) return "#FFFFFF";
-  return ramp[idx]?.hex ?? "#000000"; // fallback
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Neutral tokens: fixed values used throughout the app for content or backgrounds
-// ────────────────────────────────────────────────────────────────────────────────
-export const NEUTRAL_TOKENS = {
-  contentTertiary: "#5E5E5E",        // medium gray
-  backgroundSecondary: "#F3F3F3",    // light gray
-  backgroundTertiary: "#E8E8E8",     // slightly darker light gray
-} as const;
-
-/**
- * Strategies that define how "brand" tokens are computed from the color ramp.
- * Each entry leads to a ramp index (or special black/white) after computeSemanticsIndices is called.
+/** 
+ * Finds the ramp color closest in OKLCH space to `targetHex`. 
  */
-type Strategy =
-  | { kind: "closest-base-color" }
-  | { kind: "lightest-with-contrast"; contrastAgainst: string; ratio: number }
-  | { kind: "darkest-with-contrast"; contrastAgainst?: string; contrastAgainstToken?: string; ratio: number }
-  | { kind: "disabled-content-color"; backgroundIndexToken: string; contentOnSecondaryIndexToken: string }
-  | { kind: "shift-step"; relativeTo: string; offset: number }
-  | { kind: "use-same-index"; referenceToken: string }
-  | {
-      kind: "border-accessible";
-      referenceToken: string;
-      ratio: number;
-      contrastAgainst: string;
-    }
-  | {
-      kind: "content-on-primary-6to1";
-      backgroundToken: string;
-    };
-
-interface SemanticTokenSpec {
-  name: string;
-  strategy: Strategy;
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Brand token configuration: how each token picks a ramp color
-// ────────────────────────────────────────────────────────────────────────────────
-const SEMANTIC_CONFIG: SemanticTokenSpec[] = [
-  {
-    // brandBackgroundPrimary picks whichever ramp color is closest to the user-provided baseColor.
-    name: "brandBackgroundPrimary",
-    strategy: { kind: "closest-base-color" },
-  },
-  {
-    // brandBackgroundSecondary picks the lightest ramp color with at least 4.5:1 contrast vs #5E5E5E
-    name: "brandBackgroundSecondary",
-    strategy: {
-      kind: "lightest-with-contrast",
-      contrastAgainst: NEUTRAL_TOKENS.contentTertiary, // "#5E5E5E"
-      ratio: 4.5,
-    },
-  },
-  {
-    // brandBackgroundDisabled shifts brandBackgroundSecondary's index by +1
-    name: "brandBackgroundDisabled",
-    strategy: {
-      kind: "shift-step",
-      relativeTo: "brandBackgroundSecondary",
-      offset: 1,
-    },
-  },
-  {
-    // brandContentPrimary picks the darkest color that meets 4.5:1 vs #F3F3F3
-    name: "brandContentPrimary",
-    strategy: {
-      kind: "darkest-with-contrast",
-      contrastAgainst: NEUTRAL_TOKENS.backgroundSecondary, // "#F3F3F3"
-      ratio: 4.5,
-    },
-  },
-  {
-    // brandContentOnSecondary picks the darkest color that meets 4.5:1 vs brandBackgroundSecondary
-    name: "brandContentOnSecondary",
-    strategy: {
-      kind: "darkest-with-contrast",
-      contrastAgainstToken: "brandBackgroundSecondary",
-      ratio: 4.5,
-    },
-  },
-  {
-    // brandContentDisabled tries for ~1.2..2.2 contrast vs brandBackgroundDisabled
-    // or whichever is closest to that range.
-    name: "brandContentDisabled",
-    strategy: {
-      kind: "disabled-content-color",
-      backgroundIndexToken: "brandBackgroundDisabled",
-      contentOnSecondaryIndexToken: "brandContentOnSecondary",
-    },
-  },
-  {
-    // brandBorderAccessible tries brandBackgroundPrimary's index if >=3:1 vs #E8E8E8,
-    // else expands outward, else fallback to brandBackgroundPrimary.
-    name: "brandBorderAccessible",
-    strategy: {
-      kind: "border-accessible",
-      referenceToken: "brandBackgroundPrimary",
-      ratio: 3,
-      contrastAgainst: NEUTRAL_TOKENS.backgroundTertiary, // "#E8E8E8"
-    },
-  },
-  {
-    // brandBorderSubtle shifts brandBackgroundSecondary's index by -2
-    name: "brandBorderSubtle",
-    strategy: {
-      kind: "shift-step",
-      relativeTo: "brandBackgroundSecondary",
-      offset: -2,
-    },
-  },
-  {
-    // brandContentOnPrimary tries >=5:1 vs brandBackgroundPrimary,
-    // else black/white fallback if >=4.5:1, else fallback to brandBackgroundPrimary index.
-    name: "brandContentOnPrimary",
-    strategy: {
-      kind: "content-on-primary-6to1",
-      backgroundToken: "brandBackgroundPrimary",
-    },
-  },
-];
-
-/**
- * Helper utilities for picking an index from the ramp.
- */
-function getContrastOrFallback(foreHex: string, backHex: string) {
-  return getContrastRatio(foreHex, backHex);
-}
-function hexToOklchDistance(hex1: string, hex2: string) {
-  // Weighted difference in OKLCH
-  const a = hexToOklch(hex1);
-  const b = hexToOklch(hex2);
-
-  let hDiff = Math.abs(a.h - b.h);
-  if (hDiff > 180) hDiff = 360 - hDiff;
-  hDiff /= 360;
-
-  const lDiff = Math.abs(a.l - b.l);
-  const cDiff = Math.abs(a.c - b.c);
-
-  // Weighted sum
-  return (lDiff * 2) + (cDiff * 1.5) + (hDiff * 1);
-}
-
-/** Finds whichever ramp color is closest in OKLCH to a `targetHex`. */
 function findBestMatchingPrimitive(ramp: ColorStop[], targetHex: string): number {
   if (!ramp.length) return 0;
-  let bestIndex = 0;
+  const target = hexToOklch(targetHex);
   let minDiff = Number.MAX_VALUE;
+  let bestIndex = 0;
 
   for (let i = 0; i < ramp.length; i++) {
-    const diff = hexToOklchDistance(ramp[i].hex, targetHex);
+    const { l, c, h } = ramp[i].oklch;
+    const lDiff = Math.abs(l - target.l);
+    const cDiff = Math.abs(c - target.c);
+
+    let hDiff = Math.abs(h - target.h);
+    if (hDiff > 180) hDiff = 360 - hDiff; // hue wrap-around
+    hDiff /= 360;
+
+    // Weighted difference
+    const diff = (lDiff * 2) + (cDiff * 1.5) + (hDiff * 1);
     if (diff < minDiff) {
       minDiff = diff;
       bestIndex = i;
@@ -178,7 +41,12 @@ function findBestMatchingPrimitive(ramp: ColorStop[], targetHex: string): number
   return bestIndex;
 }
 
-/** Looks from lightest → darkest for first ramp color with >= minContrast vs `against`. */
+/** Simple wrapper around getContrastRatio. */
+function getContrastOrFallback(foreHex: string, backHex: string) {
+  return getContrastRatio(foreHex, backHex);
+}
+
+/** Finds the first (lightest) color in `ramp` with >= minContrast vs `against`. */
 function findLightestWithContrast(ramp: ColorStop[], against: string, minContrast: number) {
   for (let i = 0; i < ramp.length; i++) {
     if (getContrastOrFallback(ramp[i].hex, against) >= minContrast) {
@@ -189,7 +57,7 @@ function findLightestWithContrast(ramp: ColorStop[], against: string, minContras
   return ramp.length - 1;
 }
 
-/** Looks from darkest → lightest for first ramp color with >= minContrast vs `against`. */
+/** Finds the first (darkest -> lightest) color in `ramp` with >= minContrast vs `against`. */
 function findDarkestWithContrast(ramp: ColorStop[], against: string, minContrast: number) {
   for (let i = ramp.length - 1; i >= 0; i--) {
     if (getContrastOrFallback(ramp[i].hex, against) >= minContrast) {
@@ -201,12 +69,16 @@ function findDarkestWithContrast(ramp: ColorStop[], against: string, minContrast
 }
 
 /**
- * For "disabled content," tries [1.2..2.2] contrast vs bgHex.
- * If none found, picks whichever is closest. Fallback is the "contentOnSecondary" index if needed.
+ * For "disabled content," tries [1.2..2.2] contrast vs bgHex. 
+ * If none is found, picks whichever is closest, or a known fallback index.
  */
-function findDisabledContentColor(ramp: ColorStop[], bgHex: string, defaultIndex: number) {
+function findDisabledContentColor(
+  ramp: ColorStop[],
+  bgHex: string,
+  contentOnSecondaryIndex: number
+) {
   if (!ramp.length) return 0;
-  let bestIndex = defaultIndex;
+  let bestIndex = contentOnSecondaryIndex;
   let bestDistance = Number.MAX_VALUE;
 
   for (let i = 0; i < ramp.length; i++) {
@@ -214,10 +86,14 @@ function findDisabledContentColor(ramp: ColorStop[], bgHex: string, defaultIndex
     if (contrast >= 1.2 && contrast <= 2.2) {
       return i; // Found a color in the desired range
     }
+    // measure how far outside [1.2..2.2] range we are
     const distance =
-      contrast < 1.2 ? 1.2 - contrast :
-      contrast > 2.2 ? contrast - 2.2 :
-      0;
+      contrast < 1.2
+        ? 1.2 - contrast
+        : contrast > 2.2
+        ? contrast - 2.2
+        : 0;
+
     if (distance < bestDistance) {
       bestDistance = distance;
       bestIndex = i;
@@ -226,22 +102,138 @@ function findDisabledContentColor(ramp: ColorStop[], bgHex: string, defaultIndex
   return bestIndex;
 }
 
-/** 
- * Core function to compute ramp index for each brand token, used by your UI code. 
- * We'll export it so your existing code that imports it won't break.
+/**
+ * Below are neutral tokens (system-level colors) you want to keep around. 
+ * They are not picked from the ramp; they are fixed in your design system.
  */
-export function computeSemanticIndices(ramp: ColorStop[], baseColor: string) {
-  const result: Record<string, number> = {};
+export const NEUTRAL_TOKENS = {
+  contentTertiary: "#5E5E5E",
+  backgroundSecondary: "#F3F3F3",
+  backgroundTertiary: "#E8E8E8", // used for brandBorderAccessible fallback
+};
 
-  for (const tokenSpec of SEMANTIC_CONFIG) {
-    const idx = pickIndexForStrategy(tokenSpec.strategy, ramp, result, baseColor);
-    result[tokenSpec.name] = idx;
-  }
-  return result;
+/**
+ * We define brand tokens in a "config array," so each token name 
+ * has a strategy to pick a suitable ramp color.
+ */
+type Strategy =
+  | { kind: "closest-base-color" }
+  | { kind: "lightest-with-contrast"; contrastAgainst: string; ratio: number }
+  | {
+      kind: "darkest-with-contrast";
+      contrastAgainst?: string;
+      contrastAgainstToken?: string;
+      ratio: number;
+    }
+  | {
+      kind: "disabled-content-color";
+      backgroundIndexToken: string;
+      contentOnSecondaryIndexToken: string;
+    }
+  | { kind: "shift-step"; relativeTo: string; offset: number }
+  | { kind: "use-same-index"; referenceToken: string }
+  | {
+      kind: "border-accessible";
+      referenceToken: string;
+      ratio: number;
+      contrastAgainst: string;
+    }
+  | {
+      /**
+       * brandContentOnPrimary tries for >=5:1 vs brandBackgroundPrimary, 
+       * else black/white fallback if >=4.5:1, else fallback to background's index.
+       */
+      kind: "content-on-primary-6to1";
+      backgroundToken: string;
+    };
+
+interface SemanticTokenSpec {
+  name: string;
+  strategy: Strategy;
 }
 
-/** 
- * The function that picks an index based on the given strategy. 
+/**
+ * This array describes *brand tokens* and how each color is chosen from the ramp.
+ */
+const BRAND_TOKENS_CONFIG: SemanticTokenSpec[] = [
+  {
+    // brandBackgroundPrimary picks the color in the ramp closest to the user-provided "baseColor"
+    name: "brandBackgroundPrimary",
+    strategy: { kind: "closest-base-color" },
+  },
+  {
+    // brandBackgroundSecondary uses "lightest-with-contrast" against NEUTRAL_TOKENS.contentTertiary (#5E5E5E) with ratio=4.5
+    name: "brandBackgroundSecondary",
+    strategy: {
+      kind: "lightest-with-contrast",
+      contrastAgainst: NEUTRAL_TOKENS.contentTertiary,
+      ratio: 4.5,
+    },
+  },
+  {
+    name: "brandBackgroundDisabled",
+    strategy: {
+      kind: "shift-step",
+      relativeTo: "brandBackgroundSecondary",
+      offset: 1,
+    },
+  },
+  {
+    // brandContentPrimary tries "darkest-with-contrast" vs NEUTRAL_TOKENS.backgroundSecondary (#F3F3F3) with ratio=4.5
+    name: "brandContentPrimary",
+    strategy: {
+      kind: "darkest-with-contrast",
+      contrastAgainst: NEUTRAL_TOKENS.backgroundSecondary,
+      ratio: 4.5,
+    },
+  },
+  {
+    name: "brandContentOnSecondary",
+    strategy: {
+      kind: "darkest-with-contrast",
+      contrastAgainstToken: "brandBackgroundSecondary",
+      ratio: 4.5,
+    },
+  },
+  {
+    name: "brandContentDisabled",
+    strategy: {
+      kind: "disabled-content-color",
+      backgroundIndexToken: "brandBackgroundDisabled",
+      contentOnSecondaryIndexToken: "brandContentOnSecondary",
+    },
+  },
+  {
+    // brandBorderAccessible tries to be the same as brandBackgroundPrimary if possible (≥3:1) 
+    // else expands outward in the ramp, referencing NEUTRAL_TOKENS.backgroundTertiary (#E8E8E8).
+    name: "brandBorderAccessible",
+    strategy: {
+      kind: "border-accessible",
+      referenceToken: "brandBackgroundPrimary",
+      ratio: 3,
+      contrastAgainst: NEUTRAL_TOKENS.backgroundTertiary,
+    },
+  },
+  {
+    name: "brandBorderSubtle",
+    strategy: {
+      kind: "shift-step",
+      relativeTo: "brandBackgroundSecondary",
+      offset: -2,
+    },
+  },
+  {
+    // brandContentOnPrimary tries >=5:1 vs brandBackgroundPrimary, else fallback logic
+    name: "brandContentOnPrimary",
+    strategy: {
+      kind: "content-on-primary-6to1",
+      backgroundToken: "brandBackgroundPrimary",
+    },
+  },
+];
+
+/**
+ * Picks a color index from the ramp for a single brand token strategy.
  */
 function pickIndexForStrategy(
   strategy: Strategy,
@@ -257,10 +249,10 @@ function pickIndexForStrategy(
       return findLightestWithContrast(ramp, strategy.contrastAgainst, strategy.ratio);
 
     case "darkest-with-contrast": {
-      let compareHex = strategy.contrastAgainst || "#FFFFFF";
+      let compareHex = strategy.contrastAgainst ?? "#FFFFFF";
       if (strategy.contrastAgainstToken) {
         const refIndex = knownIndices[strategy.contrastAgainstToken] ?? 0;
-        compareHex = getColorFromIndex(ramp, refIndex);
+        compareHex = ramp[refIndex]?.hex || compareHex;
       }
       return findDarkestWithContrast(ramp, compareHex, strategy.ratio);
     }
@@ -268,7 +260,7 @@ function pickIndexForStrategy(
     case "disabled-content-color": {
       const bgIndex = knownIndices[strategy.backgroundIndexToken] ?? 0;
       const cOnSecIndex = knownIndices[strategy.contentOnSecondaryIndexToken] ?? 0;
-      const bgHex = getColorFromIndex(ramp, bgIndex);
+      const bgHex = ramp[bgIndex]?.hex || "#FFFFFF";
       return findDisabledContentColor(ramp, bgHex, cOnSecIndex);
     }
 
@@ -284,15 +276,17 @@ function pickIndexForStrategy(
       return knownIndices[strategy.referenceToken] ?? 0;
 
     case "border-accessible": {
-      const refIndex = knownIndices[strategy.referenceToken] ?? 0;
-      const candidateHex = getColorFromIndex(ramp, refIndex);
+      const referenceIndex = knownIndices[strategy.referenceToken] ?? 0;
+      const candidateHex = ramp[referenceIndex]?.hex;
       const candidateContrast = getContrastOrFallback(candidateHex, strategy.contrastAgainst);
+
       if (candidateContrast >= strategy.ratio) {
-        return refIndex;
+        return referenceIndex;
       }
-      // Expand outward
-      let left = refIndex - 1;
-      let right = refIndex + 1;
+
+      // Expand outward from referenceIndex
+      let left = referenceIndex - 1;
+      let right = referenceIndex + 1;
       while (left >= 0 || right < ramp.length) {
         if (left >= 0) {
           const leftHex = ramp[left].hex;
@@ -309,54 +303,61 @@ function pickIndexForStrategy(
           right++;
         }
       }
+
       // fallback
-      return refIndex;
+      return referenceIndex;
     }
 
     case "content-on-primary-6to1": {
       const bgIndex = knownIndices[strategy.backgroundToken] ?? 0;
-      const bgHex = getColorFromIndex(ramp, bgIndex);
+      const bgHex = ramp[bgIndex]?.hex || "#FFFFFF";
 
-      // 1) Try to find a ramp color >= 5:1 vs bgHex, searching outward from bgIndex
+      // Step 1) search ramp for >=5:1
       const candidateIndices: number[] = [];
-      candidateIndices.push(bgIndex);
-      let left = bgIndex - 1;
-      let right = bgIndex + 1;
-      while (left >= 0 || right < ramp.length) {
-        if (left >= 0) {
-          candidateIndices.push(left);
-          left--;
-        }
-        if (right < ramp.length) {
-          candidateIndices.push(right);
-          right++;
+      function expandIndices() {
+        candidateIndices.push(bgIndex);
+        let left = bgIndex - 1;
+        let right = bgIndex + 1;
+        while (left >= 0 || right < ramp.length) {
+          if (left >= 0) {
+            candidateIndices.push(left);
+            left--;
+          }
+          if (right < ramp.length) {
+            candidateIndices.push(right);
+            right++;
+          }
         }
       }
+      expandIndices();
+
       let foundIndex = -1;
       for (const idx of candidateIndices) {
-        // Add safety check to prevent errors with undefined ramp elements
-        if (idx >= 0 && idx < ramp.length && ramp[idx]) {
-          const foreHex = ramp[idx].hex;
-          if (getContrastOrFallback(foreHex, bgHex) >= 5) {
-            foundIndex = idx;
-            break;
-          }
+        const fHex = ramp[idx].hex;
+        const c = getContrastOrFallback(fHex, bgHex);
+        if (c >= 5) {
+          foundIndex = idx;
+          break;
         }
       }
       if (foundIndex >= 0) {
         return foundIndex;
       }
 
-      // 2) fallback to black/white if >=4.5:1
+      // Step 2) fallback to black/white if >=4.5
       const blackC = getContrastOrFallback("#000000", bgHex);
       const whiteC = getContrastOrFallback("#FFFFFF", bgHex);
+
       if (blackC >= 4.5 || whiteC >= 4.5) {
-        // pick whichever is higher
-        if (blackC > whiteC && blackC >= 4.5) return SPECIAL_BLACK_INDEX;
-        if (whiteC >= 4.5) return SPECIAL_WHITE_INDEX;
+        if (blackC > whiteC && blackC >= 4.5) {
+          return SPECIAL_BLACK_INDEX;
+        }
+        if (whiteC >= 4.5) {
+          return SPECIAL_WHITE_INDEX;
+        }
       }
 
-      // 3) fallback to same index as background
+      // Step 3) fallback to same background index
       return bgIndex;
     }
 
@@ -365,23 +366,51 @@ function pickIndexForStrategy(
   }
 }
 
-/** 
- * If you ever want ONE object with both neutral tokens + brand tokens (as final hex),
- * you can use this function in your code. Otherwise, it's optional.
+/**
+ * Computes an object like { brandBackgroundPrimary: 3, brandBackgroundSecondary: 8, ... }
+ * where each value is a ramp index or special black/white index.
  */
-export function generateAllTokens(ramp: ColorStop[], baseColor: string): Record<string, string> {
-  // 1) figure out brand token indices
-  const brandIndices = computeSemanticIndices(ramp, baseColor);
+export function computeSemanticsIndices(
+  ramp: ColorStop[],
+  baseColor: string
+): Record<string, number> {
+  const result: Record<string, number> = {};
 
-  // 2) map brandIndices -> final hex
-  const brandHexes: Record<string, string> = {};
-  for (const [tokenName, index] of Object.entries(brandIndices)) {
-    brandHexes[tokenName] = getColorFromIndex(ramp, index);
+  for (const tokenSpec of BRAND_TOKENS_CONFIG) {
+    const idx = pickIndexForStrategy(tokenSpec.strategy, ramp, result, baseColor);
+    result[tokenSpec.name] = idx;
+  }
+  return result;
+}
+
+/**
+ * For convenience, you can generate a final object that merges both:
+ * - computed brand token hexes
+ * - static neutral tokens
+ *
+ * Example usage:
+ *   const designTokens = computeDesignTokens(ramp, baseColor);
+ *   designTokens.brand.brandBackgroundPrimary // => "#???" from the ramp
+ *   designTokens.neutral.backgroundSecondary  // => "#F3F3F3" (fixed)
+ */
+export function computeDesignTokens(ramp: ColorStop[], baseColor: string) {
+  const brandIndices = computeSemanticsIndices(ramp, baseColor);
+  const brandColors: Record<string, string> = {};
+
+  // Convert each brand token index to an actual hex color
+  for (const tokenName in brandIndices) {
+    const idx = brandIndices[tokenName];
+    if (idx === SPECIAL_BLACK_INDEX) {
+      brandColors[tokenName] = "#000000";
+    } else if (idx === SPECIAL_WHITE_INDEX) {
+      brandColors[tokenName] = "#FFFFFF";
+    } else {
+      brandColors[tokenName] = ramp[idx]?.hex || "#000000";
+    }
   }
 
-  // 3) combine with neutral tokens into one final "token dictionary"
   return {
-    ...NEUTRAL_TOKENS,  // contentTertiary, backgroundSecondary, backgroundTertiary
-    ...brandHexes,      // brandBackgroundPrimary, brandContentOnSecondary, etc.
+    brand: brandColors,
+    neutral: { ...NEUTRAL_TOKENS },
   };
 }

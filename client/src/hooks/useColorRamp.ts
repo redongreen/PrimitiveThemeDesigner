@@ -1,108 +1,267 @@
-// File: /src/hooks/useColorRamp.ts
-
-import { useState, useEffect } from "react";
-import { ColorStop } from "@/lib/color";  // adjust import path if needed
-import { computeSemanticIndices } from "@/lib/semanticTokens";
+import { useState, useEffect, useCallback } from "react";
+import { generateRamp, oklchToHex, hexToOklch, type ColorStop } from "@/lib/color";
+import { computeSemanticsIndices } from "@/lib/semanticTokens";
 
 interface Point {
   step: number;
   value: number;
 }
 
-interface RampState {
-  ramp: ColorStop[];
-  semanticIndices: Record<string, number>;  // <-- The important part!
-  baseColor: string;
-  steps: number;
-  vibrance: number;
-  hueTorsion: number;
-  contrast: number;
-
-  // curve arrays
-  lightnessPoints: Point[];
-  chromaPoints: Point[];
-  huePoints: Point[];
-
-  // handlers
-  handleColorChange: (color: string) => void;
-  handleGenerateRamp: () => void;
-  handleStepsChange: (newSteps: number) => void;
-  handleVibranceChange: (val: number) => void;
-  handleHueTorsionChange: (val: number) => void;
-  handleContrastChange: (val: number) => void;
-  handleLightnessCurveChange: (newPoints: Point[]) => void;
-  handleChromaCurveChange: (newPoints: Point[]) => void;
-  handleHueCurveChange: (newPoints: Point[]) => void;
+function toHueOffset(baseHue: number, hue: number) {
+  // Convert absolute hue → offset in [-180..180]
+  let offset = hue - baseHue;
+  // Wrap around so 0 is the base hue, negative is below base, positive above
+  offset = ((offset + 180 + 360) % 360) - 180;
+  return offset;
 }
 
-// EXAMPLE ONLY—replace with your actual ramp-generation code
-export function useColorRamp(): RampState {
-  // Basic states
-  const [baseColor, setBaseColor] = useState("#ff0000");
-  const [steps, setSteps] = useState(7);
+function fromHueOffset(baseHue: number, offset: number) {
+  // Convert offset back to 0..360 absolute hue
+  let h = baseHue + offset;
+  h = ((h % 360) + 360) % 360;
+  return h;
+}
+
+export function useColorRamp() {
+  const [baseColor, setBaseColor] = useState("#6366f1");
+  const [steps, setSteps] = useState(10);
   const [vibrance, setVibrance] = useState(0.5);
-  const [hueTorsion, setHueTorsion] = useState(0.3);
+  const [hueTorsion, setHueTorsion] = useState(0.5);
   const [contrast, setContrast] = useState(0.5);
 
-  // Example curves
-  const [lightnessPoints, setLightnessPoints] = useState<Point[]>([
-    { step: 0, value: 20 },
-    { step: steps - 1, value: 90 },
-  ]);
-  const [chromaPoints, setChromaPoints] = useState<Point[]>([
-    { step: 0, value: 10 },
-    { step: steps - 1, value: 80 },
-  ]);
-  const [huePoints, setHuePoints] = useState<Point[]>([
-    { step: 0, value: 0 },
-    { step: steps - 1, value: 0 },
-  ]);
+  // Convert the "contrast" slider into alphaIn / alphaOut
+  const getContrastValues = (val: number) => {
+    const alphaIn = 1 + val * 1; // 1 → 2
+    const alphaOut = 1 + val * 2; // 1 → 3
+    return { alphaIn, alphaOut };
+  };
 
-  // The actual color ramp array
-  const [ramp, setRamp] = useState<ColorStop[]>([]);
+  // Generate an initial ramp
+  const { alphaIn: initAlphaIn, alphaOut: initAlphaOut } = getContrastValues(contrast);
+  const initialBaseRamp = generateRamp(baseColor, steps, vibrance, hueTorsion, {
+    alphaIn: initAlphaIn,
+    alphaOut: initAlphaOut,
+  });
 
-  // Recompute ramp when relevant states change
-  useEffect(() => {
-    generateRamp();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [baseColor, steps, vibrance, hueTorsion, contrast, lightnessPoints, chromaPoints, huePoints]);
+  // We'll grab the hue of the base color to treat as our "0" offset
+  const initialBaseHue = hexToOklch(baseColor).h;
 
-  function generateRamp() {
-    // 1) generate your ramp. 
-    //    Implementation is up to you—this is just a placeholder.
-    const newRamp: ColorStop[] = [];
-    for (let i = 0; i < steps; i++) {
-      // This is just placeholder logic, replace with your real color generation.
-      newRamp.push({
-        hex: i === 0 ? "#ffffff" : i === steps - 1 ? "#000000" : `#f${i}f${i}f${i}`,
-        oklch: { l: 1 - i / (steps - 1), c: 0.2, h: 0 },
-      });
+  const [ramp, setRamp] = useState<ColorStop[]>(initialBaseRamp);
+
+  // INITIAL curve points for L, C, and H (offset)
+  const [lightnessPoints, setLightnessPoints] = useState<Point[]>(() =>
+    initialBaseRamp.map((c, i) => ({ step: i, value: c.oklch.l * 100 }))
+  );
+  const [chromaPoints, setChromaPoints] = useState<Point[]>(() =>
+    initialBaseRamp.map((c, i) => ({ step: i, value: c.oklch.c * 100 }))
+  );
+  const [huePoints, setHuePoints] = useState<Point[]>(() =>
+    initialBaseRamp.map((c, i) => ({
+      step: i,
+      value: toHueOffset(initialBaseHue, c.oklch.h),
+    }))
+  );
+
+  // Utility to handle re-sampling of the curve points when steps changes
+  const interpolatePoints = (currentPoints: Point[], newStepCount: number): Point[] => {
+    if (currentPoints.length <= 1) {
+      return Array.from({ length: newStepCount }, (_, i) => ({
+        step: i,
+        value: currentPoints[0]?.value ?? 50,
+      }));
     }
+    const sorted = [...currentPoints].sort((a, b) => a.step - b.step);
+    return Array.from({ length: newStepCount }, (_, i) => {
+      const position = (i / (newStepCount - 1)) * (sorted.length - 1);
+      const index = Math.floor(position);
+      const fraction = position - index;
+      if (index >= sorted.length - 1) {
+        return { step: i, value: sorted[sorted.length - 1].value };
+      }
+      const start = sorted[index].value;
+      const end = sorted[index + 1].value;
+      const interpolatedValue = start + (end - start) * fraction;
+      return { step: i, value: interpolatedValue };
+    });
+  };
+
+  // Re-compute the final ramp each time any relevant state changes
+  const updateRamp = useCallback(() => {
+    const { alphaIn, alphaOut } = getContrastValues(contrast);
+    // baseline ramp from generateRamp
+    const baseRamp = generateRamp(baseColor, steps, vibrance, hueTorsion, {
+      alphaIn,
+      alphaOut,
+    });
+
+    // re-derive the base hue each time in case user changed the base color
+    const currentBaseHue = hexToOklch(baseColor).h;
+
+    // override each step with our custom L, C, and offset-H
+    const newRamp = baseRamp.map((color, i) => {
+      const l = (lightnessPoints[i]?.value ?? 50) / 100;
+      const c = (chromaPoints[i]?.value ?? 50) / 100;
+      const offset = huePoints[i]?.value ?? 0;
+
+      const h = fromHueOffset(currentBaseHue, offset);
+      return {
+        oklch: { l, c, h },
+        hex: oklchToHex({ l, c, h }),
+      };
+    });
+
     setRamp(newRamp);
+  }, [
+    baseColor,
+    steps,
+    vibrance,
+    hueTorsion,
+    contrast,
+    lightnessPoints,
+    chromaPoints,
+    huePoints,
+  ]);
+
+  useEffect(() => {
+    updateRamp();
+  }, [updateRamp]);
+
+  // ==================
+  // PUBLIC CALLBACKS
+  // ==================
+
+  // 1) Basic color input
+  function handleColorChange(newColor: string) {
+    setBaseColor(newColor);
   }
 
-  // Now, we compute the brand token indices from our ramp
-  const semanticIndices = computeSemanticIndices(ramp, baseColor);
-
-  // Handler implementations
-  function handleColorChange(color: string) {
-    setBaseColor(color);
-  }
+  // 2) "Generate Ramp" button
   function handleGenerateRamp() {
-    generateRamp();
+    const { alphaIn, alphaOut } = getContrastValues(contrast);
+    const newBaseRamp = generateRamp(newColorOrBase(baseColor), steps, vibrance, hueTorsion, {
+      alphaIn,
+      alphaOut,
+    });
+
+    const newBaseHue = hexToOklch(newColorOrBase(baseColor)).h;
+
+    // re-init curve points from scratch
+    setLightnessPoints(newBaseRamp.map((c, i) => ({ step: i, value: c.oklch.l * 100 })));
+    setChromaPoints(newBaseRamp.map((c, i) => ({ step: i, value: c.oklch.c * 100 })));
+    setHuePoints(
+      newBaseRamp.map((c, i) => ({
+        step: i,
+        value: toHueOffset(newBaseHue, c.oklch.h),
+      }))
+    );
+    setRamp(newBaseRamp);
   }
+
+  // Helper so we consistently handle `newColor` or `baseColor`
+  function newColorOrBase(col: string): string {
+    return col?.length ? col : "#6366f1";
+  }
+
+  // 3) Steps +/- buttons
   function handleStepsChange(newSteps: number) {
+    if (newSteps < 4 || newSteps > 20) return;
+
+    const newLightness = interpolatePoints(lightnessPoints, newSteps);
+    const newChroma = interpolatePoints(chromaPoints, newSteps);
+    const newHue = interpolatePoints(huePoints, newSteps);
+
     setSteps(newSteps);
+    setLightnessPoints(newLightness);
+    setChromaPoints(newChroma);
+    setHuePoints(newHue);
+
+    // re-generate ramp
+    const { alphaIn, alphaOut } = getContrastValues(contrast);
+    const baseRamp = generateRamp(baseColor, newSteps, vibrance, hueTorsion, {
+      alphaIn,
+      alphaOut,
+    });
+    const currentBaseHue = hexToOklch(baseColor).h;
+
+    const finalRamp = baseRamp.map((color, i) => {
+      const l = newLightness[i]?.value / 100;
+      const c = newChroma[i]?.value / 100;
+      const offset = newHue[i]?.value;
+      const h = fromHueOffset(currentBaseHue, offset || 0);
+      return {
+        oklch: { l, c, h },
+        hex: oklchToHex({ l, c, h }),
+      };
+    });
+    setRamp(finalRamp);
   }
+
+  // 4) Vibrance slider
   function handleVibranceChange(val: number) {
     setVibrance(val);
+    const { alphaIn, alphaOut } = getContrastValues(contrast);
+    const newBaseRamp = generateRamp(baseColor, steps, val, hueTorsion, {
+      alphaIn,
+      alphaOut,
+    });
+    const currentBaseHue = hexToOklch(baseColor).h;
+
+    setLightnessPoints(newBaseRamp.map((c, i) => ({ step: i, value: c.oklch.l * 100 })));
+    setChromaPoints(newBaseRamp.map((c, i) => ({ step: i, value: c.oklch.c * 100 })));
+    setHuePoints(
+      newBaseRamp.map((c, i) => ({
+        step: i,
+        value: toHueOffset(currentBaseHue, c.oklch.h),
+      }))
+    );
+    setRamp(newBaseRamp);
   }
+
+  // 5) Hue Torsion slider
   function handleHueTorsionChange(val: number) {
     setHueTorsion(val);
+    const { alphaIn, alphaOut } = getContrastValues(contrast);
+    const newBaseRamp = generateRamp(baseColor, steps, vibrance, val, {
+      alphaIn,
+      alphaOut,
+    });
+    const currentBaseHue = hexToOklch(baseColor).h;
+
+    setLightnessPoints(newBaseRamp.map((c, i) => ({ step: i, value: c.oklch.l * 100 })));
+    setChromaPoints(newBaseRamp.map((c, i) => ({ step: i, value: c.oklch.c * 100 })));
+    setHuePoints(
+      newBaseRamp.map((c, i) => ({
+        step: i,
+        value: toHueOffset(currentBaseHue, c.oklch.h),
+      }))
+    );
+    setRamp(newBaseRamp);
   }
+
+  // 6) Contrast slider
   function handleContrastChange(val: number) {
     setContrast(val);
+    const { alphaIn, alphaOut } = getContrastValues(val);
+    const newBaseRamp = generateRamp(baseColor, steps, vibrance, hueTorsion, {
+      alphaIn,
+      alphaOut,
+    });
+    const currentBaseHue = hexToOklch(baseColor).h;
+
+    setLightnessPoints(newBaseRamp.map((c, i) => ({ step: i, value: c.oklch.l * 100 })));
+    setChromaPoints(newBaseRamp.map((c, i) => ({ step: i, value: c.oklch.c * 100 })));
+    setHuePoints(
+      newBaseRamp.map((c, i) => ({
+        step: i,
+        value: toHueOffset(currentBaseHue, c.oklch.h),
+      }))
+    );
+    setRamp(newBaseRamp);
   }
+
+  // ========
+  // DRAGGING THE POINTS
+  // ========
   function handleLightnessCurveChange(newPoints: Point[]) {
     setLightnessPoints(newPoints);
   }
@@ -113,24 +272,42 @@ export function useColorRamp(): RampState {
     setHuePoints(newPoints);
   }
 
-  // Finally, return everything
+  // ==================
+  // COMPUTE SEMANTIC TOKENS
+  // ==================
+  const [semanticIndices, setSemanticIndices] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const si = computeSemanticsIndices(ramp, baseColor);
+    setSemanticIndices(si);
+  }, [ramp, baseColor]);
+
   return {
+    // main data
     ramp,
-    semanticIndices,  // <----- KEY! Now home.tsx won't break
     baseColor,
     steps,
     vibrance,
     hueTorsion,
     contrast,
+
+    // curve data
     lightnessPoints,
     chromaPoints,
     huePoints,
+
+    // semantic token indices
+    semanticIndices,
+
+    // actions
     handleColorChange,
     handleGenerateRamp,
     handleStepsChange,
     handleVibranceChange,
     handleHueTorsionChange,
     handleContrastChange,
+
+    // curve drag handlers
     handleLightnessCurveChange,
     handleChromaCurveChange,
     handleHueCurveChange,
