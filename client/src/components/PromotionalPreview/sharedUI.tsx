@@ -63,29 +63,39 @@ export const NavButton = ({
   );
 };
 
-/** 3) FoodItem: now takes a React node for its icon instead of an emoji string. */
+/**
+ * 3) FoodItem: now receives brandBorderSubtle so we can apply a border.
+ */
 interface FoodItemProps {
   brandBackgroundPrimary: string;
   brandContentOnPrimary: string;
+  brandBorderSubtle: string; // NEW
   title: string;
   subtitle: string;
-  icon: React.ReactNode; // changed from imgEmoji => icon
+  icon: React.ReactNode;
 }
 
 export const FoodItem: React.FC<FoodItemProps> = ({
   brandBackgroundPrimary,
   brandContentOnPrimary,
+  brandBorderSubtle,
   title,
   subtitle,
   icon
 }) => {
   return (
-    <div className="bg-white bg-opacity-10 rounded-xl p-3">
+    <div
+      className="rounded-xl p-3"
+      // Add a subtle border
+      style={{
+        backgroundColor: "rgba(255,255,255,0.1)",  // same as before
+        border: `1px solid rgba(255,255,255,0.05)`,   // NEW
+      }}
+    >
       <div 
         className="w-16 h-16 rounded-full bg-white bg-opacity-20 mb-3 flex items-center justify-center"
         style={{ color: brandContentOnPrimary }}
       >
-        {/* Now we directly render the passed-in icon */}
         {icon}
       </div>
       <div className="font-semibold text-sm" style={{ color: brandContentOnPrimary }}>

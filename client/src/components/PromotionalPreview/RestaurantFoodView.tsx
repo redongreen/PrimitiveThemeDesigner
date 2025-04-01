@@ -3,12 +3,11 @@ import { X, Utensils, ThumbsUp, ArrowRight } from "lucide-react";
 
 /**
  * Props for the "RestaurantFoodView" screen.
- * We added 'brandBackgroundSecondary' so you can use it inside.
  */
 interface Props {
   brandBackgroundPrimary: string;
   brandContentOnPrimary: string;
-  brandBackgroundSecondary: string; // NEW
+  brandBackgroundSecondary: string;
 }
 
 /**
@@ -18,7 +17,7 @@ interface Props {
 export const RestaurantFoodView: React.FC<Props> = ({
   brandBackgroundPrimary,
   brandContentOnPrimary,
-  brandBackgroundSecondary, // now available
+  brandBackgroundSecondary,
 }) => {
   return (
     <div 
@@ -141,47 +140,48 @@ export const RestaurantFoodView: React.FC<Props> = ({
               </div>
             </div>
 
-            {/* Menu Item Card - example usage of brandBackgroundSecondary */}
+            {/* Menu Item Card - improved layout */}
             <div className="px-4 py-2">
               <div
-                className="w-full rounded-xl p-3 flex items-center"
+                className="w-full p-4 rounded-xl flex items-center justify-between"
                 style={{ 
-                  // If you want brandBackgroundSecondary, just swap below:
                   backgroundColor: brandBackgroundPrimary,
                   boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
                 }}
               >
-                <div 
-                  className="w-16 h-16 rounded-lg bg-black bg-opacity-20 flex-shrink-0 flex items-center justify-center"
-                  style={{ color: brandContentOnPrimary }}
-                >
-                  <Utensils size={24} />
-                </div>
-                <div className="ml-3 flex-grow">
+                {/* Left side: icon + dish info */}
+                <div className="flex items-center gap-3">
                   <div
-                    className="font-semibold text-sm"
-                    style={{ color: brandContentOnPrimary }}
+                    className="w-12 h-12 rounded-md flex items-center justify-center"
+                    style={{
+                      backgroundColor: "rgba(0,0,0,0.1)",
+                    }}
                   >
-                    Roast Pheasant
+                    <Utensils size={24} style={{ color: brandContentOnPrimary }} />
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div>
                     <div
-                      className="text-xs opacity-90"
+                      className="font-semibold"
                       style={{ color: brandContentOnPrimary }}
                     >
-                      5 Gold
+                      Roast Pheasant
                     </div>
                     <div
-                      className="flex items-center text-xs opacity-90"
+                      className="text-sm mt-0.5 flex flex-wrap items-center gap-2"
                       style={{ color: brandContentOnPrimary }}
                     >
-                      <ThumbsUp size={12} className="mr-1" />
-                      <span>98% (237)</span>
+                      <span>5 Gold</span>
+                      <span className="inline-flex items-center">
+                        <ThumbsUp size={14} className="mr-1" />
+                        98% (237)
+                      </span>
                     </div>
                   </div>
                 </div>
+
+                {/* Right side: button */}
                 <button
-                  className="ml-2 px-3 py-1.5 rounded-lg bg-white bg-opacity-20 text-xs font-medium"
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium"
                   style={{
                     backgroundColor: brandContentOnPrimary,
                     color: brandBackgroundPrimary

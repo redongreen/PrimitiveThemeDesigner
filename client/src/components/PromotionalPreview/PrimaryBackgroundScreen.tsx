@@ -15,15 +15,18 @@ import {
 } from "lucide-react";
 import { CategoryPill, NavButton, FoodItem } from "./sharedUI";
 
-/** Props for the "PrimaryBackgroundScreen" mock. */
 interface Props {
   brandBackgroundPrimary: string;
   brandContentOnPrimary: string;
+
+  // NEW: We'll receive brandBorderSubtle here
+  brandBorderSubtle: string;
 }
 
 export const PrimaryBackgroundScreen: React.FC<Props> = ({
   brandBackgroundPrimary,
   brandContentOnPrimary,
+  brandBorderSubtle,
 }) => {
   return (
     <div 
@@ -84,7 +87,7 @@ export const PrimaryBackgroundScreen: React.FC<Props> = ({
               textColor={brandBackgroundPrimary}
             />
             <CategoryPill
-              icon={<ShoppingCart size={16} />}
+              icon={<ShoppingCart size={16} />} // ensure ShoppingCart is imported
               label="Market"
               active
               bgColor={brandContentOnPrimary}
@@ -119,35 +122,39 @@ export const PrimaryBackgroundScreen: React.FC<Props> = ({
             Buy 1, get 1 free on featured items
           </div>
 
-          {/* Food Grid - now passing Lucide icons instead of emojis */}
+          {/* Food Grid */}
           <div className="grid grid-cols-2 gap-4">
             <FoodItem 
               brandBackgroundPrimary={brandBackgroundPrimary}
               brandContentOnPrimary={brandContentOnPrimary}
+              brandBorderSubtle={brandBorderSubtle} // pass border subtle
               title="Coffee Shop"
               subtitle="Hot & Cold Drinks"
-              icon={<Coffee size={32} />} // replaced emoji with lucide icon
+              icon={<Coffee size={32} />}
             />
             <FoodItem 
               brandBackgroundPrimary={brandBackgroundPrimary}
               brandContentOnPrimary={brandContentOnPrimary}
+              brandBorderSubtle={brandBorderSubtle}
               title="Fresh Greens"
               subtitle="Salads & Bowls"
-              icon={<Leaf size={32} />} // example for salad/greens
+              icon={<Leaf size={32} />}
             />
             <FoodItem 
               brandBackgroundPrimary={brandBackgroundPrimary}
               brandContentOnPrimary={brandContentOnPrimary}
+              brandBorderSubtle={brandBorderSubtle}
               title="Grill House"
               subtitle="Burgers & Sandwiches"
-              icon={<Flame size={32} />} // example flame for a grill house
+              icon={<Flame size={32} />}
             />
             <FoodItem 
               brandBackgroundPrimary={brandBackgroundPrimary}
               brandContentOnPrimary={brandContentOnPrimary}
+              brandBorderSubtle={brandBorderSubtle}
               title="Breakfast Bar"
               subtitle="Morning Essentials"
-              icon={<Cookie size={32} />} // e.g. cookie for breakfast pastries
+              icon={<Cookie size={32} />}
             />
           </div>
         </div>

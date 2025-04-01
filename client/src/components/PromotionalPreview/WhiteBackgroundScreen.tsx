@@ -238,7 +238,7 @@ export const WhiteBackgroundScreen: React.FC<Props> = ({
         {/* Bottom Navigation */}
         <div
           className="mt-auto p-4 border-t flex justify-between items-center"
-          style={{ borderColor: brandBorderSubtle }}
+          style={{ borderColor: 'rgba(0,0,0,.1)' }}
         >
           <NavButton icon={<Home size={20} />} active color={brandContentPrimary} />
           <NavButton icon={<Search size={20} />} color={brandContentPrimary} />
