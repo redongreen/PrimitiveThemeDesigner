@@ -1,5 +1,4 @@
 import React from "react";
-import { Copy } from "lucide-react";
 
 /** 1) Category Pill */
 interface CategoryPillProps {
@@ -64,44 +63,30 @@ export const NavButton = ({
   );
 };
 
-/** 3) FoodItem for the "grid" in the primary background screen */
+/** 3) FoodItem: now takes a React node for its icon instead of an emoji string. */
 interface FoodItemProps {
   brandBackgroundPrimary: string;
   brandContentOnPrimary: string;
   title: string;
   subtitle: string;
-  imgEmoji: string;
+  icon: React.ReactNode; // changed from imgEmoji => icon
 }
+
 export const FoodItem: React.FC<FoodItemProps> = ({
   brandBackgroundPrimary,
   brandContentOnPrimary,
   title,
   subtitle,
-  imgEmoji
+  icon
 }) => {
-  // Map some emojis to icons (if you want).
-  function getIconForItem(type: string) {
-    switch (type) {
-      case "☕":
-        return <span style={{ fontSize: "1.5rem" }}>☕</span>;
-      case "🥗":
-        return <span style={{ fontSize: "1.5rem" }}>🥗</span>;
-      case "🍔":
-        return <span style={{ fontSize: "1.5rem" }}>🍔</span>;
-      case "🥯":
-        return <span style={{ fontSize: "1.5rem" }}>🥯</span>;
-      default:
-        return <span style={{ fontSize: "1.5rem" }}>🍽️</span>;
-    }
-  }
-
   return (
     <div className="bg-white bg-opacity-10 rounded-xl p-3">
       <div 
         className="w-16 h-16 rounded-full bg-white bg-opacity-20 mb-3 flex items-center justify-center"
         style={{ color: brandContentOnPrimary }}
       >
-        {getIconForItem(imgEmoji)}
+        {/* Now we directly render the passed-in icon */}
+        {icon}
       </div>
       <div className="font-semibold text-sm" style={{ color: brandContentOnPrimary }}>
         {title}

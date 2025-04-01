@@ -54,7 +54,7 @@ export default function Home() {
       </Tabs>
 
       <div className="mt-16 pt-8 border-t text-xs text-muted-foreground text-center">
-        Last updated on March 20, 2025, created by{" "}
+        Last updated on March 31, 2025, created by{" "}
         <a
           href="https://www.linkedin.com/in/iguisard/"
           target="_blank"

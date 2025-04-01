@@ -1,13 +1,14 @@
 import React from "react";
 import { X, Utensils, ThumbsUp, ArrowRight } from "lucide-react";
-import { NavButton } from "./sharedUI";
 
 /**
  * Props for the "RestaurantFoodView" screen.
+ * We added 'brandBackgroundSecondary' so you can use it inside.
  */
 interface Props {
   brandBackgroundPrimary: string;
   brandContentOnPrimary: string;
+  brandBackgroundSecondary: string; // NEW
 }
 
 /**
@@ -17,6 +18,7 @@ interface Props {
 export const RestaurantFoodView: React.FC<Props> = ({
   brandBackgroundPrimary,
   brandContentOnPrimary,
+  brandBackgroundSecondary, // now available
 }) => {
   return (
     <div 
@@ -139,11 +141,12 @@ export const RestaurantFoodView: React.FC<Props> = ({
               </div>
             </div>
 
-            {/* Menu Item Card */}
+            {/* Menu Item Card - example usage of brandBackgroundSecondary */}
             <div className="px-4 py-2">
               <div
                 className="w-full rounded-xl p-3 flex items-center"
                 style={{ 
+                  // If you want brandBackgroundSecondary, just swap below:
                   backgroundColor: brandBackgroundPrimary,
                   boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
                 }}

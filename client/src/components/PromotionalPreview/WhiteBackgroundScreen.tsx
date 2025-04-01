@@ -8,14 +8,20 @@ interface Props {
   brandContentOnSecondary: string;
   brandBorderAccessible: string;
   brandBorderSubtle: string;
-  neutralBackground: string;
-  fgPrimary: string;
-  fgSecondary: string;
+
+  /* Renamed from neutralBackground => backgroundPrimary */
+  backgroundPrimary: string;
+
+  /* Renamed from fgPrimary => contentPrimary */
+  contentPrimary: string;
+
+  /* Renamed from fgSecondary => contentSecondary */
+  contentSecondary: string;
 }
 
 /**
  * Renders the "White background" screen example, 
- * with brand tokens for banners and content coloring.
+ * with brand tokens for banners and content coloring, plus neutral tokens.
  */
 export const WhiteBackgroundScreen: React.FC<Props> = ({
   brandContentPrimary,
@@ -23,9 +29,11 @@ export const WhiteBackgroundScreen: React.FC<Props> = ({
   brandContentOnSecondary,
   brandBorderAccessible,
   brandBorderSubtle,
-  neutralBackground,
-  fgPrimary,
-  fgSecondary,
+
+  // newly renamed
+  backgroundPrimary,
+  contentPrimary,
+  contentSecondary,
 }) => {
   return (
     <div 
@@ -38,11 +46,13 @@ export const WhiteBackgroundScreen: React.FC<Props> = ({
     >
       <div
         className="w-full h-full flex flex-col"
-        style={{ backgroundColor: neutralBackground }}
+        style={{ backgroundColor: backgroundPrimary }}
       >
         {/* Status Bar */}
         <div className="px-4 py-2 flex justify-between items-center">
-          <span style={{ color: brandContentPrimary, fontWeight: "500" }}>9:41</span>
+          <span style={{ color: brandContentPrimary, fontWeight: "500" }}>
+            9:41
+          </span>
           <div className="flex gap-2">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ color: brandContentPrimary }}>
               <rect x="2" y="6" width="20" height="12" rx="2" />
@@ -55,7 +65,7 @@ export const WhiteBackgroundScreen: React.FC<Props> = ({
 
         {/* Header */}
         <div className="p-4 mb-2 flex justify-between items-center">
-          <div className="font-semibold" style={{ color: fgPrimary }}>
+          <div className="font-semibold" style={{ color: contentPrimary }}>
             Discover
           </div>
           <User size={16} style={{ color: brandContentPrimary }} />
@@ -67,26 +77,26 @@ export const WhiteBackgroundScreen: React.FC<Props> = ({
             <CategoryPill
               icon={<Utensils size={16} />}
               label="Food"
-              bgColor={neutralBackground}
+              bgColor={backgroundPrimary}
               textColor={brandContentPrimary}
             />
             <CategoryPill
               icon={<ShoppingBag size={16} />}
               label="Market"
-              bgColor={neutralBackground}
-              textColor={fgPrimary}
+              bgColor={backgroundPrimary}
+              textColor={contentPrimary}
             />
             <CategoryPill
               icon={<Gift size={16} />}
               label="Deals"
-              bgColor={neutralBackground}
-              textColor={fgPrimary}
+              bgColor={backgroundPrimary}
+              textColor={contentPrimary}
             />
             <CategoryPill
               icon={<Store size={16} />}
               label="Shop"
-              bgColor={neutralBackground}
-              textColor={fgPrimary}
+              bgColor={backgroundPrimary}
+              textColor={contentPrimary}
             />
           </div>
         </div>
@@ -94,7 +104,7 @@ export const WhiteBackgroundScreen: React.FC<Props> = ({
         {/* Featured Restaurants */}
         <div className="px-4 mb-4">
           <div className="flex justify-between items-center mb-2">
-            <div className="font-semibold text-sm" style={{ color: fgPrimary }}>
+            <div className="font-semibold text-sm" style={{ color: contentPrimary }}>
               Featured Restaurants <span>→</span>
             </div>
           </div>
@@ -154,7 +164,7 @@ export const WhiteBackgroundScreen: React.FC<Props> = ({
             style={{ backgroundColor: brandBackgroundSecondary }}
           >
             <div>
-              <div className="font-semibold text-sm" style={{ color: brandContentOnSecondary}}>
+              <div className="font-semibold text-sm" style={{ color: brandContentOnSecondary }}>
                 BOGO Week
               </div>
               <div className="text-xs" style={{ color: brandContentOnSecondary }}>
@@ -164,7 +174,7 @@ export const WhiteBackgroundScreen: React.FC<Props> = ({
             <div 
               className="text-xs px-3 py-1.5 rounded-full font-medium"
               style={{ 
-                backgroundColor: neutralBackground, 
+                backgroundColor: backgroundPrimary, 
                 color: brandContentPrimary 
               }}
             >
@@ -176,7 +186,7 @@ export const WhiteBackgroundScreen: React.FC<Props> = ({
         {/* Local Favorites Card */}
         <div className="px-4 mb-4">
           <div className="flex justify-between items-center mb-2">
-            <div className="font-semibold text-sm" style={{ color: fgPrimary }}>
+            <div className="font-semibold text-sm" style={{ color: contentPrimary }}>
               Local Favorites <span>→</span>
             </div>
           </div>
@@ -226,7 +236,10 @@ export const WhiteBackgroundScreen: React.FC<Props> = ({
         </div>
 
         {/* Bottom Navigation */}
-        <div className="mt-auto p-4 border-t flex justify-between items-center" style={{ borderColor: brandBorderSubtle }}>
+        <div
+          className="mt-auto p-4 border-t flex justify-between items-center"
+          style={{ borderColor: brandBorderSubtle }}
+        >
           <NavButton icon={<Home size={20} />} active color={brandContentPrimary} />
           <NavButton icon={<Search size={20} />} color={brandContentPrimary} />
           <NavButton icon={<ShoppingBag size={20} />} badge="2" color={brandContentPrimary} />

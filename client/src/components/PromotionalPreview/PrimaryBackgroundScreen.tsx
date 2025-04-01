@@ -1,5 +1,18 @@
 import React from "react";
-import { Search, ShoppingBag, Home, User, ShoppingCart, Gift, Store, Utensils } from "lucide-react";
+import {
+  Search,
+  ShoppingBag,
+  Home,
+  User,
+  Gift,
+  Store,
+  Utensils,
+  Coffee,
+  Leaf,
+  Flame,
+  Cookie,
+  ShoppingCart
+} from "lucide-react";
 import { CategoryPill, NavButton, FoodItem } from "./sharedUI";
 
 /** Props for the "PrimaryBackgroundScreen" mock. */
@@ -106,35 +119,35 @@ export const PrimaryBackgroundScreen: React.FC<Props> = ({
             Buy 1, get 1 free on featured items
           </div>
 
-          {/* Food Grid */}
+          {/* Food Grid - now passing Lucide icons instead of emojis */}
           <div className="grid grid-cols-2 gap-4">
             <FoodItem 
               brandBackgroundPrimary={brandBackgroundPrimary}
               brandContentOnPrimary={brandContentOnPrimary}
               title="Coffee Shop"
               subtitle="Hot & Cold Drinks"
-              imgEmoji="☕"
+              icon={<Coffee size={32} />} // replaced emoji with lucide icon
             />
             <FoodItem 
               brandBackgroundPrimary={brandBackgroundPrimary}
               brandContentOnPrimary={brandContentOnPrimary}
               title="Fresh Greens"
               subtitle="Salads & Bowls"
-              imgEmoji="🥗"
+              icon={<Leaf size={32} />} // example for salad/greens
             />
             <FoodItem 
               brandBackgroundPrimary={brandBackgroundPrimary}
               brandContentOnPrimary={brandContentOnPrimary}
               title="Grill House"
               subtitle="Burgers & Sandwiches"
-              imgEmoji="🍔"
+              icon={<Flame size={32} />} // example flame for a grill house
             />
             <FoodItem 
               brandBackgroundPrimary={brandBackgroundPrimary}
               brandContentOnPrimary={brandContentOnPrimary}
               title="Breakfast Bar"
               subtitle="Morning Essentials"
-              imgEmoji="🥯"
+              icon={<Cookie size={32} />} // e.g. cookie for breakfast pastries
             />
           </div>
         </div>
